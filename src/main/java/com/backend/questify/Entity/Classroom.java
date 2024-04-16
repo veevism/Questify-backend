@@ -22,6 +22,6 @@ public class Classroom {
 	private LocalDateTime endTime;
 
 	@OneToMany(mappedBy = "classroom")
-	private Set<Enrollment> enrollments;
+	private Set<Activity> activities;
 
 }

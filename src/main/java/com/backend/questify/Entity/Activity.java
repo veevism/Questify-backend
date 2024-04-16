@@ -3,8 +3,8 @@ package com.backend.questify.Entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "enrollments")
-public class Enrollment {
+@Table(name = "activities")
+public class Activity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long enrollmentId;

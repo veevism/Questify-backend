@@ -9,40 +9,45 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
-public class UserService {
+import java.util.List;
+import java.util.Optional;
 
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private StudentRepository studentRepository;
-	@Autowired
-	private ProfessorRepository professorRepository;
 
-	@Transactional
-	public User registerUser(User user, String role) {
-		if (userRepository.existsByEmail(user.getEmail())) {
-			throw new IllegalStateException("Email already in use.");
+	@Service
+	public class UserService {
+
+		@Autowired
+		private UserRepository userRepository;
+
+		public User createUser(User user) {
+			return userRepository.save(user);
 		}
 
-		User createdUser = new User();
-		createdUser.setUserName(user.getUserName());
-		createdUser.setPassword(user.getPassword());  // Consider encrypting the password
-		createdUser.setEmail(user.getEmail());
-		createdUser.setRole(Role.valueOf(role.toUpperCase()));
-
-		createdUser = userRepository.save(createdUser);
-
-		if (role.equalsIgnoreCase("student")) {
-			Student student = new Student();
-			student.setUser(createdUser);
-			studentRepository.save(student);
-		} else if (role.equalsIgnoreCase("professor")) {
-			Professor professor = new Professor();
-			professor.setUser(createdUser);
-			professorRepository.save(professor);
+		public Optional<User> getUserById(Long userId) {
+			return userRepository.findById(userId);
 		}
 
-		return createdUser;
+		public Optional<User> getUserByUserName(String userName) {
+			return userRepository.findByUserName(userName);
+		}
+
+		public List<User> getAllUsers() {
+			return userRepository.findAll();
+		}
+
+		public User updateUser(Long userId, User userDetails) {
+			User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with id " + userId));
+			user.setFirstName(userDetails.getFirstName());
+			user.setLastName(userDetails.getLastName());
+			user.setDisplayName(userDetails.getDisplayName());
+			user.setPassword(userDetails.getPassword());
+			user.setImage(userDetails.getImage());
+			user.setEmail(userDetails.getEmail());
+			user.setRole(userDetails.getRole());
+			return userRepository.save(user);
+		}
+
+		public void deleteUser(Long userId) {
+			userRepository.deleteById(userId);
+		}
 	}
-}

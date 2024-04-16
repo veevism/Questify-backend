@@ -2,14 +2,15 @@ package com.backend.questify.Util;
 
 import com.backend.questify.DTO.UserDto;
 import com.backend.questify.Entity.User;
+import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface Mapper {
- Mapper INSTANCE = Mappers.getMapper(Mapper.class);
+public interface DtoMapper {
+ DtoMapper INSTANCE = Mappers.getMapper(DtoMapper.class);
 
- UserDto UserDtoToUser (UserDto userDto);
+ User UserDtoToUser (UserDto userDto);
 
- User UserToUserDto (User user);
+ UserDto UserToUserDto (User user);
 
 }
