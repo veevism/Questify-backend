@@ -1,6 +1,7 @@
 package com.backend.questify.Service;
 
 import com.backend.questify.Entity.*;
+import com.backend.questify.Model.Role;
 import com.backend.questify.Repository.ProfessorRepository;
 import com.backend.questify.Repository.StudentRepository;
 import com.backend.questify.Repository.UserRepository;

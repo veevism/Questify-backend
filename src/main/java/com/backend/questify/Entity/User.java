@@ -1,5 +1,6 @@
 package com.backend.questify.Entity;
 
+import com.backend.questify.Model.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
