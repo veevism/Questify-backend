@@ -23,7 +23,6 @@ public class QuestifyApplication {
 
 
 			User studentUser1 = User.builder()
-								   .userId(1L)
 								   .userName("student1")
 								   .firstName("Student")
 								   .lastName("User")
@@ -35,7 +34,6 @@ public class QuestifyApplication {
 			userService.createUser(studentUser1);
 
 			User professorUser = User.builder()
-								   .userId(2L)
 								   .userName("admin")
 								   .firstName("Admin")
 								   .lastName("User")
@@ -47,7 +45,6 @@ public class QuestifyApplication {
 			userService.createUser(professorUser);
 
 			User studentUser2 = User.builder()
-									.userId(3L)
 									.userName("student2")
 									.firstName("Student")
 									.lastName("User")
@@ -59,7 +56,6 @@ public class QuestifyApplication {
 			userService.createUser(studentUser2);
 
 			User studentUser3 = User.builder()
-									.userId(4L)
 									.userName("student3")
 									.firstName("Student")
 									.lastName("User")
@@ -71,7 +67,6 @@ public class QuestifyApplication {
 			userService.createUser(studentUser3);
 
 			User studentUser4 = User.builder()
-									.userId(5L)
 									.userName("student4")
 									.firstName("Student")
 									.lastName("User")

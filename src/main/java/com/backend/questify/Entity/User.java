@@ -42,5 +42,11 @@ public class User {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
+	@OneToOne(fetch = FetchType.LAZY)
+	private Student student;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	private Professor professor;
+
 }
 

@@ -2,10 +2,7 @@ package com.backend.questify.Entity;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 @Data
@@ -16,9 +13,10 @@ import lombok.NoArgsConstructor;
 @Table(name = "professors")
 public class Professor {
 	@Id
+	@EqualsAndHashCode.Exclude
 	private Long professorId;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@MapsId
 	@JoinColumn(name = "professor_id")
 	private User user;

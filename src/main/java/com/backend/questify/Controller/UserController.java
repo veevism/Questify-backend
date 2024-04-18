@@ -1,7 +1,9 @@
 package com.backend.questify.Controller;
 
+import com.backend.questify.DTO.UserDto;
 import com.backend.questify.Entity.User;
 import com.backend.questify.Service.UserService;
+import com.backend.questify.Util.DtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,8 +38,9 @@ public class UserController {
 	}
 
 	@GetMapping("")
-	public List<User> getAllUsers() {
-		return userService.getAllUsers();
+	public List<UserDto> getAllUsers() {
+
+		return DtoMapper.INSTANCE.userToUserDto(userService.getAllUsers());
 	}
 
 	@PutMapping("/{userId}")

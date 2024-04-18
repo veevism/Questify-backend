@@ -1,9 +1,11 @@
 package com.backend.questify.Service;
 
+import com.backend.questify.DTO.SubmissionDto;
 import com.backend.questify.Entity.Student;
 import com.backend.questify.Entity.Submission;
 import com.backend.questify.Repository.StudentRepository;
 import com.backend.questify.Repository.SubmissionRepository;
+import com.backend.questify.Util.DtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,17 +35,17 @@ public class SubmissionService {
 		return submissionRepository.save(submission);
 	}
 
-	public Submission createSubmission(Long studentId) {
-		Optional<Student> studentOpt = studentRepository.findById(studentId);
-		if (studentOpt.isPresent()) {
-			Student student = studentOpt.get();
+	public SubmissionDto createSubmission(Long userId) {
+//		if (studentOpt.isPresent()) {
+//			Student student = studentOpt.get();
 			Submission newSubmission = new Submission();
-			newSubmission.setStudent(student);
-			newSubmission.setSubmissionId(22L);
-			return submissionRepository.save(newSubmission);
-		} else {
-			throw new IllegalArgumentException("No student found with ID: " + studentId);
-		}
+			newSubmission.setStudent(studentRepository.findByStudentId(1L));
+//		System.out.println(newSubmission);
+//			newSubmission.setSubmissionId(22L);
+			return DtoMapper.INSTANCE.submissionToSubmissionDto(submissionRepository.save(newSubmission));
+//		} else {
+//			throw new IllegalArgumentException("No student found with ID: " + userId);
+//		}
 	}
 
 	public void deleteSubmission(Long id) {

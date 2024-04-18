@@ -1,5 +1,6 @@
 package com.backend.questify.Controller;
 
+import com.backend.questify.DTO.SubmissionDto;
 import com.backend.questify.Entity.Submission;
 import com.backend.questify.Service.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,8 @@ public class SubmissionController {
 	}
 
 	@PostMapping("/{id}")
-	public ResponseEntity<Submission> createSubmission(@PathVariable Long id) {
-		Submission savedSubmission = submissionService.createSubmission(id);
+	public ResponseEntity<SubmissionDto> createSubmission(@PathVariable Long id) {
+		SubmissionDto savedSubmission = submissionService.createSubmission(id);
 		return ResponseEntity.ok(savedSubmission);
 	}
 
