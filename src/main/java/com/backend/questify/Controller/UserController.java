@@ -2,9 +2,12 @@ package com.backend.questify.Controller;
 
 import com.backend.questify.DTO.UserDto;
 import com.backend.questify.Entity.User;
+import com.backend.questify.Exception.ResourceNotFoundException;
+import com.backend.questify.Model.ApiResponse;
 import com.backend.questify.Service.UserService;
 import com.backend.questify.Util.DtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,13 +37,14 @@ public class UserController {
 	public ResponseEntity<User> getUserByUsername(@PathVariable String userName) {
 		return userService.getUserByUserName(userName)
 						  .map(ResponseEntity::ok)
-						  .orElseGet(() -> ResponseEntity.notFound().build());
+						  .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + userName));
 	}
 
 	@GetMapping("/")
-	public List<UserDto> getAllUsers() {
-
-		return DtoMapper.INSTANCE.userToUserDto(userService.getAllUsers());
+	public ResponseEntity<ApiResponse<List<UserDto>>> getAllUsers() {
+		List<UserDto> users = DtoMapper.INSTANCE.userToUserDto(userService.getAllUsers());
+		ApiResponse<List<UserDto>> response = ApiResponse.success(users, HttpStatus.OK, "Get All User Successfully" );
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@PutMapping("/{userId}")
