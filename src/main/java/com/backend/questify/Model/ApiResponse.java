@@ -21,7 +21,7 @@ public class ApiResponse<T> {
 	private T data;
 
 
-	public static <T> ApiResponse<T> success(T data,HttpStatus status, String message) {
+	public static <T> ApiResponse<T> success(T data, HttpStatus status, String message) {
 		return new ApiResponse<>(true, status, message, null, data);
 	}
 

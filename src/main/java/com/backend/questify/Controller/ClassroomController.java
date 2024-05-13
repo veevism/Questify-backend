@@ -1,10 +1,17 @@
 package com.backend.questify.Controller;
 
+import com.backend.questify.DTO.ClassroomDto;
+import com.backend.questify.DTO.UserDto;
 import com.backend.questify.Entity.Classroom;
+import com.backend.questify.Model.ApiResponse;
 import com.backend.questify.Service.ClassroomService;
+import com.backend.questify.Util.ShortUUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/classroom")
@@ -28,10 +35,19 @@ public class ClassroomController {
 		return ResponseEntity.ok("Classroom geted successfully.");
 	}
 
+	@GetMapping("/")
+	public ResponseEntity<ApiResponse<List<ClassroomDto>>> getClassrooms() {
+		List<ClassroomDto> classroomDto1 = classroomService.getClassrooms();
+		System.out.println(ShortUUIDGenerator.generateShortUUID());
+		ApiResponse<List<ClassroomDto>> response = ApiResponse.success(classroomDto1, HttpStatus.OK, "Get Classrooms Successfully" );
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
 	@PostMapping("/")
-	public ResponseEntity<String> createClassroom(@RequestBody Classroom classroom) {
-		System.out.println(classroom);
-		return ResponseEntity.ok("Classroom created successfully.");
+	public ResponseEntity<ApiResponse<ClassroomDto>> createClassroom(@RequestBody ClassroomDto classroomDto) {
+		ClassroomDto classroomDto1 = classroomService.createClassroom(classroomDto);
+		ApiResponse<ClassroomDto> response = ApiResponse.success(classroomDto1, HttpStatus.CREATED, "Create Classroom Successfully" );
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 
