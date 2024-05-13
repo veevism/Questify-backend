@@ -39,4 +39,7 @@ public class Classroom {
 	@OneToMany(mappedBy = "classroom")
 	private Set<Assignment> assignments;
 
+	@ManyToMany
+	private Set<Student> students;
+
 }

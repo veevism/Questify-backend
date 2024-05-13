@@ -8,7 +8,8 @@ import java.time.LocalDateTime;
 @Table(name = "assignments")
 public class Assignment {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(generator = "UUID")
+	@Column(updatable = false, nullable = false)
 	private Long assignmentId;
 
 	@ManyToOne
@@ -23,16 +24,16 @@ public class Assignment {
 
 //	@Column(nullable = true)
 //	private LocalDateTime submissionTime;
-	private Boolean isActive = false;
+	private Boolean isActive = true;
 
 	@Column(nullable = true)
 	private LocalDateTime startTime;
 
 	@Column(nullable = true)
 	private LocalDateTime endTime;
-	@ManyToOne
-	@JoinColumn(name = "student_id")
-	private Student student;
+//	@ManyToOne
+//	@JoinColumn(name = "student_id")
+//	private Student student;
 
 	@ManyToOne
 	@JoinColumn(name = "classroom_id")

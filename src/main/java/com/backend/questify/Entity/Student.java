@@ -3,6 +3,8 @@ package com.backend.questify.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+
 @Data
 @Builder
 @Entity
@@ -22,5 +24,8 @@ public class Student {
 	private Integer enrollmentYear;
 
 	private String major;
+
+//	@ManyToMany
+//	private Set<Classroom> classrooms;
 
 }

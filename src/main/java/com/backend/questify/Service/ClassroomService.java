@@ -9,6 +9,7 @@ import com.backend.questify.Entity.Submission;
 import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Repository.*;
 import com.backend.questify.Util.DtoMapper;
+import com.backend.questify.Util.ShortUUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,7 @@ public class ClassroomService {
 		Optional<Professor> result = professorRepository.findById(mockProfessorId);
 		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + mockProfessorId));
 		Classroom createdClassroom = Classroom.builder()
+				.invitationCode(ShortUUIDGenerator.generateShortUUID())
 											  .classroomId(UUID.randomUUID()) // สร้าง UUID ใหม่
 											  .title(classroomDto.getTitle())
 											  .description(classroomDto.getDescription())

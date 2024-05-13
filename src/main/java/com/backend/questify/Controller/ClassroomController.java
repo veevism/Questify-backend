@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/classroom")
@@ -31,14 +32,15 @@ public class ClassroomController {
 	}
 
 	@GetMapping("/{classroomId}")
-	public ResponseEntity<String> getClassroom(@PathVariable Long classroomId) {
-		return ResponseEntity.ok("Classroom geted successfully.");
+	public ResponseEntity<ApiResponse<ClassroomDto>> getClassroom(@PathVariable UUID classroomId) {
+		ClassroomDto classroomDto1 = classroomService.getClassroom(classroomId);
+		ApiResponse<ClassroomDto> response = ApiResponse.success(classroomDto1, HttpStatus.OK, "Get Classrooms Successfully" );
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@GetMapping("/")
 	public ResponseEntity<ApiResponse<List<ClassroomDto>>> getClassrooms() {
 		List<ClassroomDto> classroomDto1 = classroomService.getClassrooms();
-		System.out.println(ShortUUIDGenerator.generateShortUUID());
 		ApiResponse<List<ClassroomDto>> response = ApiResponse.success(classroomDto1, HttpStatus.OK, "Get Classrooms Successfully" );
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
