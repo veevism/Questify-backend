@@ -60,9 +60,15 @@ public class ClassroomService {
 	public List<ClassroomDto> getClassrooms() {
 		List<Classroom> classrooms = classroomRepository.findAll();
 		if (classrooms.isEmpty()) {
-			throw new ResourceNotFoundException("Classroom not found");// หรือ ResponseEntity.notFound().build(); ตามบริบทของแอปพลิเคชัน
+			throw new ResourceNotFoundException("Classroom not found");
 		}
 		return DtoMapper.INSTANCE.classroomToClassroomDto(classrooms);
+	}
+
+	public ClassroomDto getClassroom(UUID classroomId) {
+		Optional<Classroom> result = classroomRepository.findById(classroomId);
+		Classroom classroom = result.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
+		return DtoMapper.INSTANCE.classroomToClassroomDto(classroom);
 	}
 
 //
