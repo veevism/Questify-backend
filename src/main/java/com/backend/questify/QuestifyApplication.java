@@ -1,5 +1,6 @@
 package com.backend.questify;
 
+import com.backend.questify.Entity.Classroom;
 import com.backend.questify.Entity.User;
 import com.backend.questify.Model.Role;
 import com.backend.questify.Service.UserService;
@@ -76,6 +77,11 @@ public class QuestifyApplication {
 									.role(Role.STUDENT)
 									.build();
 			userService.createUser(studentUser4);
+
+
+//			Classroom classroom1 = Classroom.builder()
+//					.professor(professorUser).
+//											.build();
 		};
 	}
 

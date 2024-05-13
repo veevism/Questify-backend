@@ -17,7 +17,7 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
-	@PostMapping("")
+	@PostMapping("/")
 	public ResponseEntity<User> createUser(@RequestBody User user) {
 		User createdUser = userService.createUser(user);
 		return ResponseEntity.ok(createdUser);
@@ -37,7 +37,7 @@ public class UserController {
 						  .orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
-	@GetMapping("")
+	@GetMapping("/")
 	public List<UserDto> getAllUsers() {
 
 		return DtoMapper.INSTANCE.userToUserDto(userService.getAllUsers());

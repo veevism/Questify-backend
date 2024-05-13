@@ -1,2 +1,4 @@
-package com.backend.questify.Service.Interface;public interface StudentServiceInterface {
+package com.backend.questify.Service.Interface;
+
+public interface StudentServiceInterface {
 }

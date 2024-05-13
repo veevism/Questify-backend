@@ -15,6 +15,10 @@ public class Laboratory {
 	@JoinColumn(name = "classroom_id")
 	private Classroom classroom;
 
+	@ManyToOne
+	@JoinColumn(name = "professor_id")
+	private Professor professor; // add later for reusing purpose
+
 	private String labTitle;
 	private String description;
 	private LocalDateTime startTime;

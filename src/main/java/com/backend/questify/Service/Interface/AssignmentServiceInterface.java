@@ -1,2 +1,4 @@
-package com.backend.questify.Service.Interface;public interface AssignmentServiceInterface {
+package com.backend.questify.Service.Interface;
+
+public interface AssignmentServiceInterface {
 }

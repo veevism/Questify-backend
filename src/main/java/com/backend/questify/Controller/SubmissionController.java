@@ -38,8 +38,18 @@ public class SubmissionController {
 		submissionService.deleteSubmission(id);
 		return ResponseEntity.ok("Submission deleted successfully.");
 	}
-	// Other endpoints...
+
+	@GetMapping("/execute/{submissionId}/{language}")
+	public ResponseEntity<String> executeSubmission(@PathVariable Long submissionId, @PathVariable String language) {
+		try {
+			String result = submissionService.executeSubmission(submissionId, language);
+			return ResponseEntity.ok(result);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+		}
+	}
 }
+
 //@RestController
 //@RequestMapping("/api/submissions/{submissionId}")
 //public class SubmissionController {

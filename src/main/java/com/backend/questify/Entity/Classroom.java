@@ -1,11 +1,19 @@
 package com.backend.questify.Entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
+@Data
+@Builder
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "classrooms")
 public class Classroom {
 	@Id
@@ -17,11 +25,14 @@ public class Classroom {
 	private Professor professor;
 
 	private String title;
+
 	private String description;
-	private LocalDateTime startTime;
-	private LocalDateTime endTime;
+
+	private Boolean isActive = false;
+
+	private String invitationCode;
 
 	@OneToMany(mappedBy = "classroom")
-	private Set<Activity> activities;
+	private Set<Assignment> assignments;
 
 }

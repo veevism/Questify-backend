@@ -13,6 +13,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 public interface DtoMapper {
@@ -29,8 +30,12 @@ public interface DtoMapper {
 
  @Mapping(source = "student.studentId", target = "studentId")
  SubmissionDto submissionToSubmissionDto (Submission submission);
+// Optional<SubmissionDto> submissionToSubmissionDto (Submission submission);
+
+
 
 // StudentDto studentToStudentDto(Student student);
 //
-// ProfessorDto professorToProfessorDto(Professor professor);
+ProfessorDto professorToProfessorDto(Professor professor);
+ List<ProfessorDto> professorToProfessorDto(List<Professor> professor);
 }

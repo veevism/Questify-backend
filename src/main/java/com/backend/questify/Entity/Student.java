@@ -20,6 +20,7 @@ public class Student {
 	private User user;
 
 	private Integer enrollmentYear;
+
 	private String major;
 
 }
