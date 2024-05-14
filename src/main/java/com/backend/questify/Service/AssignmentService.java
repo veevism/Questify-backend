@@ -47,12 +47,12 @@ public class AssignmentService {
 														 .isActive(true)
 														 .build();
 
-		if (createdAssignment.getClassroom() == null) {
-			System.out.println("Yes");
-		} else {
-
-			System.out.println(DtoMapper.INSTANCE.classroomToClassroomDto(createdAssignment.getClassroom()));
-		}
+//		if (createdAssignment.getClassroom() == null) {
+//			System.out.println("Yes");
+//		} else {
+//
+//			System.out.println(DtoMapper.INSTANCE.classroomToClassroomDto(createdAssignment.getClassroom()));
+//		}
 
 		assignmentRepository.save(createdAssignment);
 
@@ -65,13 +65,6 @@ public class AssignmentService {
 
 //		System.out.println(createdAssignment.getClassroom());
 
-
-		System.out.println(DtoMapper.INSTANCE.assignmentToAssignmentDto(createdAssignment));
-
-
-		System.out.println(DtoMapper.INSTANCE.professorToProfessorDto(professor));
-
-		System.out.println(DtoMapper.INSTANCE.classroomToClassroomDto(classroom));
 
 
 

@@ -33,8 +33,6 @@ public class AssignmentDto {
 
 	private LocalDateTime endTime;
 
-
-
 //	private Student student;
 
 	private ClassroomDto classroom;

@@ -21,24 +21,29 @@ public class AssignmentController {
 	@Autowired
 	AssignmentService assignmentService;
 
-	@DeleteMapping("/{assignmentId}")
-	public ResponseEntity<String> deleteAssignment(@PathVariable Long assignmentId) {
+	@DeleteMapping("")
+	public ResponseEntity<String> deleteAssignment(@RequestParam UUID assignmentId) {
 		return ResponseEntity.ok("Assignment deleted successfully.");
 	}
 
-	@PutMapping("/{assignmentId}")
-	public ResponseEntity<String> updateAssignment(@PathVariable Long assignmentId) {
+	@PutMapping("")
+	public ResponseEntity<String> updateAssignment(@RequestParam UUID assignmentId) {
 		return ResponseEntity.ok("Assignment updated successfully.");
 	}
 
-	@GetMapping("/{assignmentId}")
-	public ResponseEntity<String> getAssignment(@PathVariable Long assignmentId) {
-		return ResponseEntity.ok("Assignment geted successfully.");
+	@GetMapping("")
+	public ResponseEntity<String> getAssignment(@RequestParam UUID assignmentId) {
+		return ResponseEntity.ok("Assignment get by assignment successfully.");
 	}
 
-	@PostMapping("/{classroomId}")
+	@GetMapping("/classroom")
+	public ResponseEntity<String> getAssignments(@RequestParam UUID classroomId) {
+		return ResponseEntity.ok("Assignment get by classroom successfully.");
+	}
+
+	@PostMapping("")
 	public ResponseEntity<ApiResponse<AssignmentDto>> createAssignment(@RequestBody Assignment assignment,
-												   @PathVariable UUID classroomId) {
+																	   @RequestParam UUID classroomId) {
 		AssignmentDto result = assignmentService.createAssignment(assignment, classroomId);
 		ApiResponse<AssignmentDto> response = ApiResponse.success(result, HttpStatus.CREATED, "Create Assignment Successfully" );
 		return ResponseEntity.status(response.getStatus()).body(response);	}
