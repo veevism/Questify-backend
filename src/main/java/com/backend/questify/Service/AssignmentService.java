@@ -55,40 +55,6 @@ public class AssignmentService {
 //		}
 
 		assignmentRepository.save(createdAssignment);
-
-
-
-
-//		classroom.getAssignments().add(createdAssignment);
-//
-//		classroomRepository.save(classroom);
-
-//		System.out.println(createdAssignment.getClassroom());
-
-
-
-
-
-//				professor.addAssignment(createdAssignment);
-//
-//				professorRepository.save(professor);
-
-
-
-
-//		classroomRepository.findBy_ProfessorId
-//		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + mockProfessorId));
-//		Classroom createdClassroom = Classroom.builder()
-//											  .invitationCode(ShortUUIDGenerator.generateShortUUID())
-//											  .classroomId(UUID.randomUUID()) // สร้าง UUID ใหม่
-//											  .title(classroomDto.getTitle())
-//											  .description(classroomDto.getDescription())
-//											  .professor(professor)
-//											  .isActive(true)
-//											  .build();
-//		classroomRepository.save(createdClassroom);
-
-//		return DtoMapper.INSTANCE.classroomToClassroomDto(createdClassroom);
 		return DtoMapper.INSTANCE.assignmentToAssignmentDto(createdAssignment);
 	}
 
@@ -104,6 +70,47 @@ public class AssignmentService {
 
 		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignments);
 	}
+
+	public AssignmentDto updateAssignment (UUID assignmentId, AssignmentDto assignmentDto) {
+		Optional<Assignment> result = assignmentRepository.findByAssignmentId(assignmentId);
+		Assignment assignment = result.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id : " + assignmentId));
+
+		System.out.println(assignmentDto + assignmentDto.getTitle());
+		if (assignmentDto.getTitle() == null || assignmentDto.getTitle().trim().isEmpty()) {
+			throw new IllegalArgumentException("Title cannot be empty");
+		}
+
+		if (assignmentDto.getDescription() == null || assignmentDto.getDescription().trim().isEmpty()) {
+			throw new IllegalArgumentException("Description cannot be empty");
+		}
+
+		if (assignmentDto.getIsActive() == null ) {
+			throw new IllegalArgumentException("IsActive cannot be empty");
+		}
+
+		if (assignmentDto.getScore() == null ) {
+			throw new IllegalArgumentException("Score cannot be empty");
+		}
+
+		assignment.setTitle(assignmentDto.getTitle());
+		assignment.setDescription(assignmentDto.getDescription());
+		assignment.setIsActive(assignmentDto.getIsActive());
+		assignment.setScore(assignmentDto.getScore());
+
+		assignmentRepository.save(assignment);
+
+		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignment);
+
+	}
+
+	public void deleteAssignment (UUID assignmentId) {
+		if (assignmentRepository.existsById(assignmentId)) {
+			assignmentRepository.deleteById(assignmentId);
+		} else {
+			throw new ResourceNotFoundException("Assignment not found with Id : " + assignmentId);
+		}
+	}
+
 
 	public AssignmentDto getAssignment(UUID assignmentId) {
 		System.out.println(assignmentId);

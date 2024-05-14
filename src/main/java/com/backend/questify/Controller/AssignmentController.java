@@ -23,13 +23,17 @@ public class AssignmentController {
 	AssignmentService assignmentService;
 
 	@DeleteMapping("")
-	public ResponseEntity<String> deleteAssignment(@RequestParam UUID assignmentId) {
-		return ResponseEntity.ok("Assignment deleted successfully.");
+	public ResponseEntity<ApiResponse<Void>> deleteAssignment(@RequestParam UUID assignmentId) {
+		assignmentService.deleteAssignment(assignmentId);
+		ApiResponse<Void> response = ApiResponse.success(null, HttpStatus.OK, "Delete Assignment Successfully" );
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@PutMapping("")
-	public ResponseEntity<String> updateAssignment(@RequestParam UUID assignmentId) {
-		return ResponseEntity.ok("Assignment updated successfully.");
+	public ResponseEntity<ApiResponse<AssignmentDto>> updateAssignment(@RequestParam UUID assignmentId,@RequestBody AssignmentDto assignmentDto) {
+		AssignmentDto assignmentDto1 = assignmentService.updateAssignment(assignmentId, assignmentDto);
+		ApiResponse<AssignmentDto> response = ApiResponse.success(assignmentDto1, HttpStatus.OK, "Update Classrooms Successfully" );
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@GetMapping("")

@@ -69,7 +69,6 @@ public class ClassroomService {
 
 	public ClassroomDto updateClassroom(UUID classroomId, ClassroomDto classroomDto) {
 		Optional<Classroom> result = classroomRepository.findById(classroomId);
-
 		Classroom classroom = result.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
 
 		if (classroomDto.getTitle() == null || classroomDto.getTitle().trim().isEmpty()) {
