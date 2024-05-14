@@ -10,7 +10,7 @@ public class SimpleLoggingIntercepter implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		System.out.println("Hello, this is middleware asdasd");
+		System.out.println();
 		return true;
 	}
 
