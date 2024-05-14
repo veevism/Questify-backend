@@ -15,6 +15,7 @@ import com.backend.questify.Util.ShortUUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -92,4 +93,16 @@ public class AssignmentService {
 		return DtoMapper.INSTANCE.assignmentToAssignmentDto(createdAssignment);
 	}
 
+	public List<AssignmentDto> getAssignments(UUID classroomId) {
+//		System.out.println(DtoMapper.INSTANCE.assignmentToAssignmentDto(assignmentRepository.findAllByClassroom_ClassroomId(classroomId)));
+		List<Assignment> assignments = assignmentRepository.findAllByClassroom_ClassroomId(classroomId);
+
+		if (assignments.isEmpty()) {
+			throw new ResourceNotFoundException("Assignment not found");
+		}
+
+//		List<AssignmentDto> assignmentDtos = DtoMapper.INSTANCE.assignmentToAssignmentDto(assignments);
+
+		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignments);
+	}
 }

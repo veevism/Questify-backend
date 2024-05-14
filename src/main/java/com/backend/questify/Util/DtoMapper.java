@@ -44,6 +44,7 @@ ProfessorDto professorToProfessorDto(Professor professor);
  List<ClassroomDto> classroomToClassroomDto (List<Classroom> classroom);
 
  AssignmentDto assignmentToAssignmentDto (Assignment assignment);
- List<AssignmentDto> assignmentToAssignmentDto (List<AssignmentDto> assignment);
+// List<AssignmentDto> assignmentToAssignmentDto (List<AssignmentDto> assignment);
 
+ List<AssignmentDto> assignmentToAssignmentDto(List<Assignment> assignment);
 }

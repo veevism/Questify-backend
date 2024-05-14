@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -37,8 +38,12 @@ public class AssignmentController {
 	}
 
 	@GetMapping("/classroom")
-	public ResponseEntity<String> getAssignments(@RequestParam UUID classroomId) {
-		return ResponseEntity.ok("Assignment get by classroom successfully.");
+	public ResponseEntity<ApiResponse<List<AssignmentDto>>> getAssignments(@RequestParam UUID classroomId) {
+
+		List<AssignmentDto> result = assignmentService.getAssignments(classroomId);
+
+		ApiResponse<List<AssignmentDto>> response = ApiResponse.success(result, HttpStatus.CREATED, "Create Assignment Successfully" );
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@PostMapping("")
