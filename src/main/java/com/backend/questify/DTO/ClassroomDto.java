@@ -18,7 +18,7 @@ import java.util.UUID;
 public class ClassroomDto {
 	private UUID classroomId;
 
-//	private ProfessorDto professor;
+	private ProfessorDto professor;
 
 	private String title;
 
@@ -28,5 +28,5 @@ public class ClassroomDto {
 
 	private String invitationCode;
 
-	private Set<Assignment> assignments;
+	private Set<AssignmentDto> assignments;
 }

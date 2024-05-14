@@ -30,7 +30,7 @@ public class AssignmentService {
 	private ProfessorRepository professorRepository;
 
 	public AssignmentDto createAssignment(Assignment assignment, UUID classroomId) {
-		System.out.println(assignment);
+//		System.out.println(assignment);
 		Long mockProfessorId = 2L;
 		Optional<Professor> result = professorRepository.findById(mockProfessorId);
 		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + mockProfessorId));
@@ -45,13 +45,21 @@ public class AssignmentService {
 														 .title(assignment.getTitle())
 														 .description(assignment.getDescription())
 														 .professor(professor)
+														 .classroom(classroom)
 														 .isActive(true)
 														 .build();
 
 		assignmentRepository.save(createdAssignment);
 
-		System.out.println(DtoMapper.INSTANCE.classroomToClassroomDto(classroom));
+//		classroom.getAssignments().add(createdAssignment);
+//
+//		classroomRepository.save(classroom);
 
+
+		System.out.println(DtoMapper.INSTANCE.assignmentToAssignmentDto(createdAssignment));
+
+
+//		System.out.println(DtoMapper.INSTANCE.classroomToClassroomDto(classroom));
 
 
 

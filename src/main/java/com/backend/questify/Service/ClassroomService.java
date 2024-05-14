@@ -47,7 +47,6 @@ public class ClassroomService {
 		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + mockProfessorId));
 		Classroom createdClassroom = Classroom.builder()
 				.invitationCode(ShortUUIDGenerator.generateShortUUID())
-											  .classroomId(UUID.randomUUID()) // สร้าง UUID ใหม่
 											  .title(classroomDto.getTitle())
 											  .description(classroomDto.getDescription())
 											  .professor(professor)
