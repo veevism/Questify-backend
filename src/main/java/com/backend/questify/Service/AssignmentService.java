@@ -39,8 +39,7 @@ public class AssignmentService {
 		Optional<Classroom> classroomResult = classroomRepository.findById(classroomId);
 		Classroom classroom = classroomResult.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
 
-		Assignment createdAssignment = Assignment.builder()
-						.assignmentId(UUID.randomUUID()).score(20)
+		Assignment createdAssignment = Assignment.builder().score(20)
 														 .title(assignment.getTitle())
 														 .description(assignment.getDescription())
 														 .professor(professor)
@@ -104,5 +103,15 @@ public class AssignmentService {
 //		List<AssignmentDto> assignmentDtos = DtoMapper.INSTANCE.assignmentToAssignmentDto(assignments);
 
 		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignments);
+	}
+
+	public AssignmentDto getAssignment(UUID assignmentId) {
+		System.out.println(assignmentId);
+
+		Optional<Assignment> result = assignmentRepository.findByAssignmentId(assignmentId);
+		Assignment assignment = result.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id : " + assignmentId));
+
+		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignment);
+
 	}
 }

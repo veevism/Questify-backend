@@ -21,18 +21,22 @@ public class ClassroomController {
 	@Autowired
 	ClassroomService classroomService;
 
-	@DeleteMapping("/{classroomId}")
-	public ResponseEntity<String> deleteClassroom(@PathVariable Long classroomId) {
-		return ResponseEntity.ok("Classroom deleted successfully.");
+	@DeleteMapping("")
+	public ResponseEntity<ApiResponse<Void>> deleteClassroom(@RequestParam UUID classroomId) {
+		classroomService.deleteClassroom(classroomId);
+		ApiResponse<Void> response = ApiResponse.success(null, HttpStatus.OK, "Delete Classrooms Successfully" );
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
-	@PutMapping("/{classroomId}")
-	public ResponseEntity<String> updateClassroom(@PathVariable Long classroomId) {
-		return ResponseEntity.ok("Classroom updated successfully.");
+	@PutMapping("")
+	public ResponseEntity<ApiResponse<ClassroomDto>> updateClassroom(@RequestParam UUID classroomId, @RequestBody ClassroomDto classroomDto) {
+		ClassroomDto classroomDto1 = classroomService.updateClassroom(classroomId, classroomDto);
+		ApiResponse<ClassroomDto> response = ApiResponse.success(classroomDto1, HttpStatus.OK, "Update Classrooms Successfully" );
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
-	@GetMapping("/{classroomId}")
-	public ResponseEntity<ApiResponse<ClassroomDto>> getClassroom(@PathVariable UUID classroomId) {
+	@GetMapping("")
+	public ResponseEntity<ApiResponse<ClassroomDto>> getClassroom(@RequestParam UUID classroomId) {
 		ClassroomDto classroomDto1 = classroomService.getClassroom(classroomId);
 		ApiResponse<ClassroomDto> response = ApiResponse.success(classroomDto1, HttpStatus.OK, "Get Classrooms Successfully" );
 		return ResponseEntity.status(response.getStatus()).body(response);

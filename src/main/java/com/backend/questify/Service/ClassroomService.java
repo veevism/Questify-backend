@@ -11,6 +11,7 @@ import com.backend.questify.Repository.*;
 import com.backend.questify.Util.DtoMapper;
 import com.backend.questify.Util.ShortUUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -66,10 +67,44 @@ public class ClassroomService {
 		return DtoMapper.INSTANCE.classroomToClassroomDto(classrooms);
 	}
 
+	public ClassroomDto updateClassroom(UUID classroomId, ClassroomDto classroomDto) {
+		Optional<Classroom> result = classroomRepository.findById(classroomId);
+
+		Classroom classroom = result.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
+
+		if (classroomDto.getTitle() == null || classroomDto.getTitle().trim().isEmpty()) {
+			throw new IllegalArgumentException("Title cannot be empty");
+		}
+
+		if (classroomDto.getDescription() == null || classroomDto.getDescription().trim().isEmpty()) {
+			throw new IllegalArgumentException("Description cannot be empty");
+		}
+
+		if (classroomDto.getIsActive() == null ) {
+			throw new IllegalArgumentException("Active cannot be empty");
+		}
+
+		classroom.setTitle(classroomDto.getTitle());
+		classroom.setDescription(classroomDto.getDescription());
+		classroom.setIsActive(classroomDto.getIsActive());
+
+		classroomRepository.save(classroom);
+
+		return DtoMapper.INSTANCE.classroomToClassroomDto(classroom);
+	}
+
 	public ClassroomDto getClassroom(UUID classroomId) {
 		Optional<Classroom> result = classroomRepository.findById(classroomId);
 		Classroom classroom = result.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
 		return DtoMapper.INSTANCE.classroomToClassroomDto(classroom);
+	}
+
+	public void deleteClassroom(UUID classroomId) {
+		if (classroomRepository.existsById(classroomId)) {
+			classroomRepository.deleteById(classroomId);
+		} else {
+			throw new ResourceNotFoundException("Classroom not found with Id : " + classroomId);
+		}
 	}
 
 //

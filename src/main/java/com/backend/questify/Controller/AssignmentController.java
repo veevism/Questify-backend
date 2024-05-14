@@ -33,8 +33,14 @@ public class AssignmentController {
 	}
 
 	@GetMapping("")
-	public ResponseEntity<String> getAssignment(@RequestParam UUID assignmentId) {
-		return ResponseEntity.ok("Assignment get by assignment successfully.");
+	public ResponseEntity<ApiResponse<AssignmentDto>> getAssignment(@RequestParam UUID assignmentId) {
+
+		AssignmentDto assignment = assignmentService.getAssignment(assignmentId);
+
+		ApiResponse<AssignmentDto> response = ApiResponse.success(assignment, HttpStatus.OK, "Get Assignment Successfully" );
+
+		return ResponseEntity.status(response.getStatus()).body(response);
+
 	}
 
 	@GetMapping("/classroom")
@@ -42,7 +48,8 @@ public class AssignmentController {
 
 		List<AssignmentDto> result = assignmentService.getAssignments(classroomId);
 
-		ApiResponse<List<AssignmentDto>> response = ApiResponse.success(result, HttpStatus.CREATED, "Create Assignment Successfully" );
+		ApiResponse<List<AssignmentDto>> response = ApiResponse.success(result, HttpStatus.OK, "Get Assignment Successfully" );
+
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
@@ -50,7 +57,9 @@ public class AssignmentController {
 	public ResponseEntity<ApiResponse<AssignmentDto>> createAssignment(@RequestBody Assignment assignment,
 																	   @RequestParam UUID classroomId) {
 		AssignmentDto result = assignmentService.createAssignment(assignment, classroomId);
+
 		ApiResponse<AssignmentDto> response = ApiResponse.success(result, HttpStatus.CREATED, "Create Assignment Successfully" );
+
 		return ResponseEntity.status(response.getStatus()).body(response);	}
 
 }
