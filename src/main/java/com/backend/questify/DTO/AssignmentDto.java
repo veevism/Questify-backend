@@ -37,6 +37,6 @@ public class AssignmentDto {
 
 //	private Student student;
 
-//	private ClassroomDto classroom;
+	private ClassroomDto classroom;
 
 }

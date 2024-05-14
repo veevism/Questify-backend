@@ -28,5 +28,5 @@ public class ClassroomDto {
 
 	private String invitationCode;
 
-	private Set<AssignmentDto> assignments;
+//	private Set<AssignmentDto> assignments;
 }

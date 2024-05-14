@@ -36,9 +36,7 @@ public class AssignmentService {
 		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + mockProfessorId));
 
 		Optional<Classroom> classroomResult = classroomRepository.findById(classroomId);
-
 		Classroom classroom = classroomResult.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
-
 
 		Assignment createdAssignment = Assignment.builder()
 						.assignmentId(UUID.randomUUID()).score(20)
@@ -55,11 +53,15 @@ public class AssignmentService {
 //
 //		classroomRepository.save(classroom);
 
+//		System.out.println(createdAssignment.getClassroom());
+
 
 		System.out.println(DtoMapper.INSTANCE.assignmentToAssignmentDto(createdAssignment));
 
 
-//		System.out.println(DtoMapper.INSTANCE.classroomToClassroomDto(classroom));
+		System.out.println(DtoMapper.INSTANCE.professorToProfessorDto(professor));
+
+		System.out.println(DtoMapper.INSTANCE.classroomToClassroomDto(classroom));
 
 
 

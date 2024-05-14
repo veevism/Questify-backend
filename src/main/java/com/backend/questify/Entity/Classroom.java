@@ -36,8 +36,8 @@ public class Classroom {
 
 	private String invitationCode;
 
-	@OneToMany(mappedBy = "classroom")
-	private Set<Assignment> assignments;
+//	@OneToMany(mappedBy = "classroom")
+//	private Set<Assignment> assignments;
 
 	@ManyToMany
 	@JoinTable(
