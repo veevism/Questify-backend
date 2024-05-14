@@ -1,21 +1,29 @@
 package com.backend.questify.Entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "assignments")
 public class Assignment {
 	@Id
 	@GeneratedValue(generator = "UUID")
 	@Column(updatable = false, nullable = false)
-	private Long assignmentId;
+	private UUID assignmentId;
 
 	@ManyToOne
 	@JoinColumn(name = "professor_id")
 	private Professor professor; // add later for reusing purpose
-
 
 	private String title;
 	private String description;

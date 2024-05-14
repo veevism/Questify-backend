@@ -25,7 +25,7 @@ public class Student {
 
 	private String major;
 
-//	@ManyToMany
-//	private Set<Classroom> classrooms;
+	@ManyToMany(mappedBy = "students")
+	private Set<Classroom> classrooms;
 
 }

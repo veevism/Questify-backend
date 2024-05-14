@@ -32,7 +32,7 @@ public class Classroom {
 
 	private String description;
 
-	private Boolean isActive = false;
+	private Boolean isActive = true;
 
 	private String invitationCode;
 
@@ -40,6 +40,11 @@ public class Classroom {
 	private Set<Assignment> assignments;
 
 	@ManyToMany
+	@JoinTable(
+			name = "classroom_student",
+			joinColumns = @JoinColumn(name = "classroom_id"),
+			inverseJoinColumns = @JoinColumn(name = "student_id")
+	)
 	private Set<Student> students;
 
 }

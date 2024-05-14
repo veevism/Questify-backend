@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/assignment")
 public class AssignmentController {
@@ -31,7 +33,9 @@ public class AssignmentController {
 	}
 
 	@PostMapping("/{classroomId}")
-	public ResponseEntity<String> createAssignment(@RequestBody Classroom classroomId) {
+	public ResponseEntity<String> createAssignment(@RequestBody Assignment assignment,
+												   @PathVariable UUID classroomId) {
+		assignmentService.createAssignment(assignment, classroomId);
 		return ResponseEntity.ok("Assignment created successfully.");
 	}
 

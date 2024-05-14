@@ -4,16 +4,25 @@ import com.backend.questify.Entity.Classroom;
 import com.backend.questify.Entity.Professor;
 import com.backend.questify.Entity.Student;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
+@Builder
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AssignmentDto {
-	private Long assignmentId;
+	private UUID assignmentId;
 
-	private Professor professor;
-
+	private ProfessorDto professor;
 
 	private String title;
+
 	private String description;
 
 	private Integer score;
@@ -24,9 +33,10 @@ public class AssignmentDto {
 
 	private LocalDateTime endTime;
 
-	private Student student;
 
 
-	private Classroom classroom;
+//	private Student student;
+
+//	private ClassroomDto classroom;
 
 }

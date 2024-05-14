@@ -18,7 +18,7 @@ import java.util.UUID;
 public class ClassroomDto {
 	private UUID classroomId;
 
-	private ProfessorDto professor;
+//	private ProfessorDto professor;
 
 	private String title;
 

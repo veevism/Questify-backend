@@ -4,6 +4,8 @@ package com.backend.questify.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+
 
 @Data
 @Builder
@@ -17,11 +19,32 @@ public class Professor {
 	private Long professorId;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@MapsId
+	@MapsId // This is very suspicious
 	@JoinColumn(name = "professor_id")
 	private User user;
 
 	private String faculty;
 	private String department;
+
+
+	@OneToMany(mappedBy = "professor")
+	private Set<Classroom> classrooms;
+
+	@OneToMany(mappedBy = "professor")
+	private Set<Assignment> assignments;
+
+	@OneToMany(mappedBy = "professor")
+	private Set<Laboratory> laboratories;
+
+	public void addAssignment(Assignment assignment) {
+		assignments.add(assignment);
+//		assignment.setProfessor(this);
+	}
+
+	public void removeAssignment(Assignment assignment) {
+		assignments.remove(assignment);
+		assignment.setProfessor(null);
+	}
+
 
 }

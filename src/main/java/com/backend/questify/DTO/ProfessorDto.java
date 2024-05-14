@@ -17,4 +17,7 @@ public class ProfessorDto {
 	private Long professorId;
 	private String faculty;
 	private String department;
+	private UserDto user;
+//	private AssignmentDto assignmentDto;
+//	private ClassroomDto classroomDto;
 }
