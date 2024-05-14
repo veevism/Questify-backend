@@ -47,7 +47,17 @@ public class AssignmentService {
 														 .isActive(true)
 														 .build();
 
+		if (createdAssignment.getClassroom() == null) {
+			System.out.println("Yes");
+		} else {
+
+			System.out.println(DtoMapper.INSTANCE.classroomToClassroomDto(createdAssignment.getClassroom()));
+		}
+
 		assignmentRepository.save(createdAssignment);
+
+
+
 
 //		classroom.getAssignments().add(createdAssignment);
 //

@@ -1,10 +1,14 @@
 package com.backend.questify.Controller;
 
+import com.backend.questify.DTO.AssignmentDto;
+import com.backend.questify.DTO.ClassroomDto;
 import com.backend.questify.Entity.Assignment;
 import com.backend.questify.Entity.Classroom;
+import com.backend.questify.Model.ApiResponse;
 import com.backend.questify.Service.AssignmentService;
 import com.backend.questify.Service.ClassroomService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,10 +37,10 @@ public class AssignmentController {
 	}
 
 	@PostMapping("/{classroomId}")
-	public ResponseEntity<String> createAssignment(@RequestBody Assignment assignment,
+	public ResponseEntity<ApiResponse<AssignmentDto>> createAssignment(@RequestBody Assignment assignment,
 												   @PathVariable UUID classroomId) {
-		assignmentService.createAssignment(assignment, classroomId);
-		return ResponseEntity.ok("Assignment created successfully.");
-	}
+		AssignmentDto result = assignmentService.createAssignment(assignment, classroomId);
+		ApiResponse<AssignmentDto> response = ApiResponse.success(result, HttpStatus.CREATED, "Create Assignment Successfully" );
+		return ResponseEntity.status(response.getStatus()).body(response);	}
 
 }
