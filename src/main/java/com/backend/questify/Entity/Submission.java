@@ -1,5 +1,6 @@
 package com.backend.questify.Entity;
 
+import com.backend.questify.Model.SubmissionStatus;
 import com.backend.questify.Util.HashMapConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -45,6 +47,9 @@ public class Submission {
 		}
 	}
 
+	@OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<SubmissionTestCaseResult> testCaseResults;
+
 	@Column(nullable = true)
 	private LocalDateTime submissionTime;
 
@@ -53,4 +58,13 @@ public class Submission {
 
 	@Column(nullable = true)
 	private LocalDateTime endTime;
+
+	private Integer givenScore;
+
+	private Integer maximumScore;
+
+	@Enumerated(EnumType.STRING)
+	private SubmissionStatus status;
+
+
 }

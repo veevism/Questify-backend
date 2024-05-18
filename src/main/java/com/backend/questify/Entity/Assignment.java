@@ -1,5 +1,6 @@
 package com.backend.questify.Entity;
 
+import com.backend.questify.Model.GradingCriteria;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,6 +40,11 @@ public class Assignment {
 
 	@Column(nullable = true)
 	private LocalDateTime endTime;
+
+
+	@Column(nullable = true) // change to false later
+	@Enumerated(EnumType.STRING)
+	private GradingCriteria gradingCriteria;
 //	@ManyToOne
 //	@JoinColumn(name = "student_id")
 //	private Student student;
