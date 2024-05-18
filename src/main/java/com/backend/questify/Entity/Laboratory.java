@@ -9,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -37,8 +39,15 @@ private UUID laboratoryId;
 
 	private String labTitle;
 	private String description;
+
 	private LocalDateTime startTime;
 	private LocalDateTime endTime;
+
+	private String problemStatement;
+	private String inputFormat;
+	private String outputFormat;
+	private String sampleInput;
+	private String sampleOutput;
 
 	@CreationTimestamp
 	@Column(updatable = false)
@@ -47,7 +56,21 @@ private UUID laboratoryId;
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
 
-	@OneToOne(mappedBy = "laboratory", cascade = CascadeType.ALL)
-	private Problem problem;
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "laboratory_id")
+	@Builder.Default
+	private List<TestCase> testCases = new ArrayList<>();
+
+	public void addTestCase(TestCase testCase) {
+		testCases.add(testCase);
+	}
+
+	public void removeTestCase(TestCase testCase) {
+		testCases.remove(testCase);
+	}
+
+	//mappedby = "problem"
+//	@OneToMany( cascade = CascadeType.ALL, orphanRemoval = true)
+//	private List<TestCase> testCases = new ArrayList<>();
 
 }

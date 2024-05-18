@@ -1,18 +1,12 @@
 package com.backend.questify.DTO;
 
-import com.backend.questify.Entity.Assignment;
-import com.backend.questify.Entity.Classroom;
-import com.backend.questify.Entity.Problem;
-import com.backend.questify.Entity.Professor;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Builder
 @Data
@@ -20,12 +14,26 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class LaboratoryDto {
 
-	private Assignment assignment;
+	private UUID laboratoryId;
+
+	private AssignmentDto assignment;
+
 	private String labTitle;
 	private String description;
+
+	private String problemStatement;
+	private String inputFormat;
+	private String outputFormat;
+	private String sampleInput;
+	private String sampleOutput;
+
 	private LocalDateTime startTime;
 	private LocalDateTime endTime;
+
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
-	private Problem problem;
+
+	private int testCaseQuantity;
+
+
 }

@@ -50,5 +50,10 @@ ProfessorDto professorToProfessorDto(Professor professor);
 
  List<LaboratoryDto> laboratoryToLaboratoryDto ( List<Laboratory> laboratory);
 
+ @Mapping(target = "testCaseQuantity", expression = "java(laboratory.getTestCases().size())")
  LaboratoryDto laboratoryToLaboratoryDto (Laboratory laboratory);
+
+
+
+
 }

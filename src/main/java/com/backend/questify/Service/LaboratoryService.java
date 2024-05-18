@@ -4,6 +4,7 @@ import com.backend.questify.DTO.LaboratoryDto;
 import com.backend.questify.Entity.*;
 import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Repository.AssignmentRepository;
+import com.backend.questify.Repository.ClassroomRepository;
 import com.backend.questify.Repository.LaboratoryRepository;
 import com.backend.questify.Repository.ProfessorRepository;
 import com.backend.questify.Util.DtoMapper;
@@ -26,6 +27,9 @@ public class LaboratoryService {
 	@Autowired
 	private ProfessorRepository professorRepository;
 
+	@Autowired
+	private ClassroomRepository classroomRepository;
+
 
 
 	public LaboratoryDto createLaboratory () {
@@ -37,6 +41,8 @@ public class LaboratoryService {
 
 //		Optional<Assignment> assignmentResult = assignmentRepository.findById(assignmentId);
 //		Assignment assignment = assignmentResult.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id : " + assignmentId));
+
+
 
 		Assignment newAssignment = new Assignment();
 		newAssignment.setTitle("New Classroom");
@@ -51,6 +57,16 @@ public class LaboratoryService {
 				.labTitle("Hi Mom")
 				.description("This is laboratory na")
 				.build();
+
+		TestCase testCase1 = new TestCase();
+		testCase1.setInput("Input 1");
+		testCase1.setExpectedOutput("Output 1");
+		createdLaboratory.addTestCase(testCase1);
+
+		TestCase testCase2 = new TestCase();
+		testCase2.setInput("Input 2");
+		testCase2.setExpectedOutput("Output 2");
+		createdLaboratory.addTestCase(testCase2);
 
 		laboratoryRepository.save(createdLaboratory);
 
