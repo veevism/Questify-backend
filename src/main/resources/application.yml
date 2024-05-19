@@ -6,7 +6,13 @@ spring:
     password: questify-postgreql
   jpa:
     hibernate:
+
       ddl-auto: create-drop
+    generate-ddl : true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  servlet:
+    context-path: /api/v1
