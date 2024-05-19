@@ -1,4 +1,12 @@
 package com.backend.questify.Repository;
 
-public interface TestCaseRepository {
+import com.backend.questify.Entity.TestCase;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface TestCaseRepository extends JpaRepository<TestCase, UUID> {
+
+	List<TestCase> findAllByLaboratory_LaboratoryId(UUID laboratoryId);
 }

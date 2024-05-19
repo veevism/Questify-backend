@@ -1,6 +1,7 @@
 package com.backend.questify.Util;
 
 import com.backend.questify.DTO.*;
+import com.backend.questify.DTO.testcase.TestCaseDto;
 import com.backend.questify.Entity.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -52,6 +53,10 @@ ClassroomDto classroomToClassroomDto(Classroom classroom);
 
  @Mapping(target = "testCaseQuantity", expression = "java(laboratory.getTestCases().size())")
  LaboratoryDto laboratoryToLaboratoryDto (Laboratory laboratory);
+
+ TestCaseDto testCaseToTestCaseDto (TestCase testCase);
+
+ List<TestCaseDto> testCaseToTestCaseDto (List<TestCase> testCase);
 
 
 
