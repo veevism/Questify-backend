@@ -16,6 +16,8 @@ public class LaboratoryDto {
 
 	private UUID laboratoryId;
 
+	private ProfessorDto professor;
+
 	private AssignmentDto assignment;
 
 	private String labTitle;

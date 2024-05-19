@@ -39,7 +39,7 @@ ProfessorDto professorToProfessorDto(Professor professor);
 // @Mapping(source = "classroom.description", target = "description")
 // @Mapping(source = "classroom.isActive", target = "isActive")
 // @Mapping(source = "classroom.invitationCode", target = "invitationCode")
- ClassroomDto classroomToClassroomDto(Classroom classroom);
+ClassroomDto classroomToClassroomDto(Classroom classroom);
 
  List<ClassroomDto> classroomToClassroomDto (List<Classroom> classroom);
 
@@ -52,7 +52,6 @@ ProfessorDto professorToProfessorDto(Professor professor);
 
  @Mapping(target = "testCaseQuantity", expression = "java(laboratory.getTestCases().size())")
  LaboratoryDto laboratoryToLaboratoryDto (Laboratory laboratory);
-
 
 
 

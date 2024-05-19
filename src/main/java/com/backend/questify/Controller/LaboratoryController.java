@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,16 +23,17 @@ public class LaboratoryController {
 	@PostMapping("")
 	public ResponseEntity<ApiResponse<LaboratoryDto>> createLaboratory(@RequestBody LaboratoryDto laboratoryDto,
 																	   @RequestParam UUID assignmentId) {
-		LaboratoryDto laboratoryDto1 = laboratoryService.createLaboratory();
-		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryDto1 , HttpStatus.CREATED, "Create Classrooms Successfully");
+		LaboratoryDto laboratoryDto1 = laboratoryService.createLaboratory(assignmentId);
+		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryDto1 , HttpStatus.CREATED, "Create Laboratory Successfully");
 
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@GetMapping("/assignment")
-	public ResponseEntity<Void> getLaboratories(@RequestParam UUID assignmentId) {
-
-		return null;
+	public ResponseEntity<ApiResponse<List<LaboratoryDto>>> getLaboratories(@RequestParam UUID assignmentId) {
+		List<LaboratoryDto> laboratoryDtoList = laboratoryService.getLaboratories(assignmentId);
+		ApiResponse<List<LaboratoryDto>> response = ApiResponse.success(laboratoryDtoList , HttpStatus.CREATED, "Get Laboratories Successfully");
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@GetMapping("")
