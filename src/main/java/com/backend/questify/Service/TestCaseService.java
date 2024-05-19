@@ -8,6 +8,7 @@ import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Repository.LaboratoryRepository;
 import com.backend.questify.Repository.TestCaseRepository;
 import com.backend.questify.Util.DtoMapper;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +37,7 @@ public class TestCaseService {
 
 		laboratory.addTestCase(createdTestCase);
 
-		laboratoryRepository.save(laboratory);
+		laboratoryRepository.saveAndFlush(laboratory);
 
 		return DtoMapper.INSTANCE.testCaseToTestCaseDto(createdTestCase);
 	}
@@ -51,5 +52,53 @@ public class TestCaseService {
 		}
 
 		return DtoMapper.INSTANCE.testCaseToTestCaseDto(testCases);
+	}
+
+	public TestCaseDto getTestCase(UUID testCaseId) {
+		Optional<TestCase> testCaseResult = testCaseRepository.findById(testCaseId);
+
+		TestCase testCase = testCaseResult.orElseThrow(() -> new ResourceNotFoundException("Test Case not found with Id : " + testCaseId));
+
+		return DtoMapper.INSTANCE.testCaseToTestCaseDto(testCase);
+
+	}
+
+	public void deleteTestCase(UUID testCaseId) {
+		Optional<TestCase> testCaseResult = testCaseRepository.findById(testCaseId);
+
+		TestCase testCase = testCaseResult.orElseThrow(() -> new ResourceNotFoundException("Test Case not found with Id : " + testCaseId));
+
+		Optional<Laboratory> laboratoryResult = laboratoryRepository.findById(testCase.getLaboratory()
+																					  .getLaboratoryId());
+
+		Laboratory laboratory = laboratoryResult.orElseThrow(() -> new ResourceNotFoundException("Laboratory of this test case not found with Id : " + testCase.getLaboratory().getLaboratoryId()));
+
+		laboratory.removeTestCase(testCase);
+
+		laboratoryRepository.save(laboratory);
+//		if (testCaseRepository.existsById(testCaseId)) {
+//			testCaseRepository.deleteById(testCaseId);
+//		} else {
+//			throw new ResourceNotFoundException("Test Case not found with Id : " + testCaseId);
+//		}
+	}
+
+	@Transactional
+	public TestCaseDto updateTestCase(UUID testCaseId, TestCaseDto testCaseDto) {
+		Optional<TestCase> testCaseResult = testCaseRepository.findById(testCaseId);
+
+		TestCase testCase = testCaseResult.orElseThrow(() -> new ResourceNotFoundException("Test Case not found with Id : " + testCaseId));
+
+		if (testCaseDto.getInput() != null) {
+			testCase.setInput(testCaseDto.getInput());
+		}
+
+		if (testCaseDto.getExpectedOutput() != null) {
+			testCase.setExpectedOutput(testCaseDto.getExpectedOutput());
+		}
+
+		testCaseRepository.save(testCase);
+
+		return DtoMapper.INSTANCE.testCaseToTestCaseDto(testCase);
 	}
 }
