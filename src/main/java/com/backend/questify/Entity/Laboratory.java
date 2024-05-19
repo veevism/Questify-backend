@@ -56,19 +56,19 @@ private UUID laboratoryId;
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "laboratory_id")
+	@OneToMany(mappedBy = "laboratory", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<TestCase> testCases = new ArrayList<>();
 
 	public void addTestCase(TestCase testCase) {
 		testCases.add(testCase);
+		testCase.setLaboratory(this);
 	}
 
 	public void removeTestCase(TestCase testCase) {
 		testCases.remove(testCase);
+		testCase.setLaboratory(null);
 	}
-
 	//mappedby = "problem"
 //	@OneToMany( cascade = CascadeType.ALL, orphanRemoval = true)
 //	private List<TestCase> testCases = new ArrayList<>();

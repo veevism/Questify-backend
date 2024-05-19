@@ -32,26 +32,31 @@ public class LaboratoryController {
 	@GetMapping("/assignment")
 	public ResponseEntity<ApiResponse<List<LaboratoryDto>>> getLaboratories(@RequestParam UUID assignmentId) {
 		List<LaboratoryDto> laboratoryDtoList = laboratoryService.getLaboratories(assignmentId);
-		ApiResponse<List<LaboratoryDto>> response = ApiResponse.success(laboratoryDtoList , HttpStatus.CREATED, "Get Laboratories Successfully");
+		ApiResponse<List<LaboratoryDto>> response = ApiResponse.success(laboratoryDtoList , HttpStatus.CREATED, "Get Laboratory Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@GetMapping("")
-	public ResponseEntity<Void> getLaboratory(@RequestParam UUID laboratoryId) {
+	public ResponseEntity<ApiResponse<LaboratoryDto>> getLaboratory(@RequestParam UUID laboratoryId) {
+		LaboratoryDto laboratoryDto = laboratoryService.getLaboratory(laboratoryId);
+		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryDto , HttpStatus.OK, "Get Laboratory Successfully");
 
-		return null;
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@PutMapping("")
-	public ResponseEntity<Void> updateLaboratory(@RequestParam UUID laboratoryId) {
+	public ResponseEntity<ApiResponse<LaboratoryDto>> updateLaboratory(@RequestParam UUID laboratoryId, @RequestBody LaboratoryDto laboratory) {
+		LaboratoryDto laboratoryDto = laboratoryService.updateLaboratory(laboratoryId, laboratory);
 
-		return null;
-	}
+		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryDto , HttpStatus.OK, "Get Laboratory Successfully");
+
+		return ResponseEntity.status(response.getStatus()).body(response);	}
 
 	@DeleteMapping("")
-	public ResponseEntity<Void> deleteLaboratory(@RequestParam UUID laboratoryId) {
-
-		return null;
+	public ResponseEntity<ApiResponse<Void>> deleteLaboratory(@RequestParam UUID laboratoryId) {
+		laboratoryService.deleteLaboratory(laboratoryId);
+		ApiResponse<Void> response = ApiResponse.success(null, HttpStatus.OK, "Delete Laboratory Successfully" );
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 

@@ -75,27 +75,21 @@ public class AssignmentService {
 		Optional<Assignment> result = assignmentRepository.findByAssignmentId(assignmentId);
 		Assignment assignment = result.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id : " + assignmentId));
 
-		System.out.println(assignmentDto + assignmentDto.getTitle());
-		if (assignmentDto.getTitle() == null || assignmentDto.getTitle().trim().isEmpty()) {
-			throw new IllegalArgumentException("Title cannot be empty");
+		if (assignmentDto.getTitle() != null && !assignmentDto.getTitle().trim().isEmpty()) {
+			assignment.setTitle(assignmentDto.getTitle());
 		}
 
-		if (assignmentDto.getDescription() == null || assignmentDto.getDescription().trim().isEmpty()) {
-			throw new IllegalArgumentException("Description cannot be empty");
+		if (assignmentDto.getDescription() != null && !assignmentDto.getDescription().trim().isEmpty()) {
+			assignment.setDescription(assignmentDto.getDescription());
 		}
 
-		if (assignmentDto.getIsActive() == null ) {
-			throw new IllegalArgumentException("IsActive cannot be empty");
+		if (assignmentDto.getIsActive() != null) {
+			assignment.setIsActive(assignmentDto.getIsActive());
 		}
 
-		if (assignmentDto.getScore() == null ) {
-			throw new IllegalArgumentException("Score cannot be empty");
+		if (assignmentDto.getScore() != null) {
+			assignment.setScore(assignmentDto.getScore());
 		}
-
-		assignment.setTitle(assignmentDto.getTitle());
-		assignment.setDescription(assignmentDto.getDescription());
-		assignment.setIsActive(assignmentDto.getIsActive());
-		assignment.setScore(assignmentDto.getScore());
 
 		assignmentRepository.save(assignment);
 
@@ -113,8 +107,6 @@ public class AssignmentService {
 
 
 	public AssignmentDto getAssignment(UUID assignmentId) {
-		System.out.println(assignmentId);
-
 		Optional<Assignment> result = assignmentRepository.findByAssignmentId(assignmentId);
 		Assignment assignment = result.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id : " + assignmentId));
 

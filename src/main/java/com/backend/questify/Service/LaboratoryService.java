@@ -8,6 +8,9 @@ import com.backend.questify.Repository.ClassroomRepository;
 import com.backend.questify.Repository.LaboratoryRepository;
 import com.backend.questify.Repository.ProfessorRepository;
 import com.backend.questify.Util.DtoMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +33,9 @@ public class LaboratoryService {
 
 	@Autowired
 	private ClassroomRepository classroomRepository;
+
+//	@PersistenceContext
+//	private EntityManager entityManager;
 
 
 
@@ -86,6 +92,73 @@ public class LaboratoryService {
 		}
 
 		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratories);
+
+	}
+
+	public LaboratoryDto getLaboratory(UUID laboratoryId) {
+		Optional<Laboratory> result = laboratoryRepository.findById(laboratoryId);
+
+		Laboratory laboratory = result.orElseThrow(() -> new ResourceNotFoundException
+				("Laboratory not found with Id : " + laboratoryId));
+
+		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratory);
+	}
+
+	public void deleteLaboratory(UUID laboratoryId) {
+		if (laboratoryRepository.existsById(laboratoryId)) {
+			laboratoryRepository.deleteById(laboratoryId);
+		} else {
+			throw new ResourceNotFoundException("Laboratory not found with Id : " + laboratoryId);
+		}
+	}
+
+	@Transactional
+	public LaboratoryDto updateLaboratory(UUID laboratoryId, LaboratoryDto laboratoryDto) {
+		Optional<Laboratory> result = laboratoryRepository.findById(laboratoryId);
+
+		Laboratory laboratory = result.orElseThrow(() -> new ResourceNotFoundException
+				("Laboratory not found with Id : " + laboratoryId));
+
+		if (laboratoryDto.getLabTitle() != null && !laboratoryDto.getLabTitle().trim().isEmpty()) {
+			laboratory.setLabTitle(laboratoryDto.getLabTitle());
+		}
+
+		if (laboratoryDto.getDescription() != null && !laboratoryDto.getDescription().trim().isEmpty()) {
+			laboratory.setDescription(laboratoryDto.getDescription());
+		}
+
+		if (laboratoryDto.getStartTime() != null) {
+			laboratory.setStartTime(laboratoryDto.getStartTime());
+		}
+
+		if (laboratoryDto.getEndTime() != null) {
+			laboratory.setEndTime(laboratoryDto.getEndTime());
+		}
+
+		if (laboratoryDto.getProblemStatement() != null && !laboratoryDto.getProblemStatement().trim().isEmpty()) {
+			laboratory.setProblemStatement(laboratoryDto.getProblemStatement());
+		}
+
+		if (laboratoryDto.getInputFormat() != null && !laboratoryDto.getInputFormat().trim().isEmpty()) {
+			laboratory.setInputFormat(laboratoryDto.getInputFormat());
+		}
+
+		if (laboratoryDto.getOutputFormat() != null && !laboratoryDto.getOutputFormat().trim().isEmpty()) {
+			laboratory.setOutputFormat(laboratoryDto.getOutputFormat());
+		}
+
+		if (laboratoryDto.getSampleInput() != null && !laboratoryDto.getSampleInput().trim().isEmpty()) {
+			laboratory.setSampleInput(laboratoryDto.getSampleInput());
+		}
+
+		if (laboratoryDto.getSampleOutput() != null && !laboratoryDto.getSampleOutput().trim().isEmpty()) {
+			laboratory.setSampleOutput(laboratoryDto.getSampleOutput());
+		}
+
+//		laboratoryRepository.save(laboratory);
+		laboratoryRepository.save(laboratory);
+
+		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratory);
 
 	}
 }
