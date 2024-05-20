@@ -23,7 +23,7 @@ public class LaboratoryController {
 	@PostMapping("")
 	public ResponseEntity<ApiResponse<LaboratoryDto>> createLaboratory(@RequestBody LaboratoryDto laboratoryDto,
 																	   @RequestParam UUID assignmentId) {
-		LaboratoryDto laboratoryDto1 = laboratoryService.createLaboratory(assignmentId);
+		LaboratoryDto laboratoryDto1 = laboratoryService.createLaboratory(assignmentId, laboratoryDto);
 		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryDto1 , HttpStatus.CREATED, "Create Laboratory Successfully");
 
 		return ResponseEntity.status(response.getStatus()).body(response);
@@ -48,7 +48,7 @@ public class LaboratoryController {
 	public ResponseEntity<ApiResponse<LaboratoryDto>> updateLaboratory(@RequestParam UUID laboratoryId, @RequestBody LaboratoryDto laboratory) {
 		LaboratoryDto laboratoryDto = laboratoryService.updateLaboratory(laboratoryId, laboratory);
 
-		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryDto , HttpStatus.OK, "Get Laboratory Successfully");
+		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryDto , HttpStatus.OK, "Update Laboratory Successfully");
 
 		return ResponseEntity.status(response.getStatus()).body(response);	}
 

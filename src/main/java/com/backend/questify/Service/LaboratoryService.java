@@ -39,7 +39,7 @@ public class LaboratoryService {
 
 
 
-	public LaboratoryDto createLaboratory (UUID assignmentId) {
+	public LaboratoryDto createLaboratory (UUID assignmentId, LaboratoryDto laboratoryDto) {
 //		@RequestBody LaboratoryDto laboratoryDto, UUID assignmentId
 
 		Long mockProfessorId = 2L;
@@ -61,21 +61,25 @@ public class LaboratoryService {
 		Laboratory createdLaboratory = Laboratory.builder()
 				.assignment(assignment)
 				.professor(professor)
-				.labTitle("Hi Mom")
-				.description("This is laboratory na")
+				.labTitle(laboratoryDto.getLabTitle())
+				.description(laboratoryDto.getDescription())
+				.inputFormat(laboratoryDto.getInputFormat())
+				.outputFormat(laboratoryDto.getOutputFormat())
+				.sampleInput(laboratoryDto.getSampleInput())
+				.sampleOutput(laboratoryDto.getSampleOutput())
 				.build();
 
-		TestCase testCase1 = new TestCase();
-		testCase1.setInput("Input 1");
-		testCase1.setExpectedOutput("Output 1");
-
-
-		TestCase testCase2 = new TestCase();
-		testCase2.setInput("Input 2");
-		testCase2.setExpectedOutput("Output 2");
-
-		createdLaboratory.addTestCase(testCase1);
-		createdLaboratory.addTestCase(testCase2);
+//		TestCase testCase1 = new TestCase();
+//		testCase1.setInput("Input 1");
+//		testCase1.setExpectedOutput("Output 1");
+//
+//
+//		TestCase testCase2 = new TestCase();
+//		testCase2.setInput("Input 2");
+//		testCase2.setExpectedOutput("Output 2");
+//
+//		createdLaboratory.addTestCase(testCase1);
+//		createdLaboratory.addTestCase(testCase2);
 
 		laboratoryRepository.save(createdLaboratory);
 

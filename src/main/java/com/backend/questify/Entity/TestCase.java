@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 
 @Data
 @Builder
@@ -20,7 +22,7 @@ public class TestCase {
 @GeneratedValue(generator = "UUID")
 //	@GeneratedValue(strategy = GenerationType.AUTO)
 @Column(updatable = false, nullable = false)
-	private Long testCaseId;
+	private UUID testCaseId;
 	private String input;
 	private String expectedOutput;
 

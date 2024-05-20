@@ -36,9 +36,28 @@ public class TestCaseController {
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
-//	@GetMapping("")
-//	public ResponseEntity<ApiResponse<TestCaseDto>> getTestCase(@RequestParam UUID testCaseId) {
-//		TestCaseDto test
-//	}
+	@GetMapping("")
+	public ResponseEntity<ApiResponse<TestCaseDto>> getTestCase(@RequestParam UUID testCaseId) {
+		TestCaseDto testCaseDto = testCaseService.getTestCase(testCaseId);
+
+		ApiResponse<TestCaseDto> response = ApiResponse.success(testCaseDto, HttpStatus.OK, "Get Test Case Successfully");
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
+	@PutMapping("")
+	public ResponseEntity<ApiResponse<TestCaseDto>> updateTestCase(@RequestParam UUID testCaseId, @RequestBody TestCaseDto testCaseDto) {
+		TestCaseDto updatedTestCase = testCaseService.updateTestCase(testCaseId, testCaseDto);
+
+		ApiResponse<TestCaseDto> response = ApiResponse.success(updatedTestCase, HttpStatus.OK, "Get Test Case Successfully");
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
+	@DeleteMapping("")
+	public ResponseEntity<ApiResponse<Void>> deleteTestCase(@RequestParam UUID testCaseId) {
+		testCaseService.deleteTestCase(testCaseId);
+		ApiResponse<Void> response = ApiResponse.success(null, HttpStatus.OK, "Delete Test Case Successfully" );
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
 
 }
