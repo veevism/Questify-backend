@@ -103,8 +103,21 @@
 			<artifactId>spring-boot-starter-log4j2</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.github.the-codeboy</groupId>
+			<artifactId>Piston4J</artifactId>
+			<version>0.0.7</version>
+		</dependency>
+
 
 	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 
 <!--	<build>-->
 <!--		<plugins>-->

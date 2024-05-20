@@ -1,20 +1,25 @@
 package com.backend.questify.Service;
 
 import com.backend.questify.DTO.SubmissionDto;
+import com.backend.questify.Entity.Laboratory;
 import com.backend.questify.Entity.Student;
 import com.backend.questify.Entity.Submission;
+import com.backend.questify.Exception.ResourceNotFoundException;
+import com.backend.questify.Repository.LaboratoryRepository;
 import com.backend.questify.Repository.StudentRepository;
 import com.backend.questify.Repository.SubmissionRepository;
 import com.backend.questify.Util.DtoMapper;
+import com.github.codeboy.piston4j.api.CodeFile;
+import com.github.codeboy.piston4j.api.ExecutionResult;
+import com.github.codeboy.piston4j.api.Piston;
+import com.github.codeboy.piston4j.api.Runtime;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class SubmissionService {
@@ -22,13 +27,17 @@ public class SubmissionService {
 	private SubmissionRepository submissionRepository;
 
 	@Autowired
+	private LaboratoryRepository laboratoryRepository;
+
+	@Autowired
 	private StudentRepository studentRepository;
 
-	public Optional<Submission> getSubmissionById(Long id) {
+	public Optional<Submission> getSubmission(Long id) {
 		return submissionRepository.findById(id);
 	}
 
-	public Submission updateCodeSnippet(Long id, String language, String code) {
+	@Transactional
+	public Submission updateSubmissionContent(Long id, String language, String code) {
 		Submission submission = submissionRepository.findById(id).orElseThrow(() -> new RuntimeException("Submission not found"));
 		Map<String, String> snippets = submission.getCodeSnippets();
 		snippets.put(language, code);
@@ -39,13 +48,18 @@ public class SubmissionService {
 		return submissionRepository.save(submission);
 	}
 
-	public SubmissionDto createSubmission(Long userId) {
+	public SubmissionDto createSubmission(UUID laboratoryId) {
 //		if (studentOpt.isPresent()) {
 //			Student student = studentOpt.get();
+		Optional<Student> studentResult = studentRepository.findById(1L);
+		Student student = studentResult.orElseThrow(() -> new ResourceNotFoundException("Student Not Found With This Id :"));
+
+		Optional<Laboratory> laboratoryResult = laboratoryRepository.findById(laboratoryId);
+		Laboratory laboratory = laboratoryResult.orElseThrow(() -> new ResourceNotFoundException("Laboratory Not Found With This Id : " + laboratoryId));
+
 			Submission newSubmission = new Submission();
-			newSubmission.setStudent(studentRepository.findByStudentId(1L));
-//		System.out.println(newSubmission);
-//			newSubmission.setSubmissionId(22L);
+			newSubmission.setStudent(student);
+			newSubmission.setLaboratory(laboratory);
 			return DtoMapper.INSTANCE.submissionToSubmissionDto(submissionRepository.save(newSubmission));
 //		} else {
 //			throw new IllegalArgumentException("No student found with ID: " + userId);
@@ -57,46 +71,30 @@ public class SubmissionService {
 	}
 
 	public String executeSubmission(Long submissionId, String language) {
+
 		Optional<Submission> submission = submissionRepository.findById(submissionId);
 		if (submission.isPresent()) {
 			SubmissionDto submissionDto = DtoMapper.INSTANCE.submissionToSubmissionDto(submission.get());
 			Map<String, String> snippets = submissionDto.getCodeSnippets();
-			System.out.println(snippets);
 			if (snippets.containsKey(language)) {
-				return executeCode(snippets.get(language), language, "");
+
+		Piston api = Piston.getDefaultApi();
+		Optional<Runtime> optionalRuntime = api.getRuntime(language);
+		if (optionalRuntime.isPresent()) {
+			Runtime runtime = optionalRuntime.get();
+			CodeFile codeFile = new CodeFile("main.java", snippets.get(language));
+			ExecutionResult result = runtime.execute(codeFile);
+			System.out.println(result.getOutput().getStderr());
+			System.out.println(result.getOutput().getStdout());
+			System.out.println(result.getOutput().getOutput());
+			System.out.println(result.getOutput().getCode());
+			System.out.println(result.getOutput().getSignal());
+		}
 			}
 		}
 		throw new IllegalArgumentException("Submission or language not found");
 	}
 
-	private String executeCode(String sourceCode, String language, String input) {
-		HttpClient client = HttpClient.newHttpClient();
-		String url = "https://emkc.org/api/v2/piston/execute";
-		String requestBody = String.format("""
-            {
-                "language": "%s",
-                "files": [{
-                    "content": "%s"
-                }],
-                "stdin": "%s",
-                "version": "3.10.0"
-            }
-            """, language, sourceCode, input);
-
-		HttpRequest request = HttpRequest.newBuilder()
-										 .uri(URI.create(url))
-										 .header("Content-Type", "application/json")
-										 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-										 .build();
-
-		try {
-			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-			return response.body(); // Returning the body directly for simplicity
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null; // Consider appropriate error handling
-		}
-	}
 }
 
 

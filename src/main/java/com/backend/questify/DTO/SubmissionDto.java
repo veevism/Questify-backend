@@ -21,7 +21,7 @@ public class SubmissionDto {
 
 	private Long submissionId;
 
-	private Laboratory laboratory;
+	private LaboratoryDto laboratory;
 
 	private Long studentId;
 
@@ -29,7 +29,7 @@ public class SubmissionDto {
 
 	private LocalDateTime submissionTime;
 
-	private LocalDateTime startTime;
+	private LocalDateTime createdAt;
 
-	private LocalDateTime endTime;
+	private LocalDateTime updatedAt;
 }

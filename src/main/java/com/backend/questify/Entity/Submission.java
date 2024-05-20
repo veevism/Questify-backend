@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -38,7 +40,6 @@ public class Submission {
 
 	@PrePersist
 	public void prePersist() {
-		this.startTime = LocalDateTime.now();
 		if (this.codeSnippets.isEmpty()) {
 			this.codeSnippets.put("Java", "public class Main { public static void main(String[] args) { System.out.println(\"Welcome To Questify Ja\"); } }");
 			this.codeSnippets.put("Python", "print('Welcome To Questify Ja')");
@@ -53,11 +54,12 @@ public class Submission {
 	@Column(nullable = true)
 	private LocalDateTime submissionTime;
 
-	@Column(nullable = true)
-	private LocalDateTime startTime;
+	@CreationTimestamp
+	@Column(updatable = false)
+	private LocalDateTime createdAt;
 
-	@Column(nullable = true)
-	private LocalDateTime endTime;
+	@UpdateTimestamp
+	private LocalDateTime updatedAt;
 
 	private Integer givenScore;
 

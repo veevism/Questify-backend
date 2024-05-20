@@ -2,10 +2,14 @@ package com.backend.questify.Controller;
 
 import com.backend.questify.DTO.SubmissionDto;
 import com.backend.questify.Entity.Submission;
+import com.backend.questify.Model.ApiResponse;
 import com.backend.questify.Service.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/submission")
@@ -14,23 +18,27 @@ public class SubmissionController {
 	@Autowired
 	private SubmissionService submissionService;
 
-	@GetMapping("/{id}")
-	public ResponseEntity<Submission> getSubmissionById(@PathVariable Long id) {
-		return submissionService.getSubmissionById(id)
+	//! Don't use submissionId instead use studentId from access_token and laboratoryId
+	//! Create Model SubmissionExecuteResponseDto
+	@GetMapping("")
+	public ResponseEntity<Submission> getSubmission(@RequestParam Long submissionId) {
+		return submissionService.getSubmission(submissionId)
 								.map(ResponseEntity::ok)
 								.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
-	@PutMapping("/{id}/{language}")
-	public ResponseEntity<Submission> updateCodeSnippet(@PathVariable Long id, @PathVariable String language, @RequestBody String code) {
-		Submission updatedSubmission = submissionService.updateCodeSnippet(id, language, code);
+	@PutMapping("")
+	public ResponseEntity<Submission> updateCodeSnippet(@RequestParam Long submissionId, @RequestParam String language, @RequestBody String codeContent) {
+		Submission updatedSubmission = submissionService.updateSubmissionContent(submissionId, language, codeContent);
 		return ResponseEntity.ok(updatedSubmission);
 	}
 
-	@PostMapping("/{id}")
-	public ResponseEntity<SubmissionDto> createSubmission(@PathVariable Long id) {
-		SubmissionDto savedSubmission = submissionService.createSubmission(id);
-		return ResponseEntity.ok(savedSubmission);
+	@PostMapping("")
+	public ResponseEntity<ApiResponse<SubmissionDto>> createSubmission(@RequestParam UUID laboratoryId) {
+		SubmissionDto createdSubmission = submissionService.createSubmission(laboratoryId);
+		ApiResponse<SubmissionDto> response = ApiResponse.success(createdSubmission , HttpStatus.CREATED, "Create Submission Successfully");
+
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@DeleteMapping("/{id}")
@@ -39,8 +47,8 @@ public class SubmissionController {
 		return ResponseEntity.ok("Submission deleted successfully.");
 	}
 
-	@GetMapping("/execute/{submissionId}/{language}")
-	public ResponseEntity<String> executeSubmission(@PathVariable Long submissionId, @PathVariable String language) {
+	@GetMapping("/execute")
+	public ResponseEntity<String> executeSubmission(@RequestParam Long submissionId, @RequestParam String language) {
 		try {
 			String result = submissionService.executeSubmission(submissionId, language);
 			return ResponseEntity.ok(result);
