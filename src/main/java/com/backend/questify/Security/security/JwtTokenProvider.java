@@ -21,11 +21,13 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-	private String secretKey = "mySecretKey";
+	private final String secretKey = Base64.getEncoder().encodeToString("mySecretKey".getBytes());
 
-	@PostConstruct
-	protected void init() {
-		secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+	private final UserDetailsService userDetailsService;
+
+	@Autowired
+	public JwtTokenProvider(UserDetailsService userDetailsService) {
+		this.userDetailsService = userDetailsService;
 	}
 
 	public String createToken(String username, Role role) {
@@ -53,18 +55,11 @@ public class JwtTokenProvider {
 	}
 
 	public Authentication getAuthentication(String token) {
-		UserDetails userDetails = loadUserByUsername(getUsername(token));
+		UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername(token));
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 	}
 
 	public String getUsername(String token) {
 		return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
-	}
-
-	@Autowired
-	private UserDetailsService userDetailsService;
-
-	public UserDetails loadUserByUsername(String username) {
-		return userDetailsService.loadUserByUsername(username);
 	}
 }
