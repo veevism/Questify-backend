@@ -2,10 +2,8 @@ package com.backend.questify.Security.security;
 
 import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Model.Role;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,43 +13,51 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Map;
 
 @Component
 public class JwtTokenProvider {
 
-	private final String secretKey = Base64.getEncoder().encodeToString("mySecretKey".getBytes());
-
-	private final UserDetailsService userDetailsService;
+	private Key secretKey;
 
 	@Autowired
-	public JwtTokenProvider(UserDetailsService userDetailsService) {
-		this.userDetailsService = userDetailsService;
+	private UserDetailsService userDetailsService;
+
+	@PostConstruct
+	protected void init() {
+		this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Generates a secure key
 	}
 
 	public String createToken(String username, Role role) {
 		Claims claims = Jwts.claims().setSubject(username);
-		claims.put("role", role);
+		claims.put("role", role.name());
 
 		Date now = new Date();
-		Date validity = new Date(now.getTime() + 3600000); // 1h
+		Date validity = new Date(now.getTime() + 3600000); // 1 hour
 
 		return Jwts.builder()
 				   .setClaims(claims)
 				   .setIssuedAt(now)
 				   .setExpiration(validity)
-				   .signWith(SignatureAlgorithm.HS256, secretKey)
+				   .signWith(secretKey)
 				   .compact();
 	}
 
 	public boolean validateToken(String token) {
 		try {
-			Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+			Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
 			return true;
-		} catch (JwtException | IllegalArgumentException e) {
-			throw new ResourceNotFoundException("Expired or invalid JWT token");
+		} catch (Exception e) {
+			return false; // Return false instead of throwing an exception
 		}
+	}
+
+	public Map<String, Object> getClaims(String token) {
+		Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+		return claimsJws.getBody();
 	}
 
 	public Authentication getAuthentication(String token) {
@@ -60,6 +66,6 @@ public class JwtTokenProvider {
 	}
 
 	public String getUsername(String token) {
-		return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+		return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
 	}
 }

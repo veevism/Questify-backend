@@ -1,15 +1,16 @@
 package com.backend.questify.Controller;
 
 import com.backend.questify.DTO.UserRequestDto;
+import com.backend.questify.Security.security.JwtTokenProvider;
 import com.backend.questify.Service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -22,6 +23,32 @@ public class AuthController {
 	public ResponseEntity<AuthenticationResponse> login(@RequestBody UserRequestDto userRequest) {
 		String token = userService.authenticate(userRequest);
 		return ResponseEntity.ok(new AuthenticationResponse(token));
+	}
+
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
+
+	@GetMapping("/verify-token")
+	public ResponseEntity<Map<String, Object>> verifyToken(@RequestHeader("Authorization") String authorizationHeader) {
+		// Extract the token from the "Bearer " prefix
+		String token = authorizationHeader.replace("Bearer ", "");
+
+		// Validate the token
+		if (jwtTokenProvider.validateToken(token)) {
+			// Extract information from the token
+			String username = jwtTokenProvider.getUsername(token);
+			Authentication authentication = jwtTokenProvider.getAuthentication(token);
+			Map<String, Object> claims = jwtTokenProvider.getClaims(token);
+
+			// Return the extracted information
+			return ResponseEntity.ok(Map.of(
+					"username", username,
+					"authorities", authentication.getAuthorities(),
+					"claims", claims
+			));
+		} else {
+			return ResponseEntity.status(401).body(Map.of("error", "Invalid or expired token"));
+		}
 	}
 
 	@Data
