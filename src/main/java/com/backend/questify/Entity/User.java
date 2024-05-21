@@ -22,16 +22,16 @@ public class User {
 	private String userName;
 
 	@Column
-	private String firstName;
+	private String firstName_EN;
 
 	@Column
-	private String lastName;
+	private String lastName_EN;
 
 	@Column(nullable = false, unique = false)
 	private String displayName;
 
-	@Column(nullable = false)
-	private String password;
+	@Column
+	private String organization_name_EN;
 
 	@Column
 	private String image;
@@ -40,7 +40,7 @@ public class User {
 	private String email;
 
 	@Enumerated(EnumType.STRING)
-	private Role role;
+	private Role role; //StdAcc , ProfAcc
 
 	@OneToOne(fetch = FetchType.LAZY)
 	private Student student;

@@ -1,11 +1,13 @@
 package com.backend.questify.Service;
 
 import com.backend.questify.DTO.UserDto;
+import com.backend.questify.DTO.UserRequestDto;
 import com.backend.questify.Entity.*;
 import com.backend.questify.Model.Role;
 import com.backend.questify.Repository.ProfessorRepository;
 import com.backend.questify.Repository.StudentRepository;
 import com.backend.questify.Repository.UserRepository;
+import com.backend.questify.Security.security.JwtTokenProvider;
 import com.backend.questify.Util.DtoMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,58 +29,50 @@ import java.util.Optional;
 		@Autowired
 		private ProfessorRepository professorRepository;
 
+		@Autowired
+		private JwtTokenProvider jwtTokenProvider;
 
-		public User createUser(User user) {
-			user.setUserId(null);
+		public String authenticate(UserRequestDto userRequest) {
+			Optional<User> existingUser = userRepository.findByUserName(userRequest.getCmuitaccount_name());
+			User user;
 
-			if (Role.STUDENT.equals(user.getRole())) {
-				Student student = new Student();
-				student.setUser(user);
-				user.setStudent(student);
+			if (existingUser.isPresent()) {
+				user = existingUser.get();
+			} else {
+				user = createUser(userRequest);
+			}
+
+			return jwtTokenProvider.createToken(user.getUserName(), user.getRole());
+		}
+
+		private User createUser(UserRequestDto userRequest) {
+			User user = User.builder()
+							.userName(userRequest.getCmuitaccount_name())
+							.email(userRequest.getCmuitaccount())
+							.firstName_EN(userRequest.getFirstname_EN())
+							.lastName_EN(userRequest.getLastname_EN())
+							.displayName(userRequest.getFirstname_EN() + " " + userRequest.getLastname_EN())
+							.organization_name_EN(userRequest.getOrganization_name_EN())
+							.role(Role.valueOf(userRequest.getItaccounttype_id()))
+							.build();
+
+			user = userRepository.save(user);
+
+			if (userRequest.getItaccounttype_id().equals("StdAcc")) {
+				Student student = Student.builder()
+										 .studentId(Long.valueOf(userRequest.getStudent_id()))
+										 .user(user)
+										 .build();
 				studentRepository.save(student);
-			} else if (Role.PROFESSOR.equals(user.getRole())) {
-				Professor professor = new Professor();
-				professor.setUser(user);
-				user.setProfessor(professor);
+			} else if (userRequest.getItaccounttype_id().equals("ProfAcc")) {
+				Professor professor = Professor.builder()
+											   .professorId(Long.valueOf(userRequest.getStudent_id()))
+											   .user(user)
+											   .build();
 				professorRepository.save(professor);
 			}
-			return userRepository.save(user);
+
+			return user;
 		}
 
-		public Optional<User> getUserById(Long userId) {
-			return userRepository.findById(userId);
-		}
-
-		public Optional<User> getUserByUserName(String userName) {
-			return userRepository.findByUserName(userName);
-		}
-
-		public List<User> getAllUsers() {
-//			System.out.println(DtoMapper.INSTANCE.userToUserDto(userRepository.findAll()));
-			return userRepository.findAll();
-
-
-//			DtoMapper.INSTANCE
-//			users.stream()
-//				 .map(dtoMapper::userToUserDto)  // Assuming a method userToUserDto exists in your DtoMapper
-//				 .collect(Collectors.toList());
-
-//			DtoMapper.INSTANCE.userToUserDto()
-		}
-
-		public User updateUser(Long userId, User userDetails) {
-			User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with id " + userId));
-			user.setFirstName(userDetails.getFirstName());
-			user.setLastName(userDetails.getLastName());
-			user.setDisplayName(userDetails.getDisplayName());
-			user.setPassword(userDetails.getPassword());
-			user.setImage(userDetails.getImage());
-			user.setEmail(userDetails.getEmail());
-			user.setRole(userDetails.getRole());
-			return userRepository.save(user);
-		}
-
-		public void deleteUser(Long userId) {
-			userRepository.deleteById(userId);
-		}
 	}
