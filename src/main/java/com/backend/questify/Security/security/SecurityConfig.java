@@ -22,10 +22,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
 	private final JwtTokenProvider jwtTokenProvider;
+	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
 
 	@Autowired
-	public SecurityConfig(JwtTokenProvider jwtTokenProvider) {
+	public SecurityConfig(JwtTokenProvider jwtTokenProvider, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
 		this.jwtTokenProvider = jwtTokenProvider;
+		this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
 	}
 
 	@Bean
@@ -36,10 +39,14 @@ public class SecurityConfig {
 					.requestMatchers("/auth/**").permitAll()
 					.anyRequest().authenticated()
 			)
+			.exceptionHandling(exception -> exception
+					.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+			)
 			.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
+
 
 	@Bean
 	public JwtTokenFilter jwtTokenFilter() {

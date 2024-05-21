@@ -1,6 +1,7 @@
 package com.backend.questify.Entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,12 +16,12 @@ import java.util.Set;
 @Table(name = "professors")
 public class Professor {
 	@Id
-	@EqualsAndHashCode.Exclude
 	private Long professorId;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@MapsId // This is very suspicious
+	@MapsId
 	@JoinColumn(name = "professor_id")
+	@JsonBackReference
 	private User user;
 
 	private String faculty;

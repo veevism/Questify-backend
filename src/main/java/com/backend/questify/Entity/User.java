@@ -1,6 +1,7 @@
 package com.backend.questify.Entity;
 
 import com.backend.questify.Model.Role;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "users")
 public class User {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userId;
 
 	@Column(nullable = false, unique = true)
@@ -42,11 +43,14 @@ public class User {
 	@Enumerated(EnumType.STRING)
 	private Role role; //StdAcc , ProfAcc
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+	@JsonManagedReference
 	private Student student;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+	@JsonManagedReference
 	private Professor professor;
-
 }
+
+
 

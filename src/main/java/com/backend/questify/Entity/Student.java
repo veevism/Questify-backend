@@ -1,5 +1,6 @@
 package com.backend.questify.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,16 +14,15 @@ import java.util.Set;
 @Table(name = "students")
 public class Student {
 	@Id
-	@EqualsAndHashCode.Exclude
 	private Long studentId;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@MapsId
 	@JoinColumn(name = "student_id")
+	@JsonBackReference
 	private User user;
 
 	private Integer enrollmentYear;
-
 	private String major;
 
 	@ManyToMany(mappedBy = "students")

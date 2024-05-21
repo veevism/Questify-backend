@@ -34,6 +34,10 @@ public interface DtoMapper {
 ProfessorDto professorToProfessorDto(Professor professor);
  List<ProfessorDto> professorToProfessorDto(List<Professor> professor);
 
+ StudentDto studentToStudentDto (Student student);
+
+ List<StudentDto> studentToStudentDto(List<StudentDto> student);
+
 // @Mapping(source = "classroom.professor", target = "professor")
 // @Mapping(source = "classroom.classroomId", target = "classroomId")
 // @Mapping(source = "classroom.title", target = "title")
