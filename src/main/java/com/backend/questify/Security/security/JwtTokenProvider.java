@@ -7,7 +7,12 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import java.util.Base64;
@@ -47,7 +52,19 @@ public class JwtTokenProvider {
 		}
 	}
 
+	public Authentication getAuthentication(String token) {
+		UserDetails userDetails = loadUserByUsername(getUsername(token));
+		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+	}
+
 	public String getUsername(String token) {
 		return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+	}
+
+	@Autowired
+	private UserDetailsService userDetailsService;
+
+	public UserDetails loadUserByUsername(String username) {
+		return userDetailsService.loadUserByUsername(username);
 	}
 }
