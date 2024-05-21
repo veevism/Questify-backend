@@ -21,6 +21,8 @@ import java.util.Map;
 @Component
 public class JwtTokenProvider {
 
+	private static final String SECRET_KEY = "myVerySecureSecretKeyThatShouldBeLongEnoughToMeetSecurityStandards";
+
 	private Key secretKey;
 
 	@Autowired
@@ -28,7 +30,8 @@ public class JwtTokenProvider {
 
 	@PostConstruct
 	protected void init() {
-		this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Generates a secure key
+		byte[] keyBytes = Base64.getEncoder().encode(SECRET_KEY.getBytes());
+		this.secretKey = Keys.hmacShaKeyFor(keyBytes); // Generates a secure key
 	}
 
 	public String createToken(String username, Role role) {
@@ -42,7 +45,7 @@ public class JwtTokenProvider {
 				   .setClaims(claims)
 				   .setIssuedAt(now)
 				   .setExpiration(validity)
-				   .signWith(secretKey)
+				   .signWith(secretKey, SignatureAlgorithm.HS256)
 				   .compact();
 	}
 
@@ -55,11 +58,6 @@ public class JwtTokenProvider {
 		}
 	}
 
-	public Map<String, Object> getClaims(String token) {
-		Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
-		return claimsJws.getBody();
-	}
-
 	public Authentication getAuthentication(String token) {
 		UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername(token));
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
@@ -67,5 +65,10 @@ public class JwtTokenProvider {
 
 	public String getUsername(String token) {
 		return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
+	}
+
+	public Map<String, Object> getClaims(String token) {
+		Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+		return claimsJws.getBody();
 	}
 }
