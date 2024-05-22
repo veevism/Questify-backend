@@ -27,7 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 		Long id;
 		try {
-			id = Long.parseLong(userId);
+			id = Long.parseLong(userId); // แปลง String เป็น Long
 		} catch (NumberFormatException e) {
 			throw new UsernameNotFoundException("Invalid user ID: " + userId);
 		}

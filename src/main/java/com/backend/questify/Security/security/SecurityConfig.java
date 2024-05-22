@@ -24,7 +24,6 @@ public class SecurityConfig {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-
 	@Autowired
 	public SecurityConfig(JwtTokenProvider jwtTokenProvider, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
 		this.jwtTokenProvider = jwtTokenProvider;
@@ -47,7 +46,6 @@ public class SecurityConfig {
 		return http.build();
 	}
 
-
 	@Bean
 	public JwtTokenFilter jwtTokenFilter() {
 		return new JwtTokenFilter(jwtTokenProvider);
@@ -63,18 +61,3 @@ public class SecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 }
-
-//public class JwtConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
-//
-//	private JwtTokenProvider jwtTokenProvider;
-//
-//	public JwtConfigurer(JwtTokenProvider jwtTokenProvider) {
-//		this.jwtTokenProvider = jwtTokenProvider;
-//	}
-//
-//	@Override
-//	public void configure(HttpSecurity http) throws Exception {
-//		JwtTokenFilter customFilter = new JwtTokenFilter(jwtTokenProvider);
-//		http.addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class);
-//	}
-//}

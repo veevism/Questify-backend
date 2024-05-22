@@ -32,6 +32,10 @@ public class UserService {
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
 
+	public void getProfile() {
+
+	}
+
 	public String authenticate(UserRequestDto userRequest) {
 		Optional<User> existingUser = userRepository.findById(Long.valueOf(userRequest.getStudent_id()));
 		User user;

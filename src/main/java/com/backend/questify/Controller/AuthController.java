@@ -1,16 +1,21 @@
 package com.backend.questify.Controller;
 
+import com.backend.questify.DTO.AssignmentDto;
+import com.backend.questify.DTO.UserDto;
 import com.backend.questify.DTO.UserRequestDto;
+import com.backend.questify.Model.ApiResponse;
 import com.backend.questify.Security.security.JwtTokenProvider;
 import com.backend.questify.Service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -52,7 +57,17 @@ public class AuthController {
 		}
 	}
 
-	@Data
+	@GetMapping("/profile")
+	public ResponseEntity<ApiResponse<Void>> GetProfile() {
+userService.getProfile();
+
+		ApiResponse<Void> response = ApiResponse.success(null, HttpStatus.OK, "Get Assignment Successfully" );
+
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
+
+		@Data
 	@AllArgsConstructor
 	public static class AuthenticationResponse {
 		private String token;
