@@ -36,6 +36,7 @@ public class ClassroomController {
 	}
 
 	@GetMapping("")
+	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
 	public ResponseEntity<ApiResponse<ClassroomDto>> getClassroom(@RequestParam UUID classroomId) {
 		ClassroomDto classroomDto1 = classroomService.getClassroom(classroomId);
 		ApiResponse<ClassroomDto> response = ApiResponse.success(classroomDto1, HttpStatus.OK, "Get Classrooms Successfully" );
@@ -43,6 +44,7 @@ public class ClassroomController {
 	}
 
 	@GetMapping("/")
+	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
 	public ResponseEntity<ApiResponse<List<ClassroomDto>>> getClassrooms() {
 		List<ClassroomDto> classroomDto1 = classroomService.getClassrooms();
 		ApiResponse<List<ClassroomDto>> response = ApiResponse.success(classroomDto1, HttpStatus.OK, "Get Classrooms Successfully" );
