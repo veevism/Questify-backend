@@ -1,11 +1,8 @@
 package com.backend.questify.Controller;
 
 import com.backend.questify.DTO.ClassroomDto;
-import com.backend.questify.DTO.UserDto;
-import com.backend.questify.Entity.Classroom;
 import com.backend.questify.Model.ApiResponse;
 import com.backend.questify.Service.ClassroomService;
-import com.backend.questify.Util.ShortUUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

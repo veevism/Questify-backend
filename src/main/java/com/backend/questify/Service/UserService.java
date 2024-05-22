@@ -1,8 +1,7 @@
 package com.backend.questify.Service;
 
-import com.backend.questify.DTO.StudentDto;
-import com.backend.questify.DTO.UserDto;
-import com.backend.questify.DTO.UserRequestDto;
+import com.backend.questify.DTO.User.UserDto;
+import com.backend.questify.DTO.User.UserRequestDto;
 import com.backend.questify.Entity.*;
 import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Exception.UserNotAuthenticatedException;
@@ -10,17 +9,14 @@ import com.backend.questify.Model.Role;
 import com.backend.questify.Repository.ProfessorRepository;
 import com.backend.questify.Repository.StudentRepository;
 import com.backend.questify.Repository.UserRepository;
-import com.backend.questify.Security.security.JwtTokenProvider;
+import com.backend.questify.Security.JwtTokenProvider;
 import com.backend.questify.Util.DtoMapper;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -39,10 +35,8 @@ public class UserService {
 	private JwtTokenProvider jwtTokenProvider;
 
 	public UserDto getProfile() {
-		System.out.println(getCurrentUserId());
 		Long userId = getCurrentUserId();
 
-		System.out.println(userId);
 		Optional<User> userResult = userRepository.findById(getCurrentUserId());
 		User user = userResult.orElseThrow(() -> new ResourceNotFoundException("User Not Found By Access Token"));
 
@@ -112,4 +106,6 @@ public class UserService {
 		}
 		throw new UserNotAuthenticatedException("User is not authenticated.");
 	}
+
+
 }

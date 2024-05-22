@@ -1,4 +1,4 @@
-package com.backend.questify.DTO;
+package com.backend.questify.DTO.User;
 
 import lombok.Data;
 

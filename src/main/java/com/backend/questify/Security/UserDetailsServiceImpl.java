@@ -1,4 +1,4 @@
-package com.backend.questify.Security.security;
+package com.backend.questify.Security;
 
 import com.backend.questify.Entity.User;
 import com.backend.questify.Repository.UserRepository;

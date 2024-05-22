@@ -1,11 +1,9 @@
 package com.backend.questify.Controller;
 
-import com.backend.questify.DTO.AssignmentDto;
-import com.backend.questify.DTO.UserDto;
-import com.backend.questify.DTO.UserRequestDto;
-import com.backend.questify.Entity.User;
+import com.backend.questify.DTO.User.UserDto;
 import com.backend.questify.Model.ApiResponse;
-import com.backend.questify.Security.security.JwtTokenProvider;
+import com.backend.questify.Security.JwtTokenProvider;
+import com.backend.questify.Service.ExternalApiService;
 import com.backend.questify.Service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,9 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,13 +23,23 @@ public class AuthController {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private ExternalApiService externalApiService;
+
 	@PostMapping("/login")
-	public ResponseEntity<ApiResponse<AuthenticationResponse>> login(@RequestBody UserRequestDto userRequest) {
-		String token = userService.authenticate(userRequest);
-
-		ApiResponse<AuthenticationResponse> response = ApiResponse.success(new AuthenticationResponse(token), HttpStatus.OK, "Get Profile Successfully" );
-
-		return ResponseEntity.status(response.getStatus()).body(response);
+	public Mono<ResponseEntity<ApiResponse<AuthenticationResponse>>> login(@RequestHeader("Authorization") String authorizationHeader) {
+		String tokenA = authorizationHeader.replace("Bearer ", "");
+		return externalApiService.getUserInfo(tokenA)
+								 .map(userRequest -> {
+									 String token = userService.authenticate(userRequest);
+									 ApiResponse<AuthenticationResponse> response = ApiResponse.success(new AuthenticationResponse(token), HttpStatus.OK, "Get Profile Successfully");
+									 return ResponseEntity.status(response.getStatus()).body(response);
+								 })
+								 .onErrorResume(e -> {
+									 ApiResponse<AuthenticationResponse> response = ApiResponse.failure(
+											 String.valueOf(HttpStatus.UNAUTHORIZED), "Error fetching user info: " + e.getMessage());
+									 return Mono.just(ResponseEntity.status(response.getStatus()).body(response));
+								 });
 	}
 
 	@Autowired

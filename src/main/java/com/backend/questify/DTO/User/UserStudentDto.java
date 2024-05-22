@@ -1,5 +1,8 @@
-package com.backend.questify.DTO;
+package com.backend.questify.DTO.User;
 
+import com.backend.questify.DTO.ProfessorDto;
+import com.backend.questify.DTO.StudentDto;
+import com.backend.questify.Model.Role;
 import lombok.*;
 
 @Builder
@@ -8,8 +11,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
-
+public class UserStudentDto {
 	private Long userId;
 
 	private String firstName_EN;
@@ -26,9 +28,5 @@ public class UserDto {
 
 	private StudentDto student;
 
-	private ProfessorDto professor;
-
-
-
-	//! Todo fix mapstruct by deleted them first, delete lazy loading <- print original user first to see if data come propoerly or not
+	private Role role;
 }

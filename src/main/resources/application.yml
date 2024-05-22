@@ -7,7 +7,7 @@ spring:
   jpa:
     hibernate:
 
-      ddl-auto: create-drop
+      ddl-auto: update
     generate-ddl : true
     properties:
       hibernate:
@@ -19,3 +19,6 @@ server:
 
 jwt:
   secret: questify_jwt_token_naja_don't_peak_na
+
+
+

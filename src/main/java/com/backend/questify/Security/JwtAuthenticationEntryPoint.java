@@ -1,4 +1,4 @@
-package com.backend.questify.Security.security;
+package com.backend.questify.Security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
