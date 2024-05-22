@@ -4,6 +4,8 @@ import com.backend.questify.DTO.StudentDto;
 import com.backend.questify.DTO.UserDto;
 import com.backend.questify.DTO.UserRequestDto;
 import com.backend.questify.Entity.*;
+import com.backend.questify.Exception.ResourceNotFoundException;
+import com.backend.questify.Exception.UserNotAuthenticatedException;
 import com.backend.questify.Model.Role;
 import com.backend.questify.Repository.ProfessorRepository;
 import com.backend.questify.Repository.StudentRepository;
@@ -12,8 +14,12 @@ import com.backend.questify.Security.security.JwtTokenProvider;
 import com.backend.questify.Util.DtoMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,8 +38,15 @@ public class UserService {
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
 
-	public void getProfile() {
+	public UserDto getProfile() {
+		System.out.println(getCurrentUserId());
+		Long userId = getCurrentUserId();
 
+		System.out.println(userId);
+		Optional<User> userResult = userRepository.findById(getCurrentUserId());
+		User user = userResult.orElseThrow(() -> new ResourceNotFoundException("User Not Found By Access Token"));
+
+		return DtoMapper.INSTANCE.userToUserDto(user);
 	}
 
 	public String authenticate(UserRequestDto userRequest) {
@@ -81,6 +94,22 @@ public class UserService {
 			user.setProfessor(professor);
 		}
 
+
+
 		return userRepository.save(user);
+	}
+
+	public Long getCurrentUserId() throws UserNotAuthenticatedException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetails) {
+			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+			try {
+				System.out.println(userDetails.getUsername());
+				return Long.valueOf(userDetails.getUsername()); // Assuming the username is the userId
+			} catch (NumberFormatException e) {
+				throw new UserNotAuthenticatedException("Invalid user ID format.");
+			}
+		}
+		throw new UserNotAuthenticatedException("User is not authenticated.");
 	}
 }

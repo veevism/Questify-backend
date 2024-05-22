@@ -12,15 +12,17 @@ public class UserDto {
 
 	private Long userId;
 
-	private String firstName;
+	private String firstName_EN;
 
-	private String lastName;
+	private String lastName_EN;
 
 	private String displayName;
 
 	private String userName;
 
 	private String email;
+
+	private String organization_name_EN;
 
 	private StudentDto student;
 

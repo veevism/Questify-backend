@@ -29,7 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		try {
 			id = Long.parseLong(userId); // แปลง String เป็น Long
 		} catch (NumberFormatException e) {
-			throw new UsernameNotFoundException("Invalid user ID: " + userId);
+			throw new UsernameNotFoundException("Invalid user ID format : " + userId);
 		}
 
 		User user = userRepository.findById(id)
@@ -38,6 +38,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
 		grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
 
-		return new org.springframework.security.core.userdetails.User(user.getUserName(), "", grantedAuthorities);
+		return new org.springframework.security.core.userdetails.User(userId, "", grantedAuthorities);
 	}
 }

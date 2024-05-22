@@ -3,6 +3,7 @@ package com.backend.questify.Controller;
 import com.backend.questify.DTO.AssignmentDto;
 import com.backend.questify.DTO.UserDto;
 import com.backend.questify.DTO.UserRequestDto;
+import com.backend.questify.Entity.User;
 import com.backend.questify.Model.ApiResponse;
 import com.backend.questify.Security.security.JwtTokenProvider;
 import com.backend.questify.Service.UserService;
@@ -25,9 +26,12 @@ public class AuthController {
 	private UserService userService;
 
 	@PostMapping("/login")
-	public ResponseEntity<AuthenticationResponse> login(@RequestBody UserRequestDto userRequest) {
+	public ResponseEntity<ApiResponse<AuthenticationResponse>> login(@RequestBody UserRequestDto userRequest) {
 		String token = userService.authenticate(userRequest);
-		return ResponseEntity.ok(new AuthenticationResponse(token));
+
+		ApiResponse<AuthenticationResponse> response = ApiResponse.success(new AuthenticationResponse(token), HttpStatus.OK, "Get Profile Successfully" );
+
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@Autowired
@@ -58,13 +62,15 @@ public class AuthController {
 	}
 
 	@GetMapping("/profile")
-	public ResponseEntity<ApiResponse<Void>> GetProfile() {
-userService.getProfile();
+	public ResponseEntity<ApiResponse<UserDto>> GetProfile() {
 
-		ApiResponse<Void> response = ApiResponse.success(null, HttpStatus.OK, "Get Assignment Successfully" );
+		UserDto userDto1 = userService.getProfile();
+		ApiResponse<UserDto> response = ApiResponse.success(userDto1, HttpStatus.OK, "Get Profile Successfully" );
 
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
+
+
 
 
 		@Data
@@ -72,4 +78,5 @@ userService.getProfile();
 	public static class AuthenticationResponse {
 		private String token;
 	}
+
 }
