@@ -33,8 +33,8 @@ public class JwtTokenProvider {
 		this.secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes()); // Generates a secure key
 	}
 
-	public String createToken(String username, Role role) {
-		Claims claims = Jwts.claims().setSubject(username);
+	public String createToken(Long userId, Role role) {
+		Claims claims = Jwts.claims().setSubject(String.valueOf(userId));
 		claims.put("role", role.name());
 
 		Date now = new Date();
@@ -58,12 +58,12 @@ public class JwtTokenProvider {
 	}
 
 	public Authentication getAuthentication(String token) {
-		UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername(token));
+		UserDetails userDetails = userDetailsService.loadUserByUsername(getUserId(token).toString());
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 	}
 
-	public String getUsername(String token) {
-		return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
+	public Long getUserId(String token) {
+		return Long.valueOf(Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject());
 	}
 
 	public Map<String, Object> getClaims(String token) {

@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 public class UserService {
 
@@ -43,9 +42,7 @@ public class UserService {
 			user = createUser(userRequest);
 		}
 
-		System.out.println("Create Success Fullll");
-
-		return jwtTokenProvider.createToken(user.getUserName(), user.getRole());
+		return jwtTokenProvider.createToken(user.getUserId(), user.getRole());
 	}
 
 	private User createUser(UserRequestDto userRequest) {
@@ -70,11 +67,6 @@ public class UserService {
 									 .major(null)
 									 .build();
 			user.setStudent(student);
-
-			UserDto testUser = DtoMapper.INSTANCE.userToUserDto(user);
-			StudentDto studentDto = DtoMapper.INSTANCE.studentToStudentDto(student);
-
-			System.out.println("Hahahaha");
 		} else if (user.getRole() == Role.ProfAcc) {
 			Professor professor = Professor.builder()
 										   .professorId(userId)

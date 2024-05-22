@@ -28,21 +28,22 @@ public class AuthController {
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
 
+
 	@GetMapping("/verify-token")
-	public ResponseEntity<Map<String, Object>> verifyToken(@RequestHeader("Authorization") String authorizationHeader) {
+	public ResponseEntity<?> verifyToken(@RequestHeader("Authorization") String authorizationHeader) {
 		// Extract the token from the "Bearer " prefix
 		String token = authorizationHeader.replace("Bearer ", "");
 
 		// Validate the token
 		if (jwtTokenProvider.validateToken(token)) {
 			// Extract information from the token
-			String username = jwtTokenProvider.getUsername(token);
+			Long userId = jwtTokenProvider.getUserId(token);
 			Authentication authentication = jwtTokenProvider.getAuthentication(token);
 			Map<String, Object> claims = jwtTokenProvider.getClaims(token);
 
 			// Return the extracted information
 			return ResponseEntity.ok(Map.of(
-					"username", username,
+					"userId", userId,
 					"authorities", authentication.getAuthorities(),
 					"claims", claims
 			));
