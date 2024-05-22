@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,6 +28,10 @@ public class ClassroomDto {
 	private Boolean isActive;
 
 	private String invitationCode;
+
+	private int studentQuantity;
+
+	private List<StudentDto> students;
 
 //	private Set<AssignmentDto> assignments;
 }

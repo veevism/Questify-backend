@@ -5,6 +5,7 @@ import com.backend.questify.DTO.ProfessorDto;
 import com.backend.questify.DTO.SubmissionDto;
 import com.backend.questify.Entity.Classroom;
 import com.backend.questify.Entity.Professor;
+import com.backend.questify.Entity.Student;
 import com.backend.questify.Entity.Submission;
 import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Exception.UnauthorizedAccessException;
@@ -31,6 +32,9 @@ public class ClassroomService {
 
 	@Autowired
 	private ClassroomRepository classroomRepository;
+
+	@Autowired
+	private StudentRepository studentRepository;
 
 	@Autowired
 	private ProfessorRepository professorRepository;
@@ -120,6 +124,48 @@ public class ClassroomService {
 		} else {
 			throw new ResourceNotFoundException("Classroom not found with Id : " + classroomId);
 		}
+	}
+
+	public ClassroomDto joinClassroom(UUID classroomId) {
+		Optional<Classroom> classroomResult = classroomRepository.findById(classroomId);
+		Classroom classroom = classroomResult.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
+
+		Long currentUserId = userService.getCurrentUserId();
+		Optional<Student> studentResult = studentRepository.findById(currentUserId);
+		Student student = studentResult.orElseThrow(() -> new ResourceNotFoundException("Student not found with Id : " + currentUserId));
+
+
+		if (classroom.getStudents().contains(student)) {
+			throw new IllegalArgumentException("Student is already enrolled in this classroom");
+		}
+
+		classroom.addStudent(student);
+		classroomRepository.save(classroom);
+
+//		System.out.println(classroom.getStudents().);
+		return DtoMapper.INSTANCE.classroomToClassroomDto(classroom);
+	}
+
+	public ClassroomDto removeFromClassroom(UUID classroomId, Long studentId) {
+		Optional<Classroom> classroomResult = classroomRepository.findById(classroomId);
+		Classroom classroom = classroomResult.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
+
+		Long currentUserId = userService.getCurrentUserId();
+		if (!classroom.getProfessor().getProfessorId().equals(currentUserId)) {
+			throw new UnauthorizedAccessException("You do not have permission to update this classroom.");
+		}
+
+		Optional<Student> studentResult = studentRepository.findById(studentId);
+		Student student = studentResult.orElseThrow(() -> new ResourceNotFoundException("Student not found with Id : " + studentId));
+
+		if (!classroom.getStudents().contains(student)) {
+			throw new IllegalArgumentException("Student with Id : " + student + " isn't in this classroom in the first place");
+		}
+
+		classroom.removeStudent(student);
+		classroomRepository.save(classroom);
+
+		return DtoMapper.INSTANCE.classroomToClassroomDto(classroom);
 	}
 
 //

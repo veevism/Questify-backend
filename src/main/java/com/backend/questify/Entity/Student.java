@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -26,6 +28,7 @@ public class Student {
 	private String major;
 
 	@ManyToMany(mappedBy = "students")
-	private Set<Classroom> classrooms;
+	@Builder.Default
+	private List<Classroom> classrooms = new ArrayList<>();
 
 }

@@ -44,6 +44,8 @@ ProfessorDto professorToProfessorDto(Professor professor);
 // @Mapping(source = "classroom.description", target = "description")
 // @Mapping(source = "classroom.isActive", target = "isActive")
 // @Mapping(source = "classroom.invitationCode", target = "invitationCode")
+//  @Mapping(target = "studentQuantity", expression = "java(classroom.getStudents().size())")
+@Mapping(target = "studentQuantity", expression = "java(classroom.getStudents().size())")
 ClassroomDto classroomToClassroomDto(Classroom classroom);
 
  List<ClassroomDto> classroomToClassroomDto (List<Classroom> classroom);
