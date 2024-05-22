@@ -7,6 +7,7 @@ import com.backend.questify.Entity.Classroom;
 import com.backend.questify.Entity.Professor;
 import com.backend.questify.Entity.Submission;
 import com.backend.questify.Exception.ResourceNotFoundException;
+import com.backend.questify.Exception.UnauthorizedAccessException;
 import com.backend.questify.Repository.*;
 import com.backend.questify.Util.DtoMapper;
 import com.backend.questify.Util.ShortUUIDGenerator;
@@ -34,6 +35,9 @@ public class ClassroomService {
 	@Autowired
 	private ProfessorRepository professorRepository;
 
+	@Autowired
+	private UserService userService;
+
 
 //	@Autowired
 //	private ProfessorService
@@ -43,11 +47,11 @@ public class ClassroomService {
 //	}
 
 	public ClassroomDto createClassroom(ClassroomDto classroomDto) {
-		Long mockProfessorId = 2L;
-		Optional<Professor> result = professorRepository.findById(mockProfessorId);
-		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + mockProfessorId));
+		Long professorId = userService.getCurrentUserId();
+		Optional<Professor> result = professorRepository.findById(professorId);
+		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + professorId));
 		Classroom createdClassroom = Classroom.builder()
-				.invitationCode(ShortUUIDGenerator.generateShortUUID())
+											  .invitationCode(ShortUUIDGenerator.generateShortUUID())
 											  .title(classroomDto.getTitle())
 											  .description(classroomDto.getDescription())
 											  .professor(professor)
@@ -68,8 +72,13 @@ public class ClassroomService {
 	}
 
 	public ClassroomDto updateClassroom(UUID classroomId, ClassroomDto classroomDto) {
+		Long currentUserId = userService.getCurrentUserId();
 		Optional<Classroom> result = classroomRepository.findById(classroomId);
 		Classroom classroom = result.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
+
+		if (!classroom.getProfessor().getProfessorId().equals(currentUserId)) {
+			throw new UnauthorizedAccessException("You do not have permission to update this classroom.");
+		}
 
 		if (classroomDto.getTitle() == null || classroomDto.getTitle().trim().isEmpty()) {
 			throw new IllegalArgumentException("Title cannot be empty");
@@ -79,13 +88,10 @@ public class ClassroomService {
 			throw new IllegalArgumentException("Description cannot be empty");
 		}
 
-		if (classroomDto.getIsActive() == null ) {
-			throw new IllegalArgumentException("Active cannot be empty");
-		}
+
 
 		classroom.setTitle(classroomDto.getTitle());
 		classroom.setDescription(classroomDto.getDescription());
-		classroom.setIsActive(classroomDto.getIsActive());
 
 		classroomRepository.save(classroom);
 
@@ -99,7 +105,17 @@ public class ClassroomService {
 	}
 
 	public void deleteClassroom(UUID classroomId) {
+		Long currentUserId = userService.getCurrentUserId();
+
+
 		if (classroomRepository.existsById(classroomId)) {
+			Optional<Classroom> result = classroomRepository.findById(classroomId);
+			Classroom classroom = result.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
+
+			if (!classroom.getProfessor().getProfessorId().equals(currentUserId)) {
+				throw new UnauthorizedAccessException("You do not have permission to update this classroom.");
+			}
+
 			classroomRepository.deleteById(classroomId);
 		} else {
 			throw new ResourceNotFoundException("Classroom not found with Id : " + classroomId);

@@ -30,16 +30,18 @@ public class AssignmentService {
 	@Autowired
 	private ProfessorRepository professorRepository;
 
+	@Autowired
+	private UserService userService;
+
 	public AssignmentDto createAssignment(Assignment assignment, UUID classroomId) {
-//		System.out.println(assignment);
-		Long mockProfessorId = 2L;
-		Optional<Professor> result = professorRepository.findById(mockProfessorId);
-		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + mockProfessorId));
+		Long professorId = userService.getCurrentUserId();
+		Optional<Professor> result = professorRepository.findById(professorId);
+		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + professorId));
 
 		Optional<Classroom> classroomResult = classroomRepository.findById(classroomId);
 		Classroom classroom = classroomResult.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
 
-		Assignment createdAssignment = Assignment.builder().score(20)
+		Assignment createdAssignment = Assignment.builder().score(assignment.getScore())
 														 .title(assignment.getTitle())
 														 .description(assignment.getDescription())
 														 .professor(professor)

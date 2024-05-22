@@ -10,6 +10,7 @@ import com.backend.questify.Service.ClassroomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class AssignmentController {
 	AssignmentService assignmentService;
 
 	@DeleteMapping("")
+	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<Void>> deleteAssignment(@RequestParam UUID assignmentId) {
 		assignmentService.deleteAssignment(assignmentId);
 		ApiResponse<Void> response = ApiResponse.success(null, HttpStatus.OK, "Delete Assignment Successfully" );
@@ -30,6 +32,7 @@ public class AssignmentController {
 	}
 
 	@PutMapping("")
+	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<AssignmentDto>> updateAssignment(@RequestParam UUID assignmentId,@RequestBody AssignmentDto assignmentDto) {
 		AssignmentDto assignmentDto1 = assignmentService.updateAssignment(assignmentId, assignmentDto);
 		ApiResponse<AssignmentDto> response = ApiResponse.success(assignmentDto1, HttpStatus.OK, "Update Classrooms Successfully" );
@@ -58,6 +61,7 @@ public class AssignmentController {
 	}
 
 	@PostMapping("")
+	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<AssignmentDto>> createAssignment(@RequestBody Assignment assignment,
 																	   @RequestParam UUID classroomId) {
 		AssignmentDto result = assignmentService.createAssignment(assignment, classroomId);

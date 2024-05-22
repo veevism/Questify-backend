@@ -8,6 +8,7 @@ import com.backend.questify.Service.LaboratoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class LaboratoryController {
 	LaboratoryService laboratoryService;
 
 	@PostMapping("")
+	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<LaboratoryDto>> createLaboratory(@RequestBody LaboratoryDto laboratoryDto,
 																	   @RequestParam UUID assignmentId) {
 		LaboratoryDto laboratoryDto1 = laboratoryService.createLaboratory(assignmentId, laboratoryDto);
@@ -45,6 +47,7 @@ public class LaboratoryController {
 	}
 
 	@PutMapping("")
+	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<LaboratoryDto>> updateLaboratory(@RequestParam UUID laboratoryId, @RequestBody LaboratoryDto laboratory) {
 		LaboratoryDto laboratoryDto = laboratoryService.updateLaboratory(laboratoryId, laboratory);
 
@@ -53,6 +56,7 @@ public class LaboratoryController {
 		return ResponseEntity.status(response.getStatus()).body(response);	}
 
 	@DeleteMapping("")
+	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<Void>> deleteLaboratory(@RequestParam UUID laboratoryId) {
 		laboratoryService.deleteLaboratory(laboratoryId);
 		ApiResponse<Void> response = ApiResponse.success(null, HttpStatus.OK, "Delete Laboratory Successfully" );

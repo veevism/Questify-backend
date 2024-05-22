@@ -34,29 +34,19 @@ public class LaboratoryService {
 	@Autowired
 	private ClassroomRepository classroomRepository;
 
-//	@PersistenceContext
-//	private EntityManager entityManager;
+	@Autowired
+	private UserService userService;
 
 
 
 	public LaboratoryDto createLaboratory (UUID assignmentId, LaboratoryDto laboratoryDto) {
-//		@RequestBody LaboratoryDto laboratoryDto, UUID assignmentId
 
-		Long mockProfessorId = 2L;
-		Optional<Professor> result = professorRepository.findById(mockProfessorId);
-		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + mockProfessorId));
+		Long professorId = userService.getCurrentUserId();
+		Optional<Professor> result = professorRepository.findById(professorId);
+		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + professorId));
 
 		Optional<Assignment> assignmentResult = assignmentRepository.findById(assignmentId);
 		Assignment assignment = assignmentResult.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id : " + assignmentId));
-
-
-
-//		Assignment newAssignment = new Assignment();
-//		newAssignment.setTitle("New Classroom");
-//		newAssignment.setDescription("New Classroom");
-//		assignmentRepository.save(newAssignment);
-
-
 
 		Laboratory createdLaboratory = Laboratory.builder()
 				.assignment(assignment)
@@ -68,18 +58,6 @@ public class LaboratoryService {
 				.sampleInput(laboratoryDto.getSampleInput())
 				.sampleOutput(laboratoryDto.getSampleOutput())
 				.build();
-
-//		TestCase testCase1 = new TestCase();
-//		testCase1.setInput("Input 1");
-//		testCase1.setExpectedOutput("Output 1");
-//
-//
-//		TestCase testCase2 = new TestCase();
-//		testCase2.setInput("Input 2");
-//		testCase2.setExpectedOutput("Output 2");
-//
-//		createdLaboratory.addTestCase(testCase1);
-//		createdLaboratory.addTestCase(testCase2);
 
 		laboratoryRepository.save(createdLaboratory);
 
@@ -159,7 +137,6 @@ public class LaboratoryService {
 			laboratory.setSampleOutput(laboratoryDto.getSampleOutput());
 		}
 
-//		laboratoryRepository.save(laboratory);
 		laboratoryRepository.save(laboratory);
 
 		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratory);

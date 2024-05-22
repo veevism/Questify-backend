@@ -6,6 +6,7 @@ import com.backend.questify.Service.ClassroomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class ClassroomController {
 	ClassroomService classroomService;
 
 	@DeleteMapping("")
+	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<Void>> deleteClassroom(@RequestParam UUID classroomId) {
 		classroomService.deleteClassroom(classroomId);
 		ApiResponse<Void> response = ApiResponse.success(null, HttpStatus.OK, "Delete Classrooms Successfully" );
@@ -26,6 +28,7 @@ public class ClassroomController {
 	}
 
 	@PutMapping("")
+	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<ClassroomDto>> updateClassroom(@RequestParam UUID classroomId, @RequestBody ClassroomDto classroomDto) {
 		ClassroomDto classroomDto1 = classroomService.updateClassroom(classroomId, classroomDto);
 		ApiResponse<ClassroomDto> response = ApiResponse.success(classroomDto1, HttpStatus.OK, "Update Classrooms Successfully" );
@@ -47,6 +50,7 @@ public class ClassroomController {
 	}
 
 	@PostMapping("/")
+	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<ClassroomDto>> createClassroom(@RequestBody ClassroomDto classroomDto) {
 		ClassroomDto classroomDto1 = classroomService.createClassroom(classroomDto);
 		ApiResponse<ClassroomDto> response = ApiResponse.success(classroomDto1, HttpStatus.CREATED, "Create Classroom Successfully" );

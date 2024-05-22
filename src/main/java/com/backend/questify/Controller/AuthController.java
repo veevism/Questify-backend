@@ -1,6 +1,7 @@
 package com.backend.questify.Controller;
 
 import com.backend.questify.DTO.User.UserDto;
+import com.backend.questify.DTO.User.UserRequestDto;
 import com.backend.questify.Model.ApiResponse;
 import com.backend.questify.Security.JwtTokenProvider;
 import com.backend.questify.Service.ExternalApiService;
@@ -74,6 +75,15 @@ public class AuthController {
 
 		UserDto userDto1 = userService.getProfile();
 		ApiResponse<UserDto> response = ApiResponse.success(userDto1, HttpStatus.OK, "Get Profile Successfully" );
+
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
+	@PostMapping("/login-manual")
+	public ResponseEntity<ApiResponse<AuthenticationResponse>> login(@RequestBody UserRequestDto userRequest) {
+		String token = userService.authenticate(userRequest);
+
+		ApiResponse<AuthenticationResponse> response = ApiResponse.success(new AuthenticationResponse(token), HttpStatus.OK, "Get Profile Successfully" );
 
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}

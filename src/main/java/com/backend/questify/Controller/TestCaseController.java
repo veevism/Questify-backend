@@ -9,6 +9,7 @@ import com.backend.questify.Service.TestCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class TestCaseController {
 	@Autowired
 	private TestCaseService testCaseService;
 	@PostMapping("")
+	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<TestCaseDto>> createTestCase(@RequestParam UUID laboratoryId,
 																   @RequestBody TestCaseDto testCaseDto) {
 		TestCaseDto testCaseDto1 = testCaseService.createTestCase(laboratoryId, testCaseDto);
@@ -45,14 +47,16 @@ public class TestCaseController {
 	}
 
 	@PutMapping("")
+	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<TestCaseDto>> updateTestCase(@RequestParam UUID testCaseId, @RequestBody TestCaseDto testCaseDto) {
 		TestCaseDto updatedTestCase = testCaseService.updateTestCase(testCaseId, testCaseDto);
 
-		ApiResponse<TestCaseDto> response = ApiResponse.success(updatedTestCase, HttpStatus.OK, "Get Test Case Successfully");
+		ApiResponse<TestCaseDto> response = ApiResponse.success(updatedTestCase, HttpStatus.OK, "Update Test Case Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@DeleteMapping("")
+	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<Void>> deleteTestCase(@RequestParam UUID testCaseId) {
 		testCaseService.deleteTestCase(testCaseId);
 		ApiResponse<Void> response = ApiResponse.success(null, HttpStatus.OK, "Delete Test Case Successfully" );
