@@ -7,6 +7,7 @@ import com.backend.questify.Service.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -20,34 +21,45 @@ public class SubmissionController {
 
 	//! Don't use submissionId instead use studentId from access_token and laboratoryId
 	//! Create Model SubmissionExecuteResponseDto
-	@GetMapping("")
-	public ResponseEntity<Submission> getSubmission(@RequestParam Long submissionId) {
-		return submissionService.getSubmission(submissionId)
-								.map(ResponseEntity::ok)
-								.orElseGet(() -> ResponseEntity.notFound().build());
-	}
+//	@GetMapping("")
+//	public ResponseEntity<Submission> getSubmission(@RequestParam Long submissionId) {
+//		return submissionService.getSubmission(submissionId)
+//								.map(ResponseEntity::ok)
+//								.orElseGet(() -> ResponseEntity.notFound().build());
+//	}
 
 	@PutMapping("")
+	@PreAuthorize("hasRole('StdAcc')")
 	public ResponseEntity<Submission> updateCodeSnippet(@RequestParam Long submissionId, @RequestParam String language, @RequestBody String codeContent) {
 		Submission updatedSubmission = submissionService.updateSubmissionContent(submissionId, language, codeContent);
 		return ResponseEntity.ok(updatedSubmission);
 	}
 
-	@PostMapping("")
-	public ResponseEntity<ApiResponse<SubmissionDto>> createSubmission(@RequestParam UUID laboratoryId) {
-		SubmissionDto createdSubmission = submissionService.createSubmission(laboratoryId);
-		ApiResponse<SubmissionDto> response = ApiResponse.success(createdSubmission , HttpStatus.CREATED, "Create Submission Successfully");
+	//! Todo : Use Laboratory id only for accessing submission element
+	// because in backend they doesn't have submission to click in
+
+	//! Todo : Or Not? They can just find one from laboratory then places it in params
+	// then use it everytime, this seems to be the best practice
+
+	// Submission can have only one per laboratory
+	@GetMapping("")
+	@PreAuthorize("hasRole('StdAcc')")
+	public ResponseEntity<ApiResponse<SubmissionDto>> getAndCreateSubmission(@RequestParam UUID laboratoryId) {
+		SubmissionDto createdSubmission = submissionService.getAndCreateSubmission(laboratoryId);
+		ApiResponse<SubmissionDto> response = ApiResponse.success(createdSubmission , HttpStatus.OK, "Get And Create Submission Successfully");
 
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasRole('StdAcc')")
 	public ResponseEntity<String> deleteSubmission(@PathVariable Long id) {
 		submissionService.deleteSubmission(id);
 		return ResponseEntity.ok("Submission deleted successfully.");
 	}
 
 	@GetMapping("/execute")
+	@PreAuthorize("hasRole('StdAcc')")
 	public ResponseEntity<String> executeSubmission(@RequestParam Long submissionId, @RequestParam String language) {
 		try {
 			String result = submissionService.executeSubmission(submissionId, language);

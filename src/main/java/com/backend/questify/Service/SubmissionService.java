@@ -32,6 +32,9 @@ public class SubmissionService {
 	@Autowired
 	private StudentRepository studentRepository;
 
+	@Autowired
+	private UserService userService;
+
 	public Optional<Submission> getSubmission(Long id) {
 		return submissionRepository.findById(id);
 	}
@@ -48,28 +51,42 @@ public class SubmissionService {
 		return submissionRepository.save(submission);
 	}
 
-	public SubmissionDto createSubmission(UUID laboratoryId) {
-//		if (studentOpt.isPresent()) {
-//			Student student = studentOpt.get();
-		Optional<Student> studentResult = studentRepository.findById(1L);
-		Student student = studentResult.orElseThrow(() -> new ResourceNotFoundException("Student Not Found With This Id :"));
+
+	public SubmissionDto getAndCreateSubmission(UUID laboratoryId) {
+		Long studentId = userService.getCurrentUserId();
+
+		Optional<Student> studentResult = studentRepository.findById(studentId);
+		Student student = studentResult.orElseThrow(() -> new ResourceNotFoundException("Student Not Found With This Id: " + studentId));
 
 		Optional<Laboratory> laboratoryResult = laboratoryRepository.findById(laboratoryId);
-		Laboratory laboratory = laboratoryResult.orElseThrow(() -> new ResourceNotFoundException("Laboratory Not Found With This Id : " + laboratoryId));
+		Laboratory laboratory = laboratoryResult.orElseThrow(() -> new ResourceNotFoundException("Laboratory Not Found With This Id: " + laboratoryId));
 
-			Submission newSubmission = new Submission();
-			newSubmission.setStudent(student);
-			newSubmission.setLaboratory(laboratory);
-			return DtoMapper.INSTANCE.submissionToSubmissionDto(submissionRepository.save(newSubmission));
-//		} else {
-//			throw new IllegalArgumentException("No student found with ID: " + userId);
-//		}
+		Optional<Submission> existingSubmission = submissionRepository.findByLaboratoryAndStudent(laboratory, student);
+		if (existingSubmission.isPresent()) {
+			return DtoMapper.INSTANCE.submissionToSubmissionDto(existingSubmission.get());
+		}
+
+		Submission newSubmission = Submission.builder()
+											 .student(student)
+											 .laboratory(laboratory)
+											 .build();
+
+
+		//! Todo : Debugger said  {
+		//    "success": false,
+		//    "status": "INTERNAL_SERVER_ERROR",
+		//    "message": "Cannot invoke \"java.util.Map.isEmpty()\" because \"this.codeSnippets\" is null",
+		//    "error": "NullPointerException",
+		//    "data": null }
+
+		return DtoMapper.INSTANCE.submissionToSubmissionDto(submissionRepository.save(newSubmission));
 	}
 
 	public void deleteSubmission(Long id) {
 		submissionRepository.deleteById(id);
 	}
 
+	//! Todo : enum language, change parameter
 	public String executeSubmission(Long submissionId, String language) {
 
 		Optional<Submission> submission = submissionRepository.findById(submissionId);
