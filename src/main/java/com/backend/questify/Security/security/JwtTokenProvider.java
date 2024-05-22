@@ -21,7 +21,7 @@ import java.util.Map;
 @Component
 public class JwtTokenProvider {
 
-	private static final String SECRET_KEY = "myVerySecureSecretKeyThatShouldBeLongEnoughToMeetSecurityStandards";
+	private static final String SECRET_KEY = "myVerySecureSecretKeyThatShouldBeLongEnoughToMeetSecurityStandards123456";
 
 	private Key secretKey;
 
@@ -30,8 +30,7 @@ public class JwtTokenProvider {
 
 	@PostConstruct
 	protected void init() {
-		byte[] keyBytes = Base64.getEncoder().encode(SECRET_KEY.getBytes());
-		this.secretKey = Keys.hmacShaKeyFor(keyBytes); // Generates a secure key
+		this.secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes()); // Generates a secure key
 	}
 
 	public String createToken(String username, Role role) {
@@ -51,10 +50,10 @@ public class JwtTokenProvider {
 
 	public boolean validateToken(String token) {
 		try {
-			Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
-			return true;
+			Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+			return !claims.getBody().getExpiration().before(new Date());
 		} catch (Exception e) {
-			return false; // Return false instead of throwing an exception
+			return false;
 		}
 	}
 

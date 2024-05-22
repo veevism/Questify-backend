@@ -16,3 +16,6 @@ spring:
 server:
   servlet:
     context-path: /api/v1
+
+jwt:
+  secret: questify_jwt_token_naja_don't_peak_na
