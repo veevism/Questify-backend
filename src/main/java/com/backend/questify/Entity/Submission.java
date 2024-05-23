@@ -42,10 +42,10 @@ public class Submission {
 	@PrePersist
 	public void prePersist() {
 		if (this.codeSnippets.isEmpty()) {
-			this.codeSnippets.put("Java", "public class Main { public static void main(String[] args) { System.out.println(\"Welcome To Questify Ja\"); } }");
-			this.codeSnippets.put("Python", "print('Welcome To Questify Ja')");
-			this.codeSnippets.put("C", "#include <stdio.h>\nint main() { printf(\"Welcome To Questify Ja\"); return 0; }");
-			this.codeSnippets.put("JavaScript", "console.log('Welcome To Questify Ja');");
+			this.codeSnippets.put("Java", "public class Main { public static void main(String[] args) { System.out.println(\"Welcome To Questify Ja from Java\"); } }");
+			this.codeSnippets.put("Python", "print('Welcome To Questify Ja from Python')");
+			this.codeSnippets.put("C", "#include <stdio.h>\nint main() { printf(\"Welcome To Questify Ja from C\"); return 0; }");
+			this.codeSnippets.put("JavaScript", "console.log('Welcome To Questify Ja from Javascript');");
 		}
 	}
 

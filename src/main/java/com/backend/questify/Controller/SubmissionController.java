@@ -3,6 +3,7 @@ package com.backend.questify.Controller;
 import com.backend.questify.DTO.SubmissionDto;
 import com.backend.questify.Entity.Submission;
 import com.backend.questify.Model.ApiResponse;
+import com.backend.questify.Model.ExecutionResponse;
 import com.backend.questify.Model.Language;
 import com.backend.questify.Service.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,14 +62,15 @@ public class SubmissionController {
 
 	@PostMapping("/execute")
 	@PreAuthorize("hasRole('StdAcc')")
-	public ResponseEntity<String> executeSubmission(@RequestParam UUID laboratoryId, @RequestParam Language language) {
-		try {
-			String result = submissionService.executeSubmission(laboratoryId, language.name());
-			return ResponseEntity.ok(result);
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-		}
+	public ResponseEntity<ApiResponse<ExecutionResponse>> executeSubmission(@RequestParam UUID laboratoryId, @RequestParam Language language) {
+		ExecutionResponse result = submissionService.executeSubmission(laboratoryId, language.name());
+		ApiResponse<ExecutionResponse> response = ApiResponse.success(result , HttpStatus.OK, "Execution Successfully");
+		return ResponseEntity.status(response.getStatus()).body(response);
+
 	}
+
+	//! Todo : Should Add getRuntime which return language and version available
+
 }
 
 //@RestController

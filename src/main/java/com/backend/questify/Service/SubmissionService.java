@@ -4,7 +4,9 @@ import com.backend.questify.DTO.SubmissionDto;
 import com.backend.questify.Entity.Laboratory;
 import com.backend.questify.Entity.Student;
 import com.backend.questify.Entity.Submission;
+import com.backend.questify.Exception.BadRequestException;
 import com.backend.questify.Exception.ResourceNotFoundException;
+import com.backend.questify.Model.ExecutionResponse;
 import com.backend.questify.Repository.LaboratoryRepository;
 import com.backend.questify.Repository.StudentRepository;
 import com.backend.questify.Repository.SubmissionRepository;
@@ -41,7 +43,8 @@ public class SubmissionService {
 
 	@Transactional
 	public Submission updateSubmissionContent(Long id, String language, String code) {
-		Submission submission = submissionRepository.findById(id).orElseThrow(() -> new RuntimeException("Submission not found"));
+		Submission submission = submissionRepository.findById(id)
+													.orElseThrow(() -> new RuntimeException("Submission not found"));
 		Map<String, String> snippets = submission.getCodeSnippets();
 		snippets.put(language, code);
 		return submissionRepository.save(submission);
@@ -56,10 +59,12 @@ public class SubmissionService {
 		Long studentId = userService.getCurrentUserId();
 
 		Optional<Student> studentResult = studentRepository.findById(studentId);
-		Student student = studentResult.orElseThrow(() -> new ResourceNotFoundException("Student Not Found With This Id: " + studentId));
+		Student student = studentResult.orElseThrow(
+				() -> new ResourceNotFoundException("Student Not Found With This Id: " + studentId));
 
 		Optional<Laboratory> laboratoryResult = laboratoryRepository.findById(laboratoryId);
-		Laboratory laboratory = laboratoryResult.orElseThrow(() -> new ResourceNotFoundException("Laboratory Not Found With This Id: " + laboratoryId));
+		Laboratory laboratory = laboratoryResult.orElseThrow(
+				() -> new ResourceNotFoundException("Laboratory Not Found With This Id: " + laboratoryId));
 
 		Optional<Submission> existingSubmission = submissionRepository.findByLaboratoryAndStudent(laboratory, student);
 		if (existingSubmission.isPresent()) {
@@ -89,66 +94,68 @@ public class SubmissionService {
 		submissionRepository.deleteById(id);
 	}
 
-	public String executeSubmission(UUID laboratoryId, String language) {
+	public ExecutionResponse executeSubmission(UUID laboratoryId, String language) {
 
 		Long studentId = userService.getCurrentUserId();
 
 		Optional<Student> studentResult = studentRepository.findById(studentId);
-		Student student = studentResult.orElseThrow(() -> new ResourceNotFoundException("Student Not Found With This Id: " + studentId));
+		Student student = studentResult.orElseThrow(
+				() -> new ResourceNotFoundException("Student Not Found With This Id: " + studentId));
 
 		Optional<Laboratory> laboratoryResult = laboratoryRepository.findById(laboratoryId);
-		Laboratory laboratory = laboratoryResult.orElseThrow(() -> new ResourceNotFoundException("Laboratory Not Found With This Id: " + laboratoryId));
+		Laboratory laboratory = laboratoryResult.orElseThrow(
+				() -> new ResourceNotFoundException("Laboratory Not Found With This Id: " + laboratoryId));
 
 		Optional<Submission> submissionResult = submissionRepository.findByLaboratoryAndStudent(laboratory, student);
-		Submission submission = submissionResult.orElseThrow(() -> new ResourceNotFoundException("Submission Not Found With Laboratory Id : " + laboratoryId));
+		Submission submission = submissionResult.orElseThrow(
+				() -> new ResourceNotFoundException("Submission Not Found With Laboratory Id : " + laboratoryId));
 		SubmissionDto submissionDto = DtoMapper.INSTANCE.submissionToSubmissionDto(submission);
 
-		Map<String, String> snippets = submissionDto.getCodeSnippets();
-		if (snippets.containsKey(language)) {
+		ExecutionResult result = getExecutionResult(language, submissionDto);
 
-		Piston api = Piston.getDefaultApi();
-		Optional<Runtime> optionalRuntime = api.getRuntime(language);
-		Runtime runtime = optionalRuntime.orElseThrow(() -> new ResourceNotFoundException("Runtime Not Found With Language : " + language));
-			CodeFile codeFile = new CodeFile("main.java", snippets.get(language));
-			ExecutionResult result = runtime.execute(codeFile);
-			System.out.println(result.getOutput().getStderr());
-			System.out.println(result.getOutput().getStdout());
-			System.out.println(result.getOutput().getOutput());
-			System.out.println(result.getOutput().getCode());
-			System.out.println(result.getOutput().getSignal());
-			return result.getOutput().toString();
+		ExecutionResponse executionResponse = ExecutionResponse.builder()
+															   .StdErr(result.getOutput()
+																			 .getStderr())
+															   .StdOut(result.getOutput()
+																			 .getStdout())
+															   .Output(result.getOutput()
+																			 .getOutput())
+															   .Code(result.getOutput()
+																		   .getCode())
+															   .Signal(result.getOutput()
+																			 .getSignal())
+															   .Language(result.getLanguage())
+															   .Version(result.getVersion())
+															   .build();
+
+		return executionResponse;
+
+
+	}
+
+	private static ExecutionResult getExecutionResult(String language, SubmissionDto submissionDto) {
+		try {
+			Map<String, String> snippets = submissionDto.getCodeSnippets();
+			if (!snippets.containsKey(language)) {
+				throw new ResourceNotFoundException("Submission For Language : " + language + " Is Not Available");
+			}
+
+			Piston api = Piston.getDefaultApi();
+
+			Optional<Runtime> optionalRuntime = api.getRuntime(language);
+
+			Runtime runtime = optionalRuntime.orElseThrow(
+					() -> new ResourceNotFoundException("Runtime Not Found With Language : " + language));
+
+			CodeFile codeFile = new CodeFile("questify-coding-space", snippets.get(language));
+
+			return runtime.execute(codeFile);
+		} catch (ResourceNotFoundException e) {
+			throw new ResourceNotFoundException(e.getMessage());
+		}catch (Exception e) {
+			throw new BadRequestException("Unexpected Error With Compiler: " + e.getMessage());
 		}
 
-
-
-		throw new ResourceNotFoundException("Submission For Language : " + language + " Is Not Available");
 	}
 
 }
-
-
-//@Service
-//public class SubmissionService {
-//
-//	@Autowired
-//	private SubmissionRepository submissionRepository;
-//
-//	public Submission saveCode(Long submissionId, String language, String code) {
-//		Submission submission = submissionRepository.findById(submissionId)
-//													.orElseThrow(() -> new RuntimeException("Submission not found"));
-//
-//		Map<String, Object> codeSnippets = new ObjectMapper().readValue(submission.getCodeSnippets(), Map.class);
-//		codeSnippets.put(language, code);
-//		submission.setCodeSnippets(new ObjectMapper().writeValueAsString(codeSnippets));
-//
-//		return submissionRepository.save(submission);
-//	}
-//
-//	public String getCode(Long submissionId, String language) {
-//		Submission submission = submissionRepository.findById(submissionId)
-//													.orElseThrow(() -> new RuntimeException("Submission not found"));
-//
-//		Map<String, Object> codeSnippets = new ObjectMapper().readValue(submission.getCodeSnippets(), Map.class);
-//		return (String) codeSnippets.get(language);
-//	}
-//}
