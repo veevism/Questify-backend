@@ -39,7 +39,7 @@ public class SubmissionController {
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
-	@GetMapping("/reset")
+	@DeleteMapping("/reset")
 	@PreAuthorize("hasRole('StdAcc')")
 	public ResponseEntity<ApiResponse<SubmissionDto>> resetSubmission(@RequestParam UUID laboratoryId) {
 		SubmissionDto result = submissionService.resetSubmission(laboratoryId);
