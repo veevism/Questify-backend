@@ -36,6 +36,7 @@ public class Submission {
 
 	@Convert(converter = HashMapConverter.class)
 	@Column(columnDefinition = "TEXT")
+	@Builder.Default
 	private Map<String, String> codeSnippets = new HashMap<>();
 
 	@PrePersist

@@ -3,6 +3,7 @@ package com.backend.questify.Controller;
 import com.backend.questify.DTO.SubmissionDto;
 import com.backend.questify.Entity.Submission;
 import com.backend.questify.Model.ApiResponse;
+import com.backend.questify.Model.Language;
 import com.backend.questify.Service.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,7 +39,7 @@ public class SubmissionController {
 	//! Todo : Use Laboratory id only for accessing submission element
 	// because in backend they doesn't have submission to click in
 
-	//! Todo : Or Not? They can just find one from laboratory then places it in params
+	//! Todo : Or Not? They can just find one from laboratory, then places it in params
 	// then use it everytime, this seems to be the best practice
 
 	// Submission can have only one per laboratory
@@ -53,16 +54,16 @@ public class SubmissionController {
 
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasRole('StdAcc')")
-	public ResponseEntity<String> deleteSubmission(@PathVariable Long id) {
+	public ResponseEntity<String> resetSubmission(@PathVariable Long id) {
 		submissionService.deleteSubmission(id);
 		return ResponseEntity.ok("Submission deleted successfully.");
 	}
 
-	@GetMapping("/execute")
+	@PostMapping("/execute")
 	@PreAuthorize("hasRole('StdAcc')")
-	public ResponseEntity<String> executeSubmission(@RequestParam Long submissionId, @RequestParam String language) {
+	public ResponseEntity<String> executeSubmission(@RequestParam UUID laboratoryId, @RequestParam Language language) {
 		try {
-			String result = submissionService.executeSubmission(submissionId, language);
+			String result = submissionService.executeSubmission(laboratoryId, language.name());
 			return ResponseEntity.ok(result);
 		} catch (IllegalArgumentException e) {
 			return ResponseEntity.badRequest().body("Error: " + e.getMessage());
