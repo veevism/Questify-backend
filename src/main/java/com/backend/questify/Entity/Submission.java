@@ -42,10 +42,7 @@ public class Submission {
 	@PrePersist
 	public void prePersist() {
 		if (this.codeSnippets.isEmpty()) {
-			this.codeSnippets.put("Java", "public class Main { public static void main(String[] args) { System.out.println(\"Welcome To Questify Ja from Java\"); } }");
-			this.codeSnippets.put("Python", "print('Welcome To Questify Ja from Python')");
-			this.codeSnippets.put("C", "#include <stdio.h>\nint main() { printf(\"Welcome To Questify Ja from C\"); return 0; }");
-			this.codeSnippets.put("JavaScript", "console.log('Welcome To Questify Ja from Javascript');");
+			this.codeSnippets = getDefaultSnippets();
 		}
 	}
 
@@ -68,6 +65,15 @@ public class Submission {
 
 	@Enumerated(EnumType.STRING)
 	private SubmissionStatus status;
+
+	public static Map<String, String> getDefaultSnippets() {
+		Map<String, String> snippets = new HashMap<>();
+		snippets.put("Java", "public class Main { public static void main(String[] args) { System.out.println(\"Welcome To Questify Ja from Java\"); } }");
+		snippets.put("Python", "print('Welcome To Questify Ja from Python')");
+		snippets.put("C", "#include <stdio.h>\nint main() { printf(\"Welcome To Questify Ja from C\"); return 0; }");
+		snippets.put("JavaScript", "console.log('Welcome To Questify Ja from Javascript');");
+		return snippets;
+	}
 
 
 }

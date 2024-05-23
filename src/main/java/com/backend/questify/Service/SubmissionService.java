@@ -41,14 +41,19 @@ public class SubmissionService {
 		return submissionRepository.findById(id);
 	}
 
+	//! Todo : Add check if student can do anything ( occupied classroom )
+
 	@Transactional
-	public Submission updateSubmissionContent(Long id, String language, String code) {
-		Submission submission = submissionRepository.findById(id)
-													.orElseThrow(() -> new RuntimeException("Submission not found"));
+	public SubmissionDto updateSubmissionContent(UUID laboratoryId, String language, String updatedCode) {
+		Submission submission = getCurrentSubmission(laboratoryId);
+
 		Map<String, String> snippets = submission.getCodeSnippets();
-		snippets.put(language, code);
-		return submissionRepository.save(submission);
+		snippets.put(language, updatedCode);
+		submissionRepository.save(submission);
+
+		return DtoMapper.INSTANCE.submissionToSubmissionDto(submission);
 	}
+
 
 	public Submission saveSubmission(Submission submission) {
 		return submissionRepository.save(submission);
@@ -94,21 +99,20 @@ public class SubmissionService {
 		submissionRepository.deleteById(id);
 	}
 
+	public SubmissionDto resetSubmission(UUID laboratoryId) {
+		Submission submission = getCurrentSubmission(laboratoryId);
+
+		submission.setCodeSnippets(Submission.getDefaultSnippets());
+
+		submissionRepository.save(submission);
+
+		return DtoMapper.INSTANCE.submissionToSubmissionDto(submission);
+	}
+
 	public ExecutionResponse executeSubmission(UUID laboratoryId, String language) {
 
-		Long studentId = userService.getCurrentUserId();
+		Submission submission = getCurrentSubmission(laboratoryId);
 
-		Optional<Student> studentResult = studentRepository.findById(studentId);
-		Student student = studentResult.orElseThrow(
-				() -> new ResourceNotFoundException("Student Not Found With This Id: " + studentId));
-
-		Optional<Laboratory> laboratoryResult = laboratoryRepository.findById(laboratoryId);
-		Laboratory laboratory = laboratoryResult.orElseThrow(
-				() -> new ResourceNotFoundException("Laboratory Not Found With This Id: " + laboratoryId));
-
-		Optional<Submission> submissionResult = submissionRepository.findByLaboratoryAndStudent(laboratory, student);
-		Submission submission = submissionResult.orElseThrow(
-				() -> new ResourceNotFoundException("Submission Not Found With Laboratory Id : " + laboratoryId));
 		SubmissionDto submissionDto = DtoMapper.INSTANCE.submissionToSubmissionDto(submission);
 
 		ExecutionResult result = getExecutionResult(language, submissionDto);
@@ -133,6 +137,26 @@ public class SubmissionService {
 
 	}
 
+	private Submission getCurrentSubmission(UUID laboratoryId) {
+		Long studentId = userService.getCurrentUserId();
+
+		Optional<Student> studentResult = studentRepository.findById(studentId);
+		Student student = studentResult.orElseThrow(
+				() -> new ResourceNotFoundException("Student Not Found With This Id: " + studentId));
+
+		Optional<Laboratory> laboratoryResult = laboratoryRepository.findById(laboratoryId);
+		Laboratory laboratory = laboratoryResult.orElseThrow(
+				() -> new ResourceNotFoundException("Laboratory Not Found With This Id: " + laboratoryId));
+
+		Optional<Submission> submissionResult = submissionRepository.findByLaboratoryAndStudent(laboratory, student);
+		Submission submission = submissionResult.orElseThrow(
+				() -> new ResourceNotFoundException("Submission Not Found With Laboratory Id : " + laboratoryId));
+
+		return submission;
+	}
+
+	//! Todo : Inspect where to show error from compiling empty code
+
 	private static ExecutionResult getExecutionResult(String language, SubmissionDto submissionDto) {
 		try {
 			Map<String, String> snippets = submissionDto.getCodeSnippets();
@@ -142,6 +166,7 @@ public class SubmissionService {
 
 			Piston api = Piston.getDefaultApi();
 
+			String code = snippets.get(language);
 			Optional<Runtime> optionalRuntime = api.getRuntime(language);
 
 			Runtime runtime = optionalRuntime.orElseThrow(

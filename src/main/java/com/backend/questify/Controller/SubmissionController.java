@@ -21,50 +21,37 @@ public class SubmissionController {
 	@Autowired
 	private SubmissionService submissionService;
 
-	//! Don't use submissionId instead use studentId from access_token and laboratoryId
-	//! Create Model SubmissionExecuteResponseDto
-//	@GetMapping("")
-//	public ResponseEntity<Submission> getSubmission(@RequestParam Long submissionId) {
-//		return submissionService.getSubmission(submissionId)
-//								.map(ResponseEntity::ok)
-//								.orElseGet(() -> ResponseEntity.notFound().build());
-//	}
-
 	@PutMapping("")
 	@PreAuthorize("hasRole('StdAcc')")
-	public ResponseEntity<Submission> updateCodeSnippet(@RequestParam Long submissionId, @RequestParam String language, @RequestBody String codeContent) {
-		Submission updatedSubmission = submissionService.updateSubmissionContent(submissionId, language, codeContent);
-		return ResponseEntity.ok(updatedSubmission);
-	}
-
-	//! Todo : Use Laboratory id only for accessing submission element
-	// because in backend they doesn't have submission to click in
-
-	//! Todo : Or Not? They can just find one from laboratory, then places it in params
-	// then use it everytime, this seems to be the best practice
-
-	// Submission can have only one per laboratory
-	@GetMapping("")
-	@PreAuthorize("hasRole('StdAcc')")
-	public ResponseEntity<ApiResponse<SubmissionDto>> getAndCreateSubmission(@RequestParam UUID laboratoryId) {
-		SubmissionDto createdSubmission = submissionService.getAndCreateSubmission(laboratoryId);
-		ApiResponse<SubmissionDto> response = ApiResponse.success(createdSubmission , HttpStatus.OK, "Get And Create Submission Successfully");
+	public ResponseEntity<ApiResponse<SubmissionDto>> updateCodeSnippet(@RequestParam UUID laboratoryId, @RequestParam Language language, @RequestBody String codeContent) {
+		SubmissionDto result = submissionService.updateSubmissionContent(laboratoryId, language.name(), codeContent);
+		ApiResponse<SubmissionDto> response = ApiResponse.success(result , HttpStatus.OK, "Update Submission Successfully");
 
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
-	@DeleteMapping("/{id}")
+	@GetMapping("")
 	@PreAuthorize("hasRole('StdAcc')")
-	public ResponseEntity<String> resetSubmission(@PathVariable Long id) {
-		submissionService.deleteSubmission(id);
-		return ResponseEntity.ok("Submission deleted successfully.");
+	public ResponseEntity<ApiResponse<SubmissionDto>> getAndCreateSubmission(@RequestParam UUID laboratoryId) {
+		SubmissionDto result = submissionService.getAndCreateSubmission(laboratoryId);
+		ApiResponse<SubmissionDto> response = ApiResponse.success(result , HttpStatus.OK, "Get And Create Submission Successfully");
+
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
+	@GetMapping("/reset")
+	@PreAuthorize("hasRole('StdAcc')")
+	public ResponseEntity<ApiResponse<SubmissionDto>> resetSubmission(@RequestParam UUID laboratoryId) {
+		SubmissionDto result = submissionService.resetSubmission(laboratoryId);
+		ApiResponse<SubmissionDto> response = ApiResponse.success(result , HttpStatus.OK, "Reset Submission Successfully");
+		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@PostMapping("/execute")
 	@PreAuthorize("hasRole('StdAcc')")
 	public ResponseEntity<ApiResponse<ExecutionResponse>> executeSubmission(@RequestParam UUID laboratoryId, @RequestParam Language language) {
 		ExecutionResponse result = submissionService.executeSubmission(laboratoryId, language.name());
-		ApiResponse<ExecutionResponse> response = ApiResponse.success(result , HttpStatus.OK, "Execution Successfully");
+		ApiResponse<ExecutionResponse> response = ApiResponse.success(result , HttpStatus.OK, "Execution Submission Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 
 	}
