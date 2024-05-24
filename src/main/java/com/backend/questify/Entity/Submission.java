@@ -46,6 +46,8 @@ public class Submission {
 		}
 	}
 
+// <-- Next Phase
+
 	@OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<SubmissionTestCaseResult> testCaseResults;
 
@@ -62,6 +64,8 @@ public class Submission {
 	private Integer givenScore;
 
 	private Integer maximumScore;
+
+// Next Phase --->
 
 	@Enumerated(EnumType.STRING)
 	private SubmissionStatus status;

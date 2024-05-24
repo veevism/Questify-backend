@@ -44,7 +44,7 @@ public class Assignment {
 
 	@Column(nullable = true) // change to false later
 	@Enumerated(EnumType.STRING)
-	private GradingCriteria gradingCriteria;
+	private GradingCriteria gradingCriteria; // didn't add to the diagram
 //	@ManyToOne
 //	@JoinColumn(name = "student_id")
 //	private Student student;

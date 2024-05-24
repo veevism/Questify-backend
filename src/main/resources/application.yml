@@ -1,17 +1,15 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-
-    username: questify
-    password: questify-postgreql
+    url: jdbc:sqlserver://questify-sql.database.windows.net:1433;database=Questify-DB;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    username: questify-admin@questify-sql
+    password: Zomsantech##1597532486
   jpa:
     hibernate:
-
       ddl-auto: update
     generate-ddl : true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.SQLServer2012Dialect
 
 server:
   servlet:
