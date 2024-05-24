@@ -36,7 +36,7 @@ public class UserService {
 
 	public UserDto getProfile() {
 		Long userId = getCurrentUserId();
-
+ 
 		Optional<User> userResult = userRepository.findById(getCurrentUserId());
 		User user = userResult.orElseThrow(() -> new ResourceNotFoundException("User Not Found By Access Token"));
 
