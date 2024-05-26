@@ -1,9 +1,5 @@
 package com.backend.questify.DTO;
 
-import com.backend.questify.Entity.Classroom;
-import com.backend.questify.Entity.Professor;
-import com.backend.questify.Entity.Student;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,10 +12,9 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssignmentDto {
+public class AssignmentDtoWithoutProfessor {
 	private UUID assignmentId;
 
-	private ProfessorDto professor;
 
 	private String title;
 
@@ -36,5 +31,4 @@ public class AssignmentDto {
 //	private Student student;
 
 	private ClassroomDtoWithoutProfessor classroom;
-
 }

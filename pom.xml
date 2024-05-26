@@ -107,7 +107,6 @@
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
-			<version>9.4.1.jre8</version> <!-- เลือกเวอร์ชันที่เหมาะสม -->
 		</dependency>
 <!--		<dependency>-->
 <!--			<groupId>io.jsonwebtoken</groupId>-->
@@ -148,6 +147,10 @@
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
+		</repository>
+		<repository>
+			<id>central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
 		</repository>
 	</repositories>
 

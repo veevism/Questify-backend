@@ -18,7 +18,7 @@ public class LaboratoryDto {
 
 	private ProfessorDto professor;
 
-	private AssignmentDto assignment;
+	private AssignmentDtoWithoutProfessor assignment;
 
 	private String labTitle;
 	private String description;
