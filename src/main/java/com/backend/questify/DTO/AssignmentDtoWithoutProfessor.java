@@ -15,7 +15,6 @@ import java.util.UUID;
 public class AssignmentDtoWithoutProfessor {
 	private UUID assignmentId;
 
-
 	private String title;
 
 	private String description;

@@ -54,6 +54,11 @@ public class ClassroomService {
 		Long professorId = userService.getCurrentUserId();
 		Optional<Professor> result = professorRepository.findById(professorId);
 		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + professorId));
+
+		if (classroomRepository.existsByTitleAndProfessor(classroomDto.getTitle(), professor)) {
+			throw new IllegalArgumentException("Classroom with the same title already exists for this professor.");
+		}
+
 		Classroom createdClassroom = Classroom.builder()
 											  .invitationCode(ShortUUIDGenerator.generateShortUUID())
 											  .title(classroomDto.getTitle())
@@ -84,6 +89,10 @@ public class ClassroomService {
 			throw new UnauthorizedAccessException("You do not have permission to update this classroom.");
 		}
 
+		if (classroomRepository.existsByTitleAndProfessorAndClassroomIdNot(classroomDto.getTitle(), classroom.getProfessor(), classroomId)) {
+			throw new IllegalArgumentException("Classroom with the same title already exists for this professor.");
+		}
+
 		if (classroomDto.getTitle() == null || classroomDto.getTitle().trim().isEmpty()) {
 			throw new IllegalArgumentException("Title cannot be empty");
 		}
@@ -111,9 +120,9 @@ public class ClassroomService {
 	public void deleteClassroom(UUID classroomId) {
 		Long currentUserId = userService.getCurrentUserId();
 
-
 		if (classroomRepository.existsById(classroomId)) {
 			Optional<Classroom> result = classroomRepository.findById(classroomId);
+			System.out.println();
 			Classroom classroom = result.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
 
 			if (!classroom.getProfessor().getProfessorId().equals(currentUserId)) {
@@ -159,7 +168,7 @@ public class ClassroomService {
 		Student student = studentResult.orElseThrow(() -> new ResourceNotFoundException("Student not found with Id : " + studentId));
 
 		if (!classroom.getStudents().contains(student)) {
-			throw new IllegalArgumentException("Student with Id : " + student + " isn't in this classroom in the first place");
+			throw new ResourceNotFoundException("Student with Id : " + studentId + " not found in this classroom");
 		}
 
 		classroom.removeStudent(student);

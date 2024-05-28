@@ -71,7 +71,7 @@ public class ClassroomController {
 	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<ClassroomDto>> removeFromClassroom(@RequestParam UUID classroomId, @RequestParam Long studentId) {
 		ClassroomDto classroomDto = classroomService.removeFromClassroom(classroomId, studentId);
-		ApiResponse<ClassroomDto> response = ApiResponse.success(classroomDto, HttpStatus.OK, "Join Classroom With Id : " + classroomId + " Successfully" );
+		ApiResponse<ClassroomDto> response = ApiResponse.success(classroomDto, HttpStatus.OK, "Remove Student From Classroom With Id : " + classroomId + " Successfully" );
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 

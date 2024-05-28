@@ -32,9 +32,7 @@ public class AssignmentDto {
 	private LocalDateTime startTime;
 
 	private LocalDateTime endTime;
-
 //	private Student student;
-
 	private ClassroomDtoWithoutProfessor classroom;
 
 }
