@@ -55,6 +55,7 @@ public class LaboratoryService {
 				.description(laboratoryDto.getDescription())
 				.inputFormat(laboratoryDto.getInputFormat())
 				.outputFormat(laboratoryDto.getOutputFormat())
+				.problemStatement(laboratoryDto.getProblemStatement())
 				.sampleInput(laboratoryDto.getSampleInput())
 				.sampleOutput(laboratoryDto.getSampleOutput())
 				.build();
@@ -108,8 +109,6 @@ public class LaboratoryService {
 		if (laboratoryDto.getDescription() != null && !laboratoryDto.getDescription().trim().isEmpty()) {
 			laboratory.setDescription(laboratoryDto.getDescription());
 		}
-
-
 
 		if (laboratoryDto.getProblemStatement() != null && !laboratoryDto.getProblemStatement().trim().isEmpty()) {
 			laboratory.setProblemStatement(laboratoryDto.getProblemStatement());

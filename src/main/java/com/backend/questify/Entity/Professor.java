@@ -24,9 +24,6 @@ public class Professor {
 	@JsonBackReference
 	private User user;
 
-	private String faculty;
-	private String department;
-
 
 	@OneToMany(mappedBy = "professor")
 	private Set<Classroom> classrooms;

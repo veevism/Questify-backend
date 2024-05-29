@@ -96,7 +96,7 @@ public class ClassroomService {
 			throw new UnauthorizedAccessException("You do not have permission to update this classroom.");
 		}
 
-		if (classroomRepository.existsByTitleAndProfessorAndClassroomIdNot(classroomDto.getTitle(), classroom.getProfessor(), classroomId)) {
+		if (classroomRepository.existsByTitleAndProfessor(classroomDto.getTitle(), classroom.getProfessor())) {
 			throw new IllegalArgumentException("Classroom title cannot be duplicated.");
 		}
 

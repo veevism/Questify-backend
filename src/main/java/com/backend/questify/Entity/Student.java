@@ -24,9 +24,6 @@ public class Student {
 	@JsonBackReference
 	private User user;
 
-	private Integer enrollmentYear;
-	private String major;
-
 	@ManyToMany(mappedBy = "students")
 	@Builder.Default
 	private List<Classroom> classrooms = new ArrayList<>();

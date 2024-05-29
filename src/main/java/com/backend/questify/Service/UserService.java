@@ -4,6 +4,7 @@ import com.backend.questify.DTO.User.UserDto;
 import com.backend.questify.DTO.User.UserRequestDto;
 import com.backend.questify.Entity.*;
 import com.backend.questify.Exception.ResourceNotFoundException;
+import com.backend.questify.Exception.UnauthorizedAccessException;
 import com.backend.questify.Exception.UserNotAuthenticatedException;
 import com.backend.questify.Model.Role;
 import com.backend.questify.Repository.ProfessorRepository;
@@ -74,16 +75,12 @@ public class UserService {
 			Student student = Student.builder()
 									 .studentId(userId)
 									 .user(user)
-									 .enrollmentYear(null)
-									 .major(null)
 									 .build();
 			user.setStudent(student);
 		} else if (user.getRole() == Role.ProfAcc) {
 			Professor professor = Professor.builder()
 										   .professorId(userId)
 										   .user(user)
-										   .faculty(null)
-										   .department(null)
 										   .build();
 			user.setProfessor(professor);
 		}
@@ -104,7 +101,7 @@ public class UserService {
 				throw new UserNotAuthenticatedException("Invalid user ID format.");
 			}
 		}
-		throw new UserNotAuthenticatedException("User is not authenticated.");
+		throw new UnauthorizedAccessException("User is not authenticated.");
 	}
 
 

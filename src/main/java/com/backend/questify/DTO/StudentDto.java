@@ -11,6 +11,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StudentDto {
 	private Long studentId;
-	private Integer enrollmentYear;
-	private String major;
 }
