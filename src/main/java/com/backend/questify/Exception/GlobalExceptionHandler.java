@@ -21,6 +21,18 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
+	@ExceptionHandler(UnauthorizedAccessException.class)
+	public ResponseEntity<ApiResponse<Object>> handleUnauthorizedAccessException(BadRequestException ex) {
+		ApiResponse<Object> response = ApiResponse.failure(HttpStatus.UNAUTHORIZED,  ex.getClass().getSimpleName(), ex.getMessage());
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ApiResponse<Object>> handleIllegalArgumentException(BadRequestException ex) {
+		ApiResponse<Object> response = ApiResponse.failure(HttpStatus.CONFLICT,  ex.getClass().getSimpleName(), ex.getMessage());
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiResponse<Object>> handleException(Exception ex) {
 		ApiResponse<Object> response = ApiResponse.failure(HttpStatus.INTERNAL_SERVER_ERROR, ex.getClass().getSimpleName(), ex.getMessage());

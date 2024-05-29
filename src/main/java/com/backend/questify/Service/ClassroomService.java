@@ -3,12 +3,10 @@ package com.backend.questify.Service;
 import com.backend.questify.DTO.ClassroomDto;
 import com.backend.questify.DTO.ProfessorDto;
 import com.backend.questify.DTO.SubmissionDto;
-import com.backend.questify.Entity.Classroom;
-import com.backend.questify.Entity.Professor;
-import com.backend.questify.Entity.Student;
-import com.backend.questify.Entity.Submission;
+import com.backend.questify.Entity.*;
 import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Exception.UnauthorizedAccessException;
+import com.backend.questify.Model.Role;
 import com.backend.questify.Repository.*;
 import com.backend.questify.Util.DtoMapper;
 import com.backend.questify.Util.ShortUUIDGenerator;
@@ -73,7 +71,17 @@ public class ClassroomService {
 	}
 
 	public List<ClassroomDto> getClassrooms() {
-		List<Classroom> classrooms = classroomRepository.findAll();
+		Long currentUserId = userService.getCurrentUserId();
+		User currentUser = userService.getCurrentUser();
+		List<Classroom> classrooms;
+
+		if (currentUser.getRole() == Role.ProfAcc) {
+			classrooms = classroomRepository.findByProfessor_ProfessorId(currentUserId);
+		} else if (currentUser.getRole() == Role.StdAcc) {
+			classrooms = classroomRepository.findByStudents_StudentId(currentUserId);
+		} else {
+			throw new UnauthorizedAccessException("You do not have permission to access classrooms.");
+		}
 		if (classrooms.isEmpty()) {
 			throw new ResourceNotFoundException("Classroom not found");
 		}
@@ -90,7 +98,7 @@ public class ClassroomService {
 		}
 
 		if (classroomRepository.existsByTitleAndProfessorAndClassroomIdNot(classroomDto.getTitle(), classroom.getProfessor(), classroomId)) {
-			throw new IllegalArgumentException("Classroom with the same title already exists for this professor.");
+			throw new IllegalArgumentException("Classroom with the same title already exists");
 		}
 
 		if (classroomDto.getTitle() == null || classroomDto.getTitle().trim().isEmpty()) {

@@ -108,4 +108,8 @@ public class UserService {
 	}
 
 
+	public User getCurrentUser() {
+		Long userId = getCurrentUserId();
+		return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+	}
 }
