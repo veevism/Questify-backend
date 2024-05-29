@@ -35,8 +35,6 @@ public class Classroom {
 
 	private String description;
 
-	private Boolean isActive = true;
-
 	private String invitationCode;
 
 //	@OneToMany(mappedBy = "classroom")

@@ -109,13 +109,7 @@ public class LaboratoryService {
 			laboratory.setDescription(laboratoryDto.getDescription());
 		}
 
-		if (laboratoryDto.getStartTime() != null) {
-			laboratory.setStartTime(laboratoryDto.getStartTime());
-		}
 
-		if (laboratoryDto.getEndTime() != null) {
-			laboratory.setEndTime(laboratoryDto.getEndTime());
-		}
 
 		if (laboratoryDto.getProblemStatement() != null && !laboratoryDto.getProblemStatement().trim().isEmpty()) {
 			laboratory.setProblemStatement(laboratoryDto.getProblemStatement());

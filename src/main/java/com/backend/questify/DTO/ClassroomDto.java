@@ -25,8 +25,6 @@ public class ClassroomDto {
 
 	private String description;
 
-	private Boolean isActive;
-
 	private String invitationCode;
 
 	private int studentQuantity;

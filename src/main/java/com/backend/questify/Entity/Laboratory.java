@@ -40,9 +40,6 @@ private UUID laboratoryId;
 	private String labTitle;
 	private String description;
 
-	private LocalDateTime startTime;
-	private LocalDateTime endTime;
-
 	private String problemStatement;
 	private String inputFormat;
 	private String outputFormat;

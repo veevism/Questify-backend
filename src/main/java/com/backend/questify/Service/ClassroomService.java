@@ -62,7 +62,6 @@ public class ClassroomService {
 											  .title(classroomDto.getTitle())
 											  .description(classroomDto.getDescription())
 											  .professor(professor)
-											  .isActive(true)
 											  .build();
 		classroomRepository.save(createdClassroom);
 

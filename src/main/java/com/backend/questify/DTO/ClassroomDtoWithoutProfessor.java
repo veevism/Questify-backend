@@ -19,8 +19,6 @@ public class ClassroomDtoWithoutProfessor {
 
 	private String description;
 
-	private Boolean isActive;
-
 	private String invitationCode;
 
 	private int studentQuantity;
