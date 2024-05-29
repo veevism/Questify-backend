@@ -3,13 +3,16 @@ spring:
     url: jdbc:sqlserver://questify-sql.database.windows.net:1433;database=Questify-DB;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
     username: questify-admin@questify-sql
     password: Zomsantech##1597532486
+    driver-class-name : com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     hibernate:
       ddl-auto: update
     generate-ddl : true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.SQLServer2012Dialect
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.SQLServerDialect
+
+#        dialect: org.hibernate.dialect.SQLServer2012Dialect
 
 server:
   servlet:
