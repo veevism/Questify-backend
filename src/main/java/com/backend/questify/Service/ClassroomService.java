@@ -141,9 +141,9 @@ public class ClassroomService {
 		}
 	}
 
-	public ClassroomDto joinClassroom(UUID classroomId) {
-		Optional<Classroom> classroomResult = classroomRepository.findById(classroomId);
-		Classroom classroom = classroomResult.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
+	public ClassroomDto joinClassroom(String invitationCode) {
+		Optional<Classroom> classroomResult = classroomRepository.findByInvitationCode(invitationCode);
+		Classroom classroom = classroomResult.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with this invitation code : " + invitationCode));
 
 		Long currentUserId = userService.getCurrentUserId();
 		Optional<Student> studentResult = studentRepository.findById(currentUserId);

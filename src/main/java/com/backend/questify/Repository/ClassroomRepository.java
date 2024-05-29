@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -17,4 +18,7 @@ public interface ClassroomRepository extends JpaRepository<Classroom, UUID> {
 	List<Classroom> findByProfessor_ProfessorId(Long currentUserId);
 
 	List<Classroom> findByStudents_StudentId(Long currentUserId);
+
+
+	Optional<Classroom> findByInvitationCode(String invitationCode);
 }

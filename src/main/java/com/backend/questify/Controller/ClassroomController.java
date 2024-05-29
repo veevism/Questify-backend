@@ -61,9 +61,9 @@ public class ClassroomController {
 
 	@GetMapping("/join")
 	@PreAuthorize("hasRole('StdAcc')")
-	public ResponseEntity<ApiResponse<ClassroomDto>> joinClassroom(@RequestParam UUID classroomId) {
-		ClassroomDto classroomDto = classroomService.joinClassroom(classroomId);
-		ApiResponse<ClassroomDto> response = ApiResponse.success(classroomDto, HttpStatus.OK, "Join Classroom With Id : " + classroomId + " Successfully" );
+	public ResponseEntity<ApiResponse<ClassroomDto>> joinClassroom(@RequestParam String invitationCode) {
+		ClassroomDto classroomDto = classroomService.joinClassroom(invitationCode);
+		ApiResponse<ClassroomDto> response = ApiResponse.success(classroomDto, HttpStatus.OK, "Join Classroom Successfully" );
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
@@ -71,7 +71,7 @@ public class ClassroomController {
 	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<ClassroomDto>> removeFromClassroom(@RequestParam UUID classroomId, @RequestParam Long studentId) {
 		ClassroomDto classroomDto = classroomService.removeFromClassroom(classroomId, studentId);
-		ApiResponse<ClassroomDto> response = ApiResponse.success(classroomDto, HttpStatus.OK, "Remove Student From Classroom With Id : " + classroomId + " Successfully" );
+		ApiResponse<ClassroomDto> response = ApiResponse.success(classroomDto, HttpStatus.OK, "Remove Student With Id : " + studentId + " Successfully" );
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
