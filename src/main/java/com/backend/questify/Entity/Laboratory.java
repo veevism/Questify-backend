@@ -40,7 +40,10 @@ private UUID laboratoryId;
 	private String labTitle;
 	private String description;
 
+	@Lob
+	@Column(columnDefinition = "TEXT")
 	private String problemStatement;
+
 	private String inputFormat;
 	private String outputFormat;
 	private String sampleInput;
