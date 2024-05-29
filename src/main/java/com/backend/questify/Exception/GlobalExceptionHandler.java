@@ -3,6 +3,7 @@ package com.backend.questify.Exception;
 import com.backend.questify.Model.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -22,14 +23,20 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(UnauthorizedAccessException.class)
-	public ResponseEntity<ApiResponse<Object>> handleUnauthorizedAccessException(BadRequestException ex) {
+	public ResponseEntity<ApiResponse<Object>> handleUnauthorizedAccessException(UnauthorizedAccessException ex) {
 		ApiResponse<Object> response = ApiResponse.failure(HttpStatus.UNAUTHORIZED,  ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity<ApiResponse<Object>> handleIllegalArgumentException(BadRequestException ex) {
+	public ResponseEntity<ApiResponse<Object>> handleIllegalArgumentException(IllegalArgumentException ex) {
 		ApiResponse<Object> response = ApiResponse.failure(HttpStatus.CONFLICT,  ex.getClass().getSimpleName(), ex.getMessage());
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<ApiResponse<Object>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+		ApiResponse<Object> response = ApiResponse.failure(HttpStatus.BAD_REQUEST, ex.getClass().getSimpleName(), "Invalid request body: " + ex.getMessage());
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 

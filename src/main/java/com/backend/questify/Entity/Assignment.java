@@ -28,7 +28,6 @@ public class Assignment {
 
 	private String title;
 	private String description;
-
 	private Integer score;
 
 //	@Column(nullable = true)

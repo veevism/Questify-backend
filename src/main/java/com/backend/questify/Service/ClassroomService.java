@@ -54,7 +54,7 @@ public class ClassroomService {
 		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + professorId));
 
 		if (classroomRepository.existsByTitleAndProfessor(classroomDto.getTitle(), professor)) {
-			throw new IllegalArgumentException("Classroom name cannot be duplicated.");
+			throw new IllegalArgumentException("Classroom title cannot be duplicated.");
 		}
 
 		Classroom createdClassroom = Classroom.builder()
@@ -98,7 +98,7 @@ public class ClassroomService {
 		}
 
 		if (classroomRepository.existsByTitleAndProfessorAndClassroomIdNot(classroomDto.getTitle(), classroom.getProfessor(), classroomId)) {
-			throw new IllegalArgumentException("Classroom name cannot be duplicated.");
+			throw new IllegalArgumentException("Classroom title cannot be duplicated.");
 		}
 
 		if (classroomDto.getTitle() == null || classroomDto.getTitle().trim().isEmpty()) {
@@ -130,7 +130,6 @@ public class ClassroomService {
 
 		if (classroomRepository.existsById(classroomId)) {
 			Optional<Classroom> result = classroomRepository.findById(classroomId);
-			System.out.println();
 			Classroom classroom = result.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
 
 			if (!classroom.getProfessor().getProfessorId().equals(currentUserId)) {

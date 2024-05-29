@@ -15,6 +15,7 @@ import com.backend.questify.Util.ShortUUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,12 +42,29 @@ public class AssignmentService {
 		Optional<Classroom> classroomResult = classroomRepository.findById(classroomId);
 		Classroom classroom = classroomResult.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
 
+		LocalDateTime now = LocalDateTime.now();
+		if (assignment.getStartTime() != null && assignment.getStartTime().isBefore(now)) {
+			throw new IllegalArgumentException("Start Date or Due Date cannot be in the past");
+		}
+
+		if (assignment.getEndTime() != null && assignment.getEndTime().isBefore(now)) {
+			throw new IllegalArgumentException("Start Date or Due Date cannot be in the past");
+		}
+
+		if (assignment.getStartTime() != null && assignment.getEndTime() != null && assignment.getEndTime().isBefore(assignment.getStartTime())) {
+			throw new IllegalArgumentException("End time cannot be before start time.");
+		}
+
+
+
 		Assignment createdAssignment = Assignment.builder().score(assignment.getScore())
 														 .title(assignment.getTitle())
 														 .description(assignment.getDescription())
 														 .professor(professor)
 														 .classroom(classroom)
 														 .isActive(true)
+												 		 .startTime(assignment.getStartTime())
+												 		 .endTime(assignment.getEndTime())
 														 .build();
 
 //		if (createdAssignment.getClassroom() == null) {
@@ -76,6 +94,25 @@ public class AssignmentService {
 	public AssignmentDto updateAssignment (UUID assignmentId, AssignmentDto assignmentDto) {
 		Optional<Assignment> result = assignmentRepository.findByAssignmentId(assignmentId);
 		Assignment assignment = result.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id : " + assignmentId));
+
+		LocalDateTime now = LocalDateTime.now();
+
+		if (assignmentDto.getStartTime() != null) {
+			if (assignmentDto.getStartTime().isBefore(now)) {
+				throw new IllegalArgumentException("Start time cannot be in the past.");
+			}
+			assignment.setStartTime(assignmentDto.getStartTime());
+		}
+
+		if (assignmentDto.getEndTime() != null) {
+			if (assignmentDto.getEndTime().isBefore(now)) {
+				throw new IllegalArgumentException("End time cannot be in the past.");
+			}
+			if (assignmentDto.getStartTime() != null && assignmentDto.getEndTime().isBefore(assignmentDto.getStartTime())) {
+				throw new IllegalArgumentException("End time cannot be before start time.");
+			}
+			assignment.setEndTime(assignmentDto.getEndTime());
+		}
 
 		if (assignmentDto.getTitle() != null && !assignmentDto.getTitle().trim().isEmpty()) {
 			assignment.setTitle(assignmentDto.getTitle());
