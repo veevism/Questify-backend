@@ -18,9 +18,10 @@ import java.util.UUID;
 public class TestCase {
 //	@Id
 //	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
+//	@GeneratedValue(strategy = GenerationType.AUTO)
 @Id
 @GeneratedValue(generator = "UUID")
-//	@GeneratedValue(strategy = GenerationType.AUTO)
 @Column(updatable = false, nullable = false)
 	private UUID testCaseId;
 	private String input;

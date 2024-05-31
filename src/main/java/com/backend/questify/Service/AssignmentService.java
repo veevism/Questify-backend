@@ -7,6 +7,7 @@ import com.backend.questify.Entity.Assignment;
 import com.backend.questify.Entity.Classroom;
 import com.backend.questify.Entity.Professor;
 import com.backend.questify.Exception.ResourceNotFoundException;
+import com.backend.questify.Exception.UnauthorizedAccessException;
 import com.backend.questify.Repository.AssignmentRepository;
 import com.backend.questify.Repository.ClassroomRepository;
 import com.backend.questify.Repository.ProfessorRepository;
@@ -41,6 +42,12 @@ public class AssignmentService {
 
 		Optional<Classroom> classroomResult = classroomRepository.findById(classroomId);
 		Classroom classroom = classroomResult.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
+
+		Long currentUserId = userService.getCurrentUserId();
+		if (!classroom.getProfessor().getProfessorId().equals(currentUserId)) {
+			throw new UnauthorizedAccessException("You do not have permission to create assignment in this classroom");
+		}
+
 
 		LocalDateTime now = LocalDateTime.now();
 		if (assignment.getStartTime() != null && assignment.getStartTime().isBefore(now)) {
@@ -96,6 +103,11 @@ public class AssignmentService {
 		Optional<Assignment> result = assignmentRepository.findByAssignmentId(assignmentId);
 		Assignment assignment = result.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id : " + assignmentId));
 
+		Long currentUserId = userService.getCurrentUserId();
+		if (!assignment.getProfessor().getProfessorId().equals(currentUserId)) {
+			throw new UnauthorizedAccessException("You do not have permission to update this assignment.");
+		}
+
 		LocalDateTime now = LocalDateTime.now();
 
 		LocalDateTime startTime;
@@ -142,11 +154,19 @@ public class AssignmentService {
 	}
 
 	public void deleteAssignment (UUID assignmentId) {
-		if (assignmentRepository.existsById(assignmentId)) {
-			assignmentRepository.deleteById(assignmentId);
-		} else {
-			throw new ResourceNotFoundException("Assignment not found with Id : " + assignmentId);
+		Optional<Assignment> result = assignmentRepository.findByAssignmentId(assignmentId);
+		Assignment assignment = result.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id : " + assignmentId));
+
+		Long currentUserId = userService.getCurrentUserId();
+		if (!assignment.getProfessor().getProfessorId().equals(currentUserId)) {
+			throw new UnauthorizedAccessException("You do not have permission to delete this assignment.");
 		}
+
+//		if (assignmentRepository.existsById(assignmentId)) {
+			assignmentRepository.deleteById(assignmentId);
+//		} else {
+//			throw new ResourceNotFoundException("Assignment not found with Id : " + assignmentId);
+//		}
 	}
 
 

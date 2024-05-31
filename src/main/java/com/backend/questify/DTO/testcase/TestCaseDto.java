@@ -1,6 +1,7 @@
 package com.backend.questify.DTO.testcase;
 
 import com.backend.questify.DTO.LaboratoryDto;
+import com.backend.questify.DTO.LaboratoryDtoWithoutRelation;
 import com.backend.questify.Entity.Laboratory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,5 +20,5 @@ public class TestCaseDto {
 	private UUID testCaseId;
 	private String input;
 	private String expectedOutput;
-	private LaboratoryDto laboratory;
+	private LaboratoryDtoWithoutRelation laboratory;
 }

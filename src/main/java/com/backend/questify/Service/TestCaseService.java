@@ -37,6 +37,8 @@ public class TestCaseService {
 
 		laboratory.addTestCase(createdTestCase);
 
+		testCaseRepository.save(createdTestCase);
+
 		laboratoryRepository.saveAndFlush(laboratory);
 
 		return DtoMapper.INSTANCE.testCaseToTestCaseDto(createdTestCase);

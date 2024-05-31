@@ -46,9 +46,15 @@ private UUID laboratoryId;
 	private String problemStatement;
 
 	private String inputFormat;
+
 	private String outputFormat;
 
+	@Lob
+	@Column(columnDefinition = "TEXT")
 	private String sampleInput;
+
+	@Lob
+	@Column(columnDefinition = "TEXT")
 	private String sampleOutput;
 
 	@CreationTimestamp

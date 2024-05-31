@@ -47,7 +47,6 @@ public class AuthController {
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
 
-
 	@GetMapping("/verify-token")
 	public ResponseEntity<?> verifyToken(@RequestHeader("Authorization") String authorizationHeader) {
 		// Extract the token from the "Bearer " prefix
