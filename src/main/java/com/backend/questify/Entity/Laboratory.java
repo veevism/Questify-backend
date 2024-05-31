@@ -11,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -46,6 +47,7 @@ private UUID laboratoryId;
 
 	private String inputFormat;
 	private String outputFormat;
+
 	private String sampleInput;
 	private String sampleOutput;
 

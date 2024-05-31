@@ -98,9 +98,9 @@ public class AssignmentService {
 		LocalDateTime now = LocalDateTime.now();
 
 		if (assignmentDto.getStartTime() != null) {
-			if (assignmentDto.getStartTime().isBefore(now)) {
-				throw new IllegalArgumentException("Start time cannot be in the past.");
-			}
+//			if (assignmentDto.getStartTime().isBefore(now)) {
+//				throw new IllegalArgumentException("Start time cannot be in the past.");
+//			}
 			assignment.setStartTime(assignmentDto.getStartTime());
 		}
 
