@@ -91,16 +91,21 @@ public class AssignmentService {
 		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignments);
 	}
 
+	// might add authorization which prevent student from irrelevant classroom to access one assignment
 	public AssignmentDto updateAssignment (UUID assignmentId, AssignmentDto assignmentDto) {
 		Optional<Assignment> result = assignmentRepository.findByAssignmentId(assignmentId);
 		Assignment assignment = result.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id : " + assignmentId));
 
 		LocalDateTime now = LocalDateTime.now();
 
+		LocalDateTime startTime;
+		startTime = assignment.getStartTime();
+
 		if (assignmentDto.getStartTime() != null) {
 //			if (assignmentDto.getStartTime().isBefore(now)) {
 //				throw new IllegalArgumentException("Start time cannot be in the past.");
 //			}
+			startTime = assignmentDto.getStartTime();
 			assignment.setStartTime(assignmentDto.getStartTime());
 		}
 
@@ -108,7 +113,7 @@ public class AssignmentService {
 			if (assignmentDto.getEndTime().isBefore(now)) {
 				throw new IllegalArgumentException("End time cannot be in the past.");
 			}
-			if (assignmentDto.getStartTime() != null && assignmentDto.getEndTime().isBefore(assignmentDto.getStartTime())) {
+			if (startTime != null && assignmentDto.getEndTime().isBefore(startTime)) {
 				throw new IllegalArgumentException("End time cannot be before start time.");
 			}
 			assignment.setEndTime(assignmentDto.getEndTime());
