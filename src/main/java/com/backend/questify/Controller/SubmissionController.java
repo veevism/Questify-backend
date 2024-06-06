@@ -39,13 +39,6 @@ public class SubmissionController {
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
-	@GetMapping("/languages")
-	public ResponseEntity<ApiResponse<Language[]>> getAllLanguages() {
-		Language[] languages = Language.values();
-		ApiResponse<Language[]> response = ApiResponse.success(languages, HttpStatus.OK, "Fetched all languages successfully");
-		return ResponseEntity.status(response.getStatus()).body(response);
-	}
-
 	@DeleteMapping("/reset")
 	@PreAuthorize("hasRole('StdAcc')")
 	public ResponseEntity<ApiResponse<SubmissionDto>> resetSubmission(@RequestParam UUID laboratoryId) {
