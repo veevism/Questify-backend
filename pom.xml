@@ -10,7 +10,6 @@
 	</parent>
 	<groupId>com.backend</groupId>
 	<artifactId>questify</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>questify</name>
 	<description>Backend for Questify - AI Laboratory Platform</description>
 	<properties>

@@ -59,4 +59,8 @@ jobs:
           app-name: 'questify-backend-sp'
           slot-name: 'Production'
           package: '*.jar'
-          
+
+      - name: Configure startup script
+        run: |
+          az webapp config appsettings set --name questify-backend-sp --resource-group Questify-group --settings "WEBSITE_RUN_FROM_PACKAGE=1"
+          az webapp config set --name questify-backend-sp --resource-group Questify-group --startup-file 'startup.txt'

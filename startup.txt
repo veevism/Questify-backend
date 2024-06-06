@@ -1,0 +1,1 @@
+java -jar target/questify-3.2.4.jar
