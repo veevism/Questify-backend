@@ -1,7 +1,7 @@
 spring:
   datasource:
-    url: jdbc:sqlserver://questify-sql.database.windows.net:1433;database=Questify-DB;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
-    username: questify-admin@questify-sql
+    url: jdbc:sqlserver://questify-db.database.windows.net:1433;database=Questify-DB;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    username: questify-admin@questify-sql@questify-db
     password: Zomsantech##1597532486
     driver-class-name : com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:

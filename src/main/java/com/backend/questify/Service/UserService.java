@@ -57,7 +57,7 @@ public class UserService {
 		return jwtTokenProvider.createToken(user.getUserId(), user.getRole());
 	}
 
-	private User createUser(UserRequestDto userRequest) {
+	public User createUser(UserRequestDto userRequest) {
 		Long userId = Long.valueOf(userRequest.getStudent_id());
 
 		User user = User.builder()
