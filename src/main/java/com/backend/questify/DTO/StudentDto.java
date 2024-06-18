@@ -11,4 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StudentDto {
 	private Long studentId;
+	private String email;
+	private String firstName_EN;
+	private String displayName;
+	// add something Web requested
 }

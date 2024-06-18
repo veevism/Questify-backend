@@ -31,9 +31,16 @@ public interface DtoMapper {
 
 // StudentDto studentToStudentDto(Student student);
 //
+@Mapping(source = "user.email", target = "email")
+@Mapping(source = "user.firstName_EN" ,target = "firstName_EN")
+@Mapping(source = "user.displayName" ,target = "displayName")
 ProfessorDto professorToProfessorDto(Professor professor);
+
  List<ProfessorDto> professorToProfessorDto(List<Professor> professor);
 
+ @Mapping(source = "user.email", target = "email")
+ @Mapping(source = "user.firstName_EN" ,target = "firstName_EN")
+ @Mapping(source = "user.displayName" ,target = "displayName")
  StudentDto studentToStudentDto (Student student);
 
  List<StudentDto> studentToStudentDto(List<StudentDto> student);

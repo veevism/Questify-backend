@@ -26,6 +26,7 @@ public class Laboratory {
 //	private Long laboratoryId;
 @Id
 @GeneratedValue(generator = "UUID")
+
 //	@GeneratedValue(strategy = GenerationType.AUTO)
 @Column(updatable = false, nullable = false)
 private UUID laboratoryId;
@@ -45,17 +46,21 @@ private UUID laboratoryId;
 	@Column(columnDefinition = "TEXT")
 	private String problemStatement;
 
-	private String inputFormat;
+//	@ElementCollection
+//	@CollectionTable(name = "laboratory_inputs", joinColumns = @JoinColumn(name = "laboratory_id"))
+//	private List<LaboratoryInput> inputs = new ArrayList<>(); // display as a seperate view to indicate the input just that.
+//
+//	@Lob
+//	@Column(columnDefinition = "TEXT")
+//	private List<LaboratoryOutput> output;
 
-	private String outputFormat;
-
-	@Lob
-	@Column(columnDefinition = "TEXT")
-	private String sampleInput;
-
-	@Lob
-	@Column(columnDefinition = "TEXT")
-	private String sampleOutput;
+//	@Lob
+//	@Column(columnDefinition = "TEXT")
+//	private String sampleInput;
+//
+//	@Lob
+//	@Column(columnDefinition = "TEXT")
+//	private String sampleOutput;
 
 	@CreationTimestamp
 	@Column(updatable = false)

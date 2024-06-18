@@ -53,11 +53,7 @@ public class LaboratoryService {
 				.professor(professor)
 				.labTitle(laboratoryDto.getLabTitle())
 				.description(laboratoryDto.getDescription())
-				.inputFormat(laboratoryDto.getInputFormat())
-				.outputFormat(laboratoryDto.getOutputFormat())
 				.problemStatement(laboratoryDto.getProblemStatement())
-				.sampleInput(laboratoryDto.getSampleInput())
-				.sampleOutput(laboratoryDto.getSampleOutput())
 				.build();
 
 		laboratoryRepository.save(createdLaboratory);
@@ -112,22 +108,6 @@ public class LaboratoryService {
 
 		if (laboratoryDto.getProblemStatement() != null && !laboratoryDto.getProblemStatement().trim().isEmpty()) {
 			laboratory.setProblemStatement(laboratoryDto.getProblemStatement());
-		}
-
-		if (laboratoryDto.getInputFormat() != null && !laboratoryDto.getInputFormat().trim().isEmpty()) {
-			laboratory.setInputFormat(laboratoryDto.getInputFormat());
-		}
-
-		if (laboratoryDto.getOutputFormat() != null && !laboratoryDto.getOutputFormat().trim().isEmpty()) {
-			laboratory.setOutputFormat(laboratoryDto.getOutputFormat());
-		}
-
-		if (laboratoryDto.getSampleInput() != null && !laboratoryDto.getSampleInput().trim().isEmpty()) {
-			laboratory.setSampleInput(laboratoryDto.getSampleInput());
-		}
-
-		if (laboratoryDto.getSampleOutput() != null && !laboratoryDto.getSampleOutput().trim().isEmpty()) {
-			laboratory.setSampleOutput(laboratoryDto.getSampleOutput());
 		}
 
 		laboratoryRepository.save(laboratory);
