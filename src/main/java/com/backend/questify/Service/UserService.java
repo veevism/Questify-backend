@@ -84,9 +84,6 @@ public class UserService {
 										   .build();
 			user.setProfessor(professor);
 		}
-
-
-
 		return userRepository.save(user);
 	}
 

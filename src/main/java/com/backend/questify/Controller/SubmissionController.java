@@ -22,7 +22,7 @@ public class SubmissionController {
 	private SubmissionService submissionService;
 
 	@PutMapping("")
-	@PreAuthorize("hasRole('StdAcc')")
+	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
 	public ResponseEntity<ApiResponse<SubmissionDto>> updateCodeSnippet(@RequestParam UUID laboratoryId, @RequestParam Language language, @RequestBody String codeContent) {
 		SubmissionDto result = submissionService.updateSubmissionContent(laboratoryId, language.name(), codeContent);
 		ApiResponse<SubmissionDto> response = ApiResponse.success(result , HttpStatus.OK, "Update Submission Successfully");
@@ -31,8 +31,9 @@ public class SubmissionController {
 	}
 
 	@GetMapping("")
-	@PreAuthorize("hasRole('StdAcc')")
-	public ResponseEntity<ApiResponse<SubmissionDto>> getAndCreateSubmission(@RequestParam UUID laboratoryId) {
+	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
+	public ResponseEntity<ApiResponse<SubmissionDto>> getAndCreateSubmission(@RequestParam UUID laboratoryId)
+	throws Exception {
 		SubmissionDto result = submissionService.getAndCreateSubmission(laboratoryId);
 		ApiResponse<SubmissionDto> response = ApiResponse.success(result , HttpStatus.OK, "Get And Create Submission Successfully");
 
@@ -40,7 +41,7 @@ public class SubmissionController {
 	}
 
 	@DeleteMapping("/reset")
-	@PreAuthorize("hasRole('StdAcc')")
+	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
 	public ResponseEntity<ApiResponse<SubmissionDto>> resetSubmission(@RequestParam UUID laboratoryId) {
 		SubmissionDto result = submissionService.resetSubmission(laboratoryId);
 		ApiResponse<SubmissionDto> response = ApiResponse.success(result , HttpStatus.OK, "Reset Submission Successfully");
@@ -48,7 +49,7 @@ public class SubmissionController {
 	}
 
 	@PostMapping("/execute")
-	@PreAuthorize("hasRole('StdAcc')")
+	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
 	public ResponseEntity<ApiResponse<ExecutionResponse>> executeSubmission(@RequestParam UUID laboratoryId, @RequestParam String language, @RequestParam UUID testCaseId) {
 		ExecutionResponse result = submissionService.executeSubmission(laboratoryId, language, testCaseId);
 		ApiResponse<ExecutionResponse> response = ApiResponse.success(result , HttpStatus.OK, "Execution Submission Successfully");

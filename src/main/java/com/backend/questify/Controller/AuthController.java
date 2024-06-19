@@ -34,7 +34,7 @@ public class AuthController {
 		return externalApiService.getUserInfo(tokenA)
 								 .map(userRequest -> {
 									 String token = userService.authenticate(userRequest);
-									 ApiResponse<AuthenticationResponse> response = ApiResponse.success(new AuthenticationResponse(token), HttpStatus.OK, "Get Profile Successfully");
+									 ApiResponse<AuthenticationResponse> response = ApiResponse.success(new AuthenticationResponse(token), HttpStatus.OK, "Login Successfully");
 									 return ResponseEntity.status(response.getStatus()).body(response);
 								 })
 								 .onErrorResume(e -> {
