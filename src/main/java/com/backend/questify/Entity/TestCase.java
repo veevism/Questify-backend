@@ -24,7 +24,9 @@ public class TestCase {
 @GeneratedValue(generator = "UUID")
 @Column(updatable = false, nullable = false)
 	private UUID testCaseId;
+	@Column(columnDefinition = "TEXT")
 	private String input;
+	@Column(columnDefinition = "TEXT")
 	private String expectedOutput;
 
 	@ManyToOne

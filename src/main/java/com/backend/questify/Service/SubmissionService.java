@@ -4,12 +4,14 @@ import com.backend.questify.DTO.SubmissionDto;
 import com.backend.questify.Entity.Laboratory;
 import com.backend.questify.Entity.Student;
 import com.backend.questify.Entity.Submission;
+import com.backend.questify.Entity.TestCase;
 import com.backend.questify.Exception.BadRequestException;
 import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Model.ExecutionResponse;
 import com.backend.questify.Repository.LaboratoryRepository;
 import com.backend.questify.Repository.StudentRepository;
 import com.backend.questify.Repository.SubmissionRepository;
+import com.backend.questify.Repository.TestCaseRepository;
 import com.backend.questify.Util.DtoMapper;
 import com.github.codeboy.piston4j.api.*;
 import com.github.codeboy.piston4j.api.Runtime;
@@ -31,6 +33,9 @@ public class SubmissionService {
 
 	@Autowired
 	private StudentRepository studentRepository;
+
+	@Autowired
+	private TestCaseRepository testCaseRepository;
 
 	@Autowired
 	private UserService userService;
@@ -113,7 +118,12 @@ public class SubmissionService {
 
 		SubmissionDto submissionDto = DtoMapper.INSTANCE.submissionToSubmissionDto(submission);
 
-		ExecutionResult result = getExecutionResult(language, submissionDto, "Hello");
+		Optional<TestCase> testCaseResult = testCaseRepository.findById(testCaseId);
+
+		TestCase testCase = testCaseResult.orElseThrow(
+				() -> new ResourceNotFoundException("Test Case Not Found With This Id: " + laboratoryId));
+
+		ExecutionResult result = getExecutionResult(language, submissionDto, testCase.getInput());
 
 		ExecutionResponse executionResponse = ExecutionResponse.builder()
 															   .StdErr(result.getOutput()
