@@ -11,9 +11,7 @@ import com.backend.questify.Repository.LaboratoryRepository;
 import com.backend.questify.Repository.StudentRepository;
 import com.backend.questify.Repository.SubmissionRepository;
 import com.backend.questify.Util.DtoMapper;
-import com.github.codeboy.piston4j.api.CodeFile;
-import com.github.codeboy.piston4j.api.ExecutionResult;
-import com.github.codeboy.piston4j.api.Piston;
+import com.github.codeboy.piston4j.api.*;
 import com.github.codeboy.piston4j.api.Runtime;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,13 +107,13 @@ public class SubmissionService {
 		return DtoMapper.INSTANCE.submissionToSubmissionDto(submission);
 	}
 
-	public ExecutionResponse executeSubmission(UUID laboratoryId, String language) {
+	public ExecutionResponse executeSubmission(UUID laboratoryId, String language, UUID testCaseId) {
 
 		Submission submission = getCurrentSubmission(laboratoryId);
 
 		SubmissionDto submissionDto = DtoMapper.INSTANCE.submissionToSubmissionDto(submission);
 
-		ExecutionResult result = getExecutionResult(language, submissionDto);
+		ExecutionResult result = getExecutionResult(language, submissionDto, "Hello");
 
 		ExecutionResponse executionResponse = ExecutionResponse.builder()
 															   .StdErr(result.getOutput()
@@ -149,15 +147,14 @@ public class SubmissionService {
 				() -> new ResourceNotFoundException("Laboratory Not Found With This Id: " + laboratoryId));
 
 		Optional<Submission> submissionResult = submissionRepository.findByLaboratoryAndStudent(laboratory, student);
-		Submission submission = submissionResult.orElseThrow(
-				() -> new ResourceNotFoundException("Submission Not Found With Laboratory Id : " + laboratoryId));
 
-		return submission;
+		return submissionResult.orElseThrow(
+				() -> new ResourceNotFoundException("Submission Not Found With Laboratory Id : " + laboratoryId));
 	}
 
 	//! Todo : Inspect where to show error from compiling empty code
 
-	private static ExecutionResult getExecutionResult(String language, SubmissionDto submissionDto) {
+	private static ExecutionResult getExecutionResult(String language, SubmissionDto submissionDto, String stdin) {
 		try {
 			Map<String, String> snippets = submissionDto.getCodeSnippets();
 			if (!snippets.containsKey(language)) {
@@ -172,9 +169,15 @@ public class SubmissionService {
 			Runtime runtime = optionalRuntime.orElseThrow(
 					() -> new ResourceNotFoundException("Runtime Not Found With Language : " + language));
 
-			CodeFile codeFile = new CodeFile("questify-coding-space", snippets.get(language));
 
-			return runtime.execute(codeFile);
+
+			CodeFile codeFile = new CodeFile("questify-coding-space", code);
+
+//			ExecutionRequest
+			ExecutionRequest request = new ExecutionRequest(runtime.getLanguage(), runtime.getVersion(), codeFile).setStdin(stdin);
+//			request.setStdin("Hello");
+
+			return api.execute(request);
 		} catch (ResourceNotFoundException e) {
 			throw new ResourceNotFoundException(e.getMessage());
 		}catch (Exception e) {

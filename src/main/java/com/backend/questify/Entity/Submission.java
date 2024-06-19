@@ -34,6 +34,10 @@ public class Submission {
 	@JoinColumn(name = "student_id")
 	private Student student;
 
+	@ManyToOne
+	@JoinColumn(name = "professor_id")
+	private Professor professor;
+
 	@Convert(converter = HashMapConverter.class)
 	@Column(columnDefinition = "TEXT")
 	@Builder.Default

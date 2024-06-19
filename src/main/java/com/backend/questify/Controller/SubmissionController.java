@@ -49,11 +49,10 @@ public class SubmissionController {
 
 	@PostMapping("/execute")
 	@PreAuthorize("hasRole('StdAcc')")
-	public ResponseEntity<ApiResponse<ExecutionResponse>> executeSubmission(@RequestParam UUID laboratoryId, @RequestParam Language language) {
-		ExecutionResponse result = submissionService.executeSubmission(laboratoryId, language.name());
+	public ResponseEntity<ApiResponse<ExecutionResponse>> executeSubmission(@RequestParam UUID laboratoryId, @RequestParam String language) {
+		ExecutionResponse result = submissionService.executeSubmission(laboratoryId, language, laboratoryId);
 		ApiResponse<ExecutionResponse> response = ApiResponse.success(result , HttpStatus.OK, "Execution Submission Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
-
 	}
 
 	//! Todo : Should Add getRuntime which return language and version available

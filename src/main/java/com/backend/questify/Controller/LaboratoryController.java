@@ -31,6 +31,8 @@ public class LaboratoryController {
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
+
+
 	@GetMapping("/assignment")
 	public ResponseEntity<ApiResponse<List<LaboratoryDto>>> getLaboratories(@RequestParam UUID assignmentId) {
 		List<LaboratoryDto> laboratoryDtoList = laboratoryService.getLaboratories(assignmentId);
@@ -53,7 +55,8 @@ public class LaboratoryController {
 
 		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryDto , HttpStatus.OK, "Update Laboratory Successfully");
 
-		return ResponseEntity.status(response.getStatus()).body(response);	}
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
 
 	@DeleteMapping("")
 	@PreAuthorize("hasRole('ProfAcc')")
