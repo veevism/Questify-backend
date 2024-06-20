@@ -25,9 +25,7 @@ public class LaboratoryController {
 	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<LaboratoryDto>> createLaboratory(@RequestBody LaboratoryDto laboratoryDto,
 																	   @RequestParam UUID assignmentId) {
-		LaboratoryDto laboratoryDto1 = laboratoryService.createLaboratory(assignmentId, laboratoryDto);
-		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryDto1 , HttpStatus.CREATED, "Create Laboratory Successfully");
-
+		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryService.createLaboratory(assignmentId, laboratoryDto) , HttpStatus.CREATED, "Create Laboratory Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
@@ -35,26 +33,20 @@ public class LaboratoryController {
 
 	@GetMapping("/assignment")
 	public ResponseEntity<ApiResponse<List<LaboratoryDto>>> getLaboratories(@RequestParam UUID assignmentId) {
-		List<LaboratoryDto> laboratoryDtoList = laboratoryService.getLaboratories(assignmentId);
-		ApiResponse<List<LaboratoryDto>> response = ApiResponse.success(laboratoryDtoList , HttpStatus.OK, "Get Laboratory Successfully");
+		ApiResponse<List<LaboratoryDto>> response = ApiResponse.success(laboratoryService.getLaboratories(assignmentId) , HttpStatus.OK, "Get Laboratories Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@GetMapping("")
 	public ResponseEntity<ApiResponse<LaboratoryDto>> getLaboratory(@RequestParam UUID laboratoryId) {
-		LaboratoryDto laboratoryDto = laboratoryService.getLaboratory(laboratoryId);
-		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryDto , HttpStatus.OK, "Get Laboratory Successfully");
-
+		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryService.getLaboratory(laboratoryId) , HttpStatus.OK, "Get Laboratory Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@PutMapping("")
 	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<LaboratoryDto>> updateLaboratory(@RequestParam UUID laboratoryId, @RequestBody LaboratoryDto laboratory) {
-		LaboratoryDto laboratoryDto = laboratoryService.updateLaboratory(laboratoryId, laboratory);
-
-		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryDto , HttpStatus.OK, "Update Laboratory Successfully");
-
+		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryService.updateLaboratory(laboratoryId, laboratory) , HttpStatus.OK, "Update Laboratory Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
