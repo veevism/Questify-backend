@@ -28,6 +28,7 @@ public class AuthController {
 	@Autowired
 	private ExternalApiService externalApiService;
 
+	//! Todo : Finish login methodology
 	@PostMapping("/login")
 	public Mono<ResponseEntity<ApiResponse<AuthenticationResponse>>> login(@RequestHeader("Authorization") String authorizationHeader) {
 		String tokenA = authorizationHeader.replace("Bearer ", "");

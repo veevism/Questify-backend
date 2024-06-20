@@ -3,6 +3,7 @@ package com.backend.questify.Service;
 import com.backend.questify.DTO.LaboratoryDto;
 import com.backend.questify.Entity.*;
 import com.backend.questify.Exception.BadRequestException;
+import com.backend.questify.Exception.ListIsNotEmptyException;
 import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Repository.*;
 import com.backend.questify.Util.DtoMapper;
@@ -28,58 +29,30 @@ public class LaboratoryService {
 	private LaboratoryRepository laboratoryRepository;
 
 	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
-	private UserService userService;
-
-	@Autowired
 	private EntityHelper entityHelper;
-
-	private User getCurrentUser() {
-		Long userId = userService.getCurrentUserId();
-		return userRepository.findById(userId)
-							 .orElseThrow(() -> new ResourceNotFoundException("User Not Found With This Id: " + userId));
-	}
 
 	public LaboratoryDto createLaboratory (UUID assignmentId, LaboratoryDto laboratoryDto) {
 
-		Long professorId = userService.getCurrentUserId();
-		Professor professor = entityHelper.findProfessorById(professorId);
-		Assignment assignment = entityHelper.findAssignmentById(assignmentId);
-
 		Laboratory createdLaboratory = Laboratory.builder()
-				.assignment(assignment)
-				.professor(professor)
+				.assignment(entityHelper.findAssignmentById(assignmentId))
+				.professor(entityHelper.findProfessorById(entityHelper.getCurrentUserId()))
 				.labTitle(laboratoryDto.getLabTitle())
 				.description(laboratoryDto.getDescription())
 				.problemStatement(laboratoryDto.getProblemStatement())
 				.build();
 
-		laboratoryRepository.save(createdLaboratory);
-
-		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(createdLaboratory);
+		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratoryRepository.save(createdLaboratory));
 	}
 
 	public List<LaboratoryDto> getLaboratories(UUID assignmentId) {
-		User user = getCurrentUser();
+		User user = entityHelper.getCurrentUser();
 		Assignment assignment = entityHelper.findAssignmentById(assignmentId);
 		if (user.getRole() == StdAcc) {
-			Student student = user.getStudent();
-			UUID laboratoryId = assignment.getStudentLabAssignments().get(student.getStudentId());
-			List<Laboratory> laboratories = laboratoryRepository.findAllByLaboratoryId(laboratoryId);
-			if (laboratories.isEmpty()) {
-				throw new ResourceNotFoundException("Laboratories not found");
-			}
-			return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratories);
+			UUID laboratoryId = assignment.getStudentLabAssignments().get(user.getStudent().getStudentId());
+			return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(ListIsNotEmptyException.requireNotEmpty(laboratoryRepository.findAllByLaboratoryId(laboratoryId), Laboratory.class.getSimpleName()));
 
 		} else if (user.getRole() == ProfAcc) {
-			List<Laboratory> laboratories = laboratoryRepository.findAllByAssignment(assignment);
-			if (laboratories.isEmpty()) {
-				throw new ResourceNotFoundException("Laboratories not found");
-			}
-			return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratories);
-
+			return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(ListIsNotEmptyException.requireNotEmpty(laboratoryRepository.findAllByAssignment(assignment), Laboratory.class.getSimpleName()));
 		} else {
 			throw new BadRequestException("Bad User"); //! Todo : Cope with this
 		}
@@ -87,12 +60,7 @@ public class LaboratoryService {
 
 	//
 	public LaboratoryDto getLaboratory(UUID laboratoryId) {
-		Optional<Laboratory> result = laboratoryRepository.findById(laboratoryId);
-
-		Laboratory laboratory = result.orElseThrow(() -> new ResourceNotFoundException
-				("Laboratory not found with Id : " + laboratoryId));
-
-		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratory);
+		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(entityHelper.findLaboratoryById(laboratoryId));
 	}
 
 	public void deleteLaboratory(UUID laboratoryId) {
@@ -120,9 +88,7 @@ public class LaboratoryService {
 			laboratory.setProblemStatement(laboratoryDto.getProblemStatement());
 		}
 
-		laboratoryRepository.save(laboratory);
-
-		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratory);
+		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratoryRepository.save(laboratory));
 
 	}
 }

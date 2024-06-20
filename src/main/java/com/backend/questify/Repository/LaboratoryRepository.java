@@ -15,4 +15,5 @@ public interface LaboratoryRepository extends JpaRepository<Laboratory, UUID> {
 	List<Laboratory> findAllByAssignment (Assignment assignment);
 
 	List<Laboratory> findAllByLaboratoryId (UUID laboratoryId);
+
 }

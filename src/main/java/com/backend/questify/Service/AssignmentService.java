@@ -26,12 +26,7 @@ public class AssignmentService {
 	private AssignmentRepository assignmentRepository;
 
 	@Autowired
-	private UserService userService;
-
-	@Autowired
 	private EntityHelper entityHelper;
-
-
 
 	public AssignmentDto createAssignment(Assignment assignment, UUID classroomId) {
 		Long currentUserId = entityHelper.getCurrentUserId();

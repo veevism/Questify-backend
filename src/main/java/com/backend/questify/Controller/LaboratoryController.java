@@ -36,7 +36,7 @@ public class LaboratoryController {
 	@GetMapping("/assignment")
 	public ResponseEntity<ApiResponse<List<LaboratoryDto>>> getLaboratories(@RequestParam UUID assignmentId) {
 		List<LaboratoryDto> laboratoryDtoList = laboratoryService.getLaboratories(assignmentId);
-		ApiResponse<List<LaboratoryDto>> response = ApiResponse.success(laboratoryDtoList , HttpStatus.CREATED, "Get Laboratory Successfully");
+		ApiResponse<List<LaboratoryDto>> response = ApiResponse.success(laboratoryDtoList , HttpStatus.OK, "Get Laboratory Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 

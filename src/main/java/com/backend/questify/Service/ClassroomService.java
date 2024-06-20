@@ -4,6 +4,7 @@ import com.backend.questify.DTO.ClassroomDto;
 import com.backend.questify.DTO.ProfessorDto;
 import com.backend.questify.DTO.SubmissionDto;
 import com.backend.questify.Entity.*;
+import com.backend.questify.Exception.ListIsNotEmptyException;
 import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Exception.UnauthorizedAccessException;
 import com.backend.questify.Model.Role;
@@ -24,6 +25,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.backend.questify.Model.Role.ProfAcc;
+import static com.backend.questify.Model.Role.StdAcc;
+
 @Service
 public class ClassroomService {
 
@@ -32,9 +36,6 @@ public class ClassroomService {
 
 	@Autowired
 	private EntityHelper entityHelper;
-
-//	@Autowired
-//	private UserService userService;
 
 	public ClassroomDto createClassroom(ClassroomDto classroomDto) {
 		Professor professor = entityHelper.findProfessorById(entityHelper.getCurrentUserId());
@@ -57,16 +58,15 @@ public class ClassroomService {
 		User currentUser = entityHelper.getCurrentUser();
 		List<Classroom> classrooms;
 
-		if (currentUser.getRole() == Role.ProfAcc) {
-			classrooms = classroomRepository.findByProfessor_ProfessorId(currentUser.getUserId());
-		} else if (currentUser.getRole() == Role.StdAcc) {
-			classrooms = classroomRepository.findByStudents_StudentId(currentUser.getUserId());
+		if (currentUser.getRole() == ProfAcc) {
+			classrooms = ListIsNotEmptyException.requireNotEmpty(classroomRepository.findByProfessor_ProfessorId(currentUser.getUserId()), Classroom.class.getSimpleName());
+		} else if (currentUser.getRole() == StdAcc) {
+			classrooms = ListIsNotEmptyException.requireNotEmpty(classroomRepository.findByStudents_StudentId(currentUser.getUserId()), Classroom.class.getSimpleName());
 		} else {
 			throw new UnauthorizedAccessException("You do not have permission to access classrooms.");
 		}
-		if (classrooms.isEmpty()) {
-			throw new ResourceNotFoundException("Classroom not found");
-		}
+
+
 		return DtoMapper.INSTANCE.classroomToClassroomDto(classrooms);
 	}
 

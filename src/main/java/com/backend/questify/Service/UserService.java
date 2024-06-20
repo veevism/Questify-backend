@@ -12,6 +12,7 @@ import com.backend.questify.Repository.StudentRepository;
 import com.backend.questify.Repository.UserRepository;
 import com.backend.questify.Security.JwtTokenProvider;
 import com.backend.questify.Util.DtoMapper;
+import com.backend.questify.Util.EntityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,32 +28,21 @@ public class UserService {
 	private UserRepository userRepository;
 
 	@Autowired
-	private StudentRepository studentRepository;
-
-	@Autowired
-	private ProfessorRepository professorRepository;
-
-	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
 
+
+	@Autowired
+	private EntityHelper entityHelper;
+
 	public UserDto getProfile() {
-		Long userId = getCurrentUserId();
- 
-		Optional<User> userResult = userRepository.findById(getCurrentUserId());
+		Optional<User> userResult = userRepository.findById((entityHelper.getCurrentUserId()));
 		User user = userResult.orElseThrow(() -> new ResourceNotFoundException("User Not Found By Access Token"));
 
 		return DtoMapper.INSTANCE.userToUserDto(user);
 	}
 
 	public String authenticate(UserRequestDto userRequest) {
-		Optional<User> existingUser = userRepository.findById(Long.valueOf(userRequest.getStudent_id()));
-		User user;
-
-		if (existingUser.isPresent()) {
-			user = existingUser.get();
-		} else {
-			user = createUser(userRequest);
-		}
+		User user = userRepository.findById(Long.valueOf(userRequest.getStudent_id())).orElse(createUser(userRequest));
 
 		return jwtTokenProvider.createToken(user.getUserId(), user.getRole());
 	}
@@ -87,23 +77,4 @@ public class UserService {
 		return userRepository.save(user);
 	}
 
-	public Long getCurrentUserId() throws UserNotAuthenticatedException {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetails) {
-			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-			try {
-				System.out.println(userDetails.getUsername());
-				return Long.valueOf(userDetails.getUsername()); // Assuming the username is the userId
-			} catch (NumberFormatException e) {
-				throw new UserNotAuthenticatedException("Invalid user ID format.");
-			}
-		}
-		throw new UnauthorizedAccessException("User is not authenticated.");
-	}
-
-
-	public User getCurrentUser() {
-		Long userId = getCurrentUserId();
-		return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
-	}
 }

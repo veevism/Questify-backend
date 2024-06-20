@@ -4,10 +4,12 @@ import com.backend.questify.DTO.LaboratoryDto;
 import com.backend.questify.DTO.testcase.TestCaseDto;
 import com.backend.questify.Entity.Laboratory;
 import com.backend.questify.Entity.TestCase;
+import com.backend.questify.Exception.ListIsNotEmptyException;
 import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Repository.LaboratoryRepository;
 import com.backend.questify.Repository.TestCaseRepository;
 import com.backend.questify.Util.DtoMapper;
+import com.backend.questify.Util.EntityHelper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,10 +28,12 @@ public class TestCaseService {
 	@Autowired
 	private TestCaseRepository testCaseRepository;
 
-	public TestCaseDto createTestCase(UUID laboratoryId, TestCaseDto testCaseDto) {
-		Optional<Laboratory> laboratoryResult = laboratoryRepository.findById(laboratoryId);
+	@Autowired
+	private EntityHelper entityHelper;
 
-		Laboratory laboratory = laboratoryResult.orElseThrow(() -> new ResourceNotFoundException("Laboratory not found with Id : " + laboratoryId));
+	public TestCaseDto createTestCase(UUID laboratoryId, TestCaseDto testCaseDto) {
+
+		Laboratory laboratory = entityHelper.findLaboratoryById(laboratoryId);
 
 		TestCase createdTestCase = TestCase.builder().input(testCaseDto.getInput())
 				.expectedOutput(testCaseDto.getExpectedOutput())
@@ -45,54 +49,29 @@ public class TestCaseService {
 	}
 
 	public List<TestCaseDto> getTestCases(UUID laboratoryId) {
-
-		Optional<Laboratory> laboratoryResult = laboratoryRepository.findById(laboratoryId);
-
-		Laboratory laboratory = laboratoryResult.orElseThrow(() -> new ResourceNotFoundException("Laboratory not found with Id : " + laboratoryId));
-		// change to list due to hierachy sake
-
-		if (laboratory.getTestCases().isEmpty()) {
-			throw new ResourceNotFoundException("Test Cases not found");
-
-		}
-
-		return DtoMapper.INSTANCE.testCaseToTestCaseDto(laboratory.getTestCases());
+		return DtoMapper.INSTANCE.testCaseToTestCaseDto(ListIsNotEmptyException.requireNotEmpty(entityHelper.findLaboratoryById(laboratoryId).getTestCases(), "Test Case"));
 	}
 
 	public TestCaseDto getTestCase(UUID testCaseId) {
-		Optional<TestCase> testCaseResult = testCaseRepository.findById(testCaseId);
-
-		TestCase testCase = testCaseResult.orElseThrow(() -> new ResourceNotFoundException("Test Case not found with Id : " + testCaseId));
-
-		return DtoMapper.INSTANCE.testCaseToTestCaseDto(testCase);
+		return DtoMapper.INSTANCE.testCaseToTestCaseDto(entityHelper.findTestCaseById(testCaseId));
 
 	}
 
 	public void deleteTestCase(UUID testCaseId) {
-		Optional<TestCase> testCaseResult = testCaseRepository.findById(testCaseId);
 
-		TestCase testCase = testCaseResult.orElseThrow(() -> new ResourceNotFoundException("Test Case not found with Id : " + testCaseId));
+		Laboratory laboratory = entityHelper.findLaboratoryByTestCaseId(testCaseId);
 
-		Optional<Laboratory> laboratoryResult = laboratoryRepository.findById(testCase.getLaboratory()
-																					  .getLaboratoryId());
-
-		Laboratory laboratory = laboratoryResult.orElseThrow(() -> new ResourceNotFoundException("Laboratory of this test case not found with Id : " + testCase.getLaboratory().getLaboratoryId()));
-
-		laboratory.removeTestCase(testCase);
+		laboratory.removeTestCase(entityHelper.findTestCaseById(testCaseId));
 
 		laboratoryRepository.save(laboratory);
-//		if (testCaseRepository.existsById(testCaseId)) {
-//			testCaseRepository.deleteById(testCaseId);
-//		} else {
-//			throw new ResourceNotFoundException("Test Case not found with Id : " + testCaseId);
-//		}
+
 	}
 
 	@Transactional
 	public TestCaseDto updateTestCase(UUID testCaseId, TestCaseDto testCaseDto) {
-		Optional<TestCase> testCaseResult = testCaseRepository.findById(testCaseId);
 
-		TestCase testCase = testCaseResult.orElseThrow(() -> new ResourceNotFoundException("Test Case not found with Id : " + testCaseId));
+
+		TestCase testCase = entityHelper.findTestCaseById(testCaseId);
 
 		if (testCaseDto.getInput() != null) {
 			testCase.setInput(testCaseDto.getInput());
@@ -102,8 +81,6 @@ public class TestCaseService {
 			testCase.setExpectedOutput(testCaseDto.getExpectedOutput());
 		}
 
-		testCaseRepository.save(testCase);
-
-		return DtoMapper.INSTANCE.testCaseToTestCaseDto(testCase);
+		return DtoMapper.INSTANCE.testCaseToTestCaseDto(testCaseRepository.save(testCase));
 	}
 }

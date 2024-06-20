@@ -1,9 +1,5 @@
 package com.backend.questify.DTO;
 
-import com.backend.questify.Entity.Laboratory;
-import com.backend.questify.Entity.Student;
-import com.backend.questify.Util.HashMapConverter;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

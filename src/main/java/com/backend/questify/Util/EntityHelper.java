@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -32,6 +33,9 @@ public class EntityHelper {
 
 	@Autowired
 	private StudentRepository studentRepository;
+
+	@Autowired
+	private TestCaseRepository testCaseRepository;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -68,6 +72,16 @@ public class EntityHelper {
 		return ListIsNotEmptyException.requireNotEmpty(assignmentRepository.findAllByClassroom_ClassroomId(classroomId), Assignment.class.getSimpleName());
 	}
 
+	public TestCase findTestCaseById(UUID testCaseId) {
+		return testCaseRepository.findById(testCaseId).orElseThrow(() -> new ResourceNotFoundException("Test Case not found with Id : " + testCaseId));
+	}
+
+	public Laboratory findLaboratoryByTestCaseId(UUID testCaseId) {
+		UUID laboratoryId = findTestCaseById(testCaseId).getLaboratory()
+														.getLaboratoryId();
+		return laboratoryRepository.findById(laboratoryId).orElseThrow(() -> new ResourceNotFoundException("Laboratory of this test case not found with Id : " + laboratoryId));
+	}
+
 	public Long getCurrentUserId() throws UserNotAuthenticatedException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetails) {
@@ -85,5 +99,10 @@ public class EntityHelper {
 	public User getCurrentUser() {
 		Long userId = getCurrentUserId();
 		return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+	}
+
+	public User findUserById(Long userId) {
+		return userRepository.findById(userId).orElseThrow(
+				() -> new ResourceNotFoundException("User Not Found With This Id: " + userId));
 	}
 }

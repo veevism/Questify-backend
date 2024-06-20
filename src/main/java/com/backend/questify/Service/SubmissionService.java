@@ -7,6 +7,7 @@ import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Model.ExecutionResponse;
 import com.backend.questify.Repository.*;
 import com.backend.questify.Util.DtoMapper;
+import com.backend.questify.Util.EntityHelper;
 import com.github.codeboy.piston4j.api.*;
 import com.github.codeboy.piston4j.api.Runtime;
 import jakarta.transaction.Transactional;
@@ -30,23 +31,8 @@ public class SubmissionService {
 	private LaboratoryRepository laboratoryRepository;
 
 	@Autowired
-	private StudentRepository studentRepository;
+	private EntityHelper entityHelper;
 
-	@Autowired
-	private TestCaseRepository testCaseRepository;
-
-	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
-	private ProfessorRepository professorRepository;
-
-	@Autowired
-	private UserService userService;
-
-	public Optional<Submission> getSubmission(Long id) {
-		return submissionRepository.findById(id);
-	}
 
 	//! Todo : Add check if student can do anything ( occupied classroom )
 
@@ -68,12 +54,8 @@ public class SubmissionService {
 
 
 	public SubmissionDto getAndCreateSubmission(UUID laboratoryId) throws Exception {
-		Long userId = userService.getCurrentUserId();
-
-		Optional<User> userResult = userRepository.findById(userId);
-
-		User user = userResult.orElseThrow(
-				() -> new ResourceNotFoundException("User Not Found With This Id: " + userId));
+		Long userId = entityHelper.getCurrentUserId();
+		User user = entityHelper.getCurrentUser();
 
 		Optional<Laboratory> laboratoryResult = laboratoryRepository.findById(laboratoryId);
 		Laboratory laboratory = laboratoryResult.orElseThrow(
@@ -82,9 +64,8 @@ public class SubmissionService {
 		Submission submission = null;
 
 		if (user.getRole() == StdAcc) {
-			Optional<Student> studentResult = studentRepository.findById(userId);
-			Student student = studentResult.orElseThrow(
-					() -> new ResourceNotFoundException("User Not Found With This Id: " + laboratoryId));
+
+			Student student = entityHelper.findStudentById(userId);
 
 			Optional<Submission> existingSubmission = submissionRepository.findByLaboratoryAndStudent(laboratory, student);
 			if (existingSubmission.isPresent()) {
@@ -98,9 +79,8 @@ public class SubmissionService {
 
 			submission = submissionRepository.save(newSubmission);
 		} else if (user.getRole() == ProfAcc) {
-			Optional<Professor> professorResult = professorRepository.findById(userId);
-			Professor professor = professorResult.orElseThrow(
-					() -> new ResourceNotFoundException("User Not Found With This Id: " + laboratoryId));
+
+			Professor professor = entityHelper.findProfessorById(userId);
 
 			Optional<Submission> existingSubmission = submissionRepository.findByLaboratoryAndProfessor(laboratory, professor);
 			if (existingSubmission.isPresent()) {
@@ -114,7 +94,7 @@ public class SubmissionService {
 
 			submission = submissionRepository.save(newSubmission);
 		} else {
-			throw new Exception("Something Bad Happens To Submission");
+			throw new Exception("Something Bad Happens To Submission"); //! Todo : Fix This
 		}
 
 
@@ -129,26 +109,14 @@ public class SubmissionService {
 
 	public SubmissionDto resetSubmission(UUID laboratoryId) {
 		Submission submission = getCurrentSubmission(laboratoryId);
-
-		submission.setCodeSnippets(Submission.getDefaultSnippets());
-
-		submissionRepository.save(submission);
-
-		return DtoMapper.INSTANCE.submissionToSubmissionDto(submission);
+		return DtoMapper.INSTANCE.submissionToSubmissionDto(submissionRepository.save(submission));
 	}
 
 	public ExecutionResponse executeSubmission(UUID laboratoryId, String language, UUID testCaseId) {
 
-		Submission submission = getCurrentSubmission(laboratoryId);
+		SubmissionDto submissionDto = DtoMapper.INSTANCE.submissionToSubmissionDto(getCurrentSubmission(laboratoryId));
 
-		SubmissionDto submissionDto = DtoMapper.INSTANCE.submissionToSubmissionDto(submission);
-
-		Optional<TestCase> testCaseResult = testCaseRepository.findById(testCaseId);
-
-		TestCase testCase = testCaseResult.orElseThrow(
-				() -> new ResourceNotFoundException("Test Case Not Found With This Id: " + laboratoryId));
-
-		ExecutionResult result = getExecutionResult(language, submissionDto, testCase.getInput());
+		ExecutionResult result = getExecutionResult(language, submissionDto, entityHelper.findTestCaseById(testCaseId).getInput());
 
 		ExecutionResponse executionResponse = ExecutionResponse.builder()
 															   .StdErr(result.getOutput()
@@ -171,33 +139,20 @@ public class SubmissionService {
 	}
 
 	private Submission getCurrentSubmission(UUID laboratoryId) {
-		Long userId = userService.getCurrentUserId();
-		Optional<User> userResult = userRepository.findById(userId);
+		Long userId = entityHelper.getCurrentUserId();
 
-		User user = userResult.orElseThrow(
-				() -> new ResourceNotFoundException("User Not Found With This Id: " + userId));
+		User user = entityHelper.getCurrentUser();
 
-		Optional<Laboratory> laboratoryResult = laboratoryRepository.findById(laboratoryId);
-		Laboratory laboratory = laboratoryResult.orElseThrow(
-				() -> new ResourceNotFoundException("Laboratory Not Found With This Id: " + laboratoryId));
+		Laboratory laboratory = entityHelper.findLaboratoryById(laboratoryId);
 
 		Submission submission = null;
 
 		if (user.getRole() == StdAcc) {
-			Optional<Student> studentResult = studentRepository.findById(userId);
-			Student student = studentResult.orElseThrow(
-					() -> new ResourceNotFoundException("User Not Found With This Id: " + laboratoryId));
-
-			Optional<Submission> submissionResult = submissionRepository.findByLaboratoryAndStudent(laboratory, student);
-			submission = submissionResult.orElseThrow(
+			submission = submissionRepository.findByLaboratoryAndStudent(laboratory, entityHelper.findStudentById(userId)).orElseThrow(
 					() -> new ResourceNotFoundException("Submission Not Found With Laboratory Id : " + laboratoryId));
-		} else if (user.getRole() == ProfAcc) {
-			Optional<Professor> professorResult = professorRepository.findById(userId);
-			Professor professor = professorResult.orElseThrow(
-					() -> new ResourceNotFoundException("User Not Found With This Id: " + laboratoryId));
 
-			Optional<Submission> submissionResult = submissionRepository.findByLaboratoryAndProfessor(laboratory, professor);
-			submission = submissionResult.orElseThrow(
+		} else if (user.getRole() == ProfAcc) {
+			submission = submissionRepository.findByLaboratoryAndProfessor(laboratory, entityHelper.findProfessorById(userId)).orElseThrow(
 					() -> new ResourceNotFoundException("Submission Not Found With Laboratory Id : " + laboratoryId));
 		}
 

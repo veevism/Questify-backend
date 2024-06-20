@@ -13,9 +13,6 @@ public class ProfessorService {
 	@Autowired
 	private ProfessorRepository professorRepository;
 
-	@Autowired
-	private UserRepository userRepository;
-
 	public void getAllProfessors () {
 		System.out.println(DtoMapper.INSTANCE.professorToProfessorDto(professorRepository.findAll()) );
 		System.out.println("Hello This is Professor Service");
