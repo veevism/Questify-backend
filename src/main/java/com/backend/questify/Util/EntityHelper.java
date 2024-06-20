@@ -1,9 +1,15 @@
 package com.backend.questify.Util;
 
 import com.backend.questify.Entity.*;
+import com.backend.questify.Exception.ListIsNotEmptyException;
 import com.backend.questify.Exception.ResourceNotFoundException;
+import com.backend.questify.Exception.UnauthorizedAccessException;
+import com.backend.questify.Exception.UserNotAuthenticatedException;
 import com.backend.questify.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -26,6 +32,9 @@ public class EntityHelper {
 
 	@Autowired
 	private StudentRepository studentRepository;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	public Professor findProfessorById(Long professorId) {
 		return professorRepository.findById(professorId)
@@ -53,5 +62,28 @@ public class EntityHelper {
 
 	public List<Laboratory> findLaboratoryByAssignment(Assignment assignment) {
 		return laboratoryRepository.findAllByAssignment(assignment);
+	}
+
+	public List<Assignment> findAllAssignmentByClassroomId(UUID classroomId) {
+		return ListIsNotEmptyException.requireNotEmpty(assignmentRepository.findAllByClassroom_ClassroomId(classroomId), Assignment.class.getSimpleName());
+	}
+
+	public Long getCurrentUserId() throws UserNotAuthenticatedException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetails) {
+			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+			try {
+				System.out.println(userDetails.getUsername());
+				return Long.valueOf(userDetails.getUsername()); // Assuming the username is the userId
+			} catch (NumberFormatException e) {
+				throw new UserNotAuthenticatedException("Invalid user ID format.");
+			}
+		}
+		throw new UnauthorizedAccessException("User is not authenticated.");
+	}
+
+	public User getCurrentUser() {
+		Long userId = getCurrentUserId();
+		return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 	}
 }

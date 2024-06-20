@@ -26,18 +26,6 @@ public class AssignmentService {
 	private AssignmentRepository assignmentRepository;
 
 	@Autowired
-	private ClassroomRepository classroomRepository;
-
-	@Autowired
-	private ProfessorRepository professorRepository;
-
-	@Autowired
-	private StudentRepository studentRepository;
-
-	@Autowired
-	private LaboratoryRepository laboratoryRepository;
-
-	@Autowired
 	private UserService userService;
 
 	@Autowired
@@ -46,10 +34,9 @@ public class AssignmentService {
 
 
 	public AssignmentDto createAssignment(Assignment assignment, UUID classroomId) {
-		Long professorId = userService.getCurrentUserId();
-		Professor professor = entityHelper.findProfessorById(professorId);
+		Long currentUserId = entityHelper.getCurrentUserId();
+		Professor professor = entityHelper.findProfessorById(currentUserId);
 		Classroom classroom = entityHelper.findClassroomById(classroomId);
-		Long currentUserId = userService.getCurrentUserId();
 		if (!classroom.getProfessor().getProfessorId().equals(currentUserId)) {
 			throw new UnauthorizedAccessException("You do not have permission to create assignment in this classroom");
 		}
@@ -81,21 +68,12 @@ public class AssignmentService {
 												 		 .endTime(assignment.getEndTime())
 														 .build();
 
-//		if (createdAssignment.getClassroom() == null) {
-//			System.out.println("Yes");
-//		} else {
-//
-//			System.out.println(DtoMapper.INSTANCE.classroomToClassroomDto(createdAssignment.getClassroom()));
-//		}
-
-		assignmentRepository.save(createdAssignment);
-		return DtoMapper.INSTANCE.assignmentToAssignmentDto(createdAssignment);
+		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignmentRepository.save(createdAssignment));
 	}
 
 	@Transactional
 	public AssignmentDto assignLabToStudent(UUID assignmentId, UUID laboratoryId, Long studentId) {
-		Assignment assignment = assignmentRepository.findById(assignmentId)
-													.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id: " + assignmentId));
+		Assignment assignment = entityHelper.findAssignmentById(assignmentId);
 
 		assignment.getStudentLabAssignments().put(entityHelper.findStudentById(studentId).getStudentId(), entityHelper.findLaboratoryById(laboratoryId).getLaboratoryId());
 
@@ -119,29 +97,17 @@ public class AssignmentService {
 			assignment.getStudentLabAssignments().put(student.getStudentId(), laboratories.get(random.nextInt(laboratories.size())).getLaboratoryId());
 		}
 
-		assignmentRepository.save(assignment);
-		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignment);
+		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignmentRepository.save(assignment));
 	}
 
 	public List<AssignmentDto> getAssignments(UUID classroomId) {
-//		System.out.println(DtoMapper.INSTANCE.assignmentToAssignmentDto(assignmentRepository.findAllByClassroom_ClassroomId(classroomId)));
-		List<Assignment> assignments = assignmentRepository.findAllByClassroom_ClassroomId(classroomId);
-
-		if (assignments.isEmpty()) {
-			throw new ResourceNotFoundException("Assignment not found");
-		}
-
-//		List<AssignmentDto> assignmentDtos = DtoMapper.INSTANCE.assignmentToAssignmentDto(assignments);
-
-		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignments);
+		return DtoMapper.INSTANCE.assignmentToAssignmentDto(entityHelper.findAllAssignmentByClassroomId(classroomId));
 	}
 
-	// might add authorization which prevent student from irrelevant classroom to access one assignment
 	public AssignmentDto updateAssignment (UUID assignmentId, AssignmentDto assignmentDto) {
-		Optional<Assignment> result = assignmentRepository.findByAssignmentId(assignmentId);
-		Assignment assignment = result.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id : " + assignmentId));
+		Assignment assignment = entityHelper.findAssignmentById(assignmentId);
 
-		Long currentUserId = userService.getCurrentUserId();
+		Long currentUserId = entityHelper.getCurrentUserId();
 		if (!assignment.getProfessor().getProfessorId().equals(currentUserId)) {
 			throw new UnauthorizedAccessException("You do not have permission to update this assignment.");
 		}
@@ -152,9 +118,6 @@ public class AssignmentService {
 		startTime = assignment.getStartTime();
 
 		if (assignmentDto.getStartTime() != null) {
-//			if (assignmentDto.getStartTime().isBefore(now)) {
-//				throw new IllegalArgumentException("Start time cannot be in the past.");
-//			}
 			startTime = assignmentDto.getStartTime();
 			assignment.setStartTime(assignmentDto.getStartTime());
 		}
@@ -185,34 +148,23 @@ public class AssignmentService {
 			assignment.setScore(assignmentDto.getScore());
 		}
 
-		assignmentRepository.save(assignment);
 
-		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignment);
+
+		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignmentRepository.save(assignment));
 
 	}
 
 	public void deleteAssignment (UUID assignmentId) {
-		Optional<Assignment> result = assignmentRepository.findByAssignmentId(assignmentId);
-		Assignment assignment = result.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id : " + assignmentId));
-
-		Long currentUserId = userService.getCurrentUserId();
-		if (!assignment.getProfessor().getProfessorId().equals(currentUserId)) {
+		Assignment assignment = entityHelper.findAssignmentById(assignmentId);
+		if (!assignment.getProfessor().getProfessorId().equals(entityHelper.getCurrentUserId())) {
 			throw new UnauthorizedAccessException("You do not have permission to delete this assignment.");
 		}
-
-//		if (assignmentRepository.existsById(assignmentId)) {
 			assignmentRepository.deleteById(assignmentId);
-//		} else {
-//			throw new ResourceNotFoundException("Assignment not found with Id : " + assignmentId);
-//		}
 	}
 
 
 	public AssignmentDto getAssignment(UUID assignmentId) {
-		Optional<Assignment> result = assignmentRepository.findByAssignmentId(assignmentId);
-		Assignment assignment = result.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id : " + assignmentId));
-
-		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignment);
+		return DtoMapper.INSTANCE.assignmentToAssignmentDto(entityHelper.findAssignmentById(assignmentId));
 
 	}
 }

@@ -9,6 +9,7 @@ import com.backend.questify.Exception.UnauthorizedAccessException;
 import com.backend.questify.Model.Role;
 import com.backend.questify.Repository.*;
 import com.backend.questify.Util.DtoMapper;
+import com.backend.questify.Util.EntityHelper;
 import com.backend.questify.Util.ShortUUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -25,33 +26,18 @@ import java.util.UUID;
 
 @Service
 public class ClassroomService {
-	@Autowired
-	private AssignmentRepository assignmentRepository;
 
 	@Autowired
 	private ClassroomRepository classroomRepository;
 
 	@Autowired
-	private StudentRepository studentRepository;
-
-	@Autowired
-	private ProfessorRepository professorRepository;
-
-	@Autowired
-	private UserService userService;
-
+	private EntityHelper entityHelper;
 
 //	@Autowired
-//	private ProfessorService
-
-//	public ClassroomDto createClassroom() {
-//
-//	}
+//	private UserService userService;
 
 	public ClassroomDto createClassroom(ClassroomDto classroomDto) {
-		Long professorId = userService.getCurrentUserId();
-		Optional<Professor> result = professorRepository.findById(professorId);
-		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + professorId));
+		Professor professor = entityHelper.findProfessorById(entityHelper.getCurrentUserId());
 
 		if (classroomRepository.existsByTitleAndProfessor(classroomDto.getTitle(), professor)) {
 			throw new IllegalArgumentException("Classroom title cannot be duplicated.");
@@ -63,21 +49,18 @@ public class ClassroomService {
 											  .description(classroomDto.getDescription())
 											  .professor(professor)
 											  .build();
-		classroomRepository.save(createdClassroom);
 
-		//		ProfessorDto professorsDto = DtoMapper.INSTANCE.professorToProfessorDto(professor);
-		return DtoMapper.INSTANCE.classroomToClassroomDto(createdClassroom);
+		return DtoMapper.INSTANCE.classroomToClassroomDto(classroomRepository.save(createdClassroom));
 	}
 
 	public List<ClassroomDto> getClassrooms() {
-		Long currentUserId = userService.getCurrentUserId();
-		User currentUser = userService.getCurrentUser();
+		User currentUser = entityHelper.getCurrentUser();
 		List<Classroom> classrooms;
 
 		if (currentUser.getRole() == Role.ProfAcc) {
-			classrooms = classroomRepository.findByProfessor_ProfessorId(currentUserId);
+			classrooms = classroomRepository.findByProfessor_ProfessorId(currentUser.getUserId());
 		} else if (currentUser.getRole() == Role.StdAcc) {
-			classrooms = classroomRepository.findByStudents_StudentId(currentUserId);
+			classrooms = classroomRepository.findByStudents_StudentId(currentUser.getUserId());
 		} else {
 			throw new UnauthorizedAccessException("You do not have permission to access classrooms.");
 		}
@@ -88,11 +71,9 @@ public class ClassroomService {
 	}
 
 	public ClassroomDto updateClassroom(UUID classroomId, ClassroomDto classroomDto) {
-		Long currentUserId = userService.getCurrentUserId();
-		Optional<Classroom> result = classroomRepository.findById(classroomId);
-		Classroom classroom = result.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
+		Classroom classroom = entityHelper.findClassroomById(classroomId);
 
-		if (!classroom.getProfessor().getProfessorId().equals(currentUserId)) {
+		if (!classroom.getProfessor().getProfessorId().equals(entityHelper.getCurrentUserId())) {
 			throw new UnauthorizedAccessException("You do not have permission to update this classroom.");
 		}
 
@@ -113,24 +94,19 @@ public class ClassroomService {
 		classroom.setTitle(classroomDto.getTitle());
 		classroom.setDescription(classroomDto.getDescription());
 
-		classroomRepository.save(classroom);
-
-		return DtoMapper.INSTANCE.classroomToClassroomDto(classroom);
+		return DtoMapper.INSTANCE.classroomToClassroomDto(classroomRepository.save(classroom));
 	}
 
 	public ClassroomDto getClassroom(UUID classroomId) {
-		Optional<Classroom> result = classroomRepository.findById(classroomId);
-		Classroom classroom = result.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
-		return DtoMapper.INSTANCE.classroomToClassroomDto(classroom);
+		return DtoMapper.INSTANCE.classroomToClassroomDto(entityHelper.findClassroomById(classroomId));
 	}
 
 	public void deleteClassroom(UUID classroomId) {
-		Long currentUserId = userService.getCurrentUserId();
+		Long currentUserId = entityHelper.getCurrentUserId();
 
 		if (classroomRepository.existsById(classroomId)) {
-			Optional<Classroom> result = classroomRepository.findById(classroomId);
-			Classroom classroom = result.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
 
+			Classroom classroom = entityHelper.findClassroomById(classroomId);
 			if (!classroom.getProfessor().getProfessorId().equals(currentUserId)) {
 				throw new UnauthorizedAccessException("You do not have permission to update this classroom.");
 			}
@@ -145,10 +121,7 @@ public class ClassroomService {
 		Optional<Classroom> classroomResult = classroomRepository.findByInvitationCode(invitationCode);
 		Classroom classroom = classroomResult.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with this invitation code : " + invitationCode));
 
-		Long currentUserId = userService.getCurrentUserId();
-		Optional<Student> studentResult = studentRepository.findById(currentUserId);
-		Student student = studentResult.orElseThrow(() -> new ResourceNotFoundException("Student not found with Id : " + currentUserId));
-
+		Student student = entityHelper.findStudentById(entityHelper.getCurrentUserId());
 
 		if (classroom.getStudents().contains(student)) {
 			throw new IllegalArgumentException("Student is already enrolled in this classroom");
@@ -157,57 +130,26 @@ public class ClassroomService {
 		classroom.addStudent(student);
 		classroomRepository.save(classroom);
 
-//		System.out.println(classroom.getStudents().);
 		return DtoMapper.INSTANCE.classroomToClassroomDto(classroom);
 	}
 
 	public ClassroomDto removeFromClassroom(UUID classroomId, Long studentId) {
-		Optional<Classroom> classroomResult = classroomRepository.findById(classroomId);
-		Classroom classroom = classroomResult.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
 
-		Long currentUserId = userService.getCurrentUserId();
-		if (!classroom.getProfessor().getProfessorId().equals(currentUserId)) {
+		Classroom classroom = entityHelper.findClassroomById(classroomId);
+
+		if (!classroom.getProfessor().getProfessorId().equals(entityHelper.getCurrentUserId())) {
 			throw new UnauthorizedAccessException("You do not have permission to update this classroom.");
 		}
 
-		Optional<Student> studentResult = studentRepository.findById(studentId);
-		Student student = studentResult.orElseThrow(() -> new ResourceNotFoundException("Student not found with Id : " + studentId));
+		Student student = entityHelper.findStudentById(studentId);
 
 		if (!classroom.getStudents().contains(student)) {
 			throw new ResourceNotFoundException("Student with Id : " + studentId + " not found in this classroom");
 		}
 
 		classroom.removeStudent(student);
-		classroomRepository.save(classroom);
 
-		return DtoMapper.INSTANCE.classroomToClassroomDto(classroom);
+		return DtoMapper.INSTANCE.classroomToClassroomDto(classroomRepository.save(classroom));
 	}
-
-//
-//	public SubmissionDto createSubmission(Long userId) {
-////		if (studentOpt.isPresent()) {
-////			Student student = studentOpt.get();
-//		Submission newSubmission = new Submission();
-//		newSubmission.setStudent(studentRepository.findByStudentId(1L));
-////		System.out.println(newSubmission);
-////			newSubmission.setSubmissionId(22L);
-//		return DtoMapper.INSTANCE.submissionToSubmissionDto(submissionRepository.save(newSubmission));
-////		} else {
-////			throw new IllegalArgumentException("No student found with ID: " + userId);
-////		}
-//	}
-//
-//	public String executeSubmission(Long submissionId, String language) {
-//		Optional<Submission> submission = submissionRepository.findById(submissionId);
-//		if (submission.isPresent()) {
-//			SubmissionDto submissionDto = DtoMapper.INSTANCE.submissionToSubmissionDto(submission.get());
-//			Map<String, String> snippets = submissionDto.getCodeSnippets();
-//			System.out.println(snippets);
-//			if (snippets.containsKey(language)) {
-//				return executeCode(snippets.get(language), language, "");
-//			}
-//		}
-//		throw new IllegalArgumentException("Submission or language not found");
-//	}
 
 }
