@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -51,5 +53,12 @@ public class Assignment {
 	@ManyToOne
 	@JoinColumn(name = "classroom_id")
 	private Classroom classroom;
+
+
+	@ElementCollection
+	@CollectionTable(name = "assignment_student_labs", joinColumns = @JoinColumn(name = "assignment_id"))
+	@MapKeyJoinColumn(name = "student_id")
+	@Column(name = "laboratory_id")
+	private Map<Long, UUID> studentLabAssignments = new HashMap<>();
 
 }

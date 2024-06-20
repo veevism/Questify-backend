@@ -2,12 +2,11 @@ package com.backend.questify.Service;
 
 import com.backend.questify.DTO.LaboratoryDto;
 import com.backend.questify.Entity.*;
+import com.backend.questify.Exception.BadRequestException;
 import com.backend.questify.Exception.ResourceNotFoundException;
-import com.backend.questify.Repository.AssignmentRepository;
-import com.backend.questify.Repository.ClassroomRepository;
-import com.backend.questify.Repository.LaboratoryRepository;
-import com.backend.questify.Repository.ProfessorRepository;
+import com.backend.questify.Repository.*;
 import com.backend.questify.Util.DtoMapper;
+import com.backend.questify.Util.EntityHelper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -19,6 +18,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.backend.questify.Model.Role.ProfAcc;
+import static com.backend.questify.Model.Role.StdAcc;
+
 @Service
 public class LaboratoryService {
 
@@ -26,27 +28,25 @@ public class LaboratoryService {
 	private LaboratoryRepository laboratoryRepository;
 
 	@Autowired
-	private AssignmentRepository assignmentRepository;
-
-	@Autowired
-	private ProfessorRepository professorRepository;
-
-	@Autowired
-	private ClassroomRepository classroomRepository;
+	private UserRepository userRepository;
 
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private EntityHelper entityHelper;
 
+	private User getCurrentUser() {
+		Long userId = userService.getCurrentUserId();
+		return userRepository.findById(userId)
+							 .orElseThrow(() -> new ResourceNotFoundException("User Not Found With This Id: " + userId));
+	}
 
 	public LaboratoryDto createLaboratory (UUID assignmentId, LaboratoryDto laboratoryDto) {
 
 		Long professorId = userService.getCurrentUserId();
-		Optional<Professor> result = professorRepository.findById(professorId);
-		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + professorId));
-
-		Optional<Assignment> assignmentResult = assignmentRepository.findById(assignmentId);
-		Assignment assignment = assignmentResult.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id : " + assignmentId));
+		Professor professor = entityHelper.findProfessorById(professorId);
+		Assignment assignment = entityHelper.findAssignmentById(assignmentId);
 
 		Laboratory createdLaboratory = Laboratory.builder()
 				.assignment(assignment)
@@ -62,18 +62,30 @@ public class LaboratoryService {
 	}
 
 	public List<LaboratoryDto> getLaboratories(UUID assignmentId) {
+		User user = getCurrentUser();
+		Assignment assignment = entityHelper.findAssignmentById(assignmentId);
+		if (user.getRole() == StdAcc) {
+			Student student = user.getStudent();
+			UUID laboratoryId = assignment.getStudentLabAssignments().get(student.getStudentId());
+			List<Laboratory> laboratories = laboratoryRepository.findAllByLaboratoryId(laboratoryId);
+			if (laboratories.isEmpty()) {
+				throw new ResourceNotFoundException("Laboratories not found");
+			}
+			return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratories);
 
-		List<Laboratory> laboratories = laboratoryRepository.findAllByAssignment_AssignmentId(assignmentId);
+		} else if (user.getRole() == ProfAcc) {
+			List<Laboratory> laboratories = laboratoryRepository.findAllByAssignment(assignment);
+			if (laboratories.isEmpty()) {
+				throw new ResourceNotFoundException("Laboratories not found");
+			}
+			return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratories);
 
-		if (laboratories.isEmpty()) {
-			throw new ResourceNotFoundException("Laboratories not found");
-
+		} else {
+			throw new BadRequestException("Bad User"); //! Todo : Cope with this
 		}
-
-		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratories);
-
 	}
 
+	//
 	public LaboratoryDto getLaboratory(UUID laboratoryId) {
 		Optional<Laboratory> result = laboratoryRepository.findById(laboratoryId);
 
@@ -93,10 +105,8 @@ public class LaboratoryService {
 
 	@Transactional
 	public LaboratoryDto updateLaboratory(UUID laboratoryId, LaboratoryDto laboratoryDto) {
-		Optional<Laboratory> result = laboratoryRepository.findById(laboratoryId);
 
-		Laboratory laboratory = result.orElseThrow(() -> new ResourceNotFoundException
-				("Laboratory not found with Id : " + laboratoryId));
+		Laboratory laboratory = entityHelper.findLaboratoryById(laboratoryId);
 
 		if (laboratoryDto.getLabTitle() != null && !laboratoryDto.getLabTitle().trim().isEmpty()) {
 			laboratory.setLabTitle(laboratoryDto.getLabTitle());

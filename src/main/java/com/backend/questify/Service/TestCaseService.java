@@ -46,14 +46,17 @@ public class TestCaseService {
 
 	public List<TestCaseDto> getTestCases(UUID laboratoryId) {
 
-		List<TestCase> testCases = testCaseRepository.findAllByLaboratory_LaboratoryId(laboratoryId);
+		Optional<Laboratory> laboratoryResult = laboratoryRepository.findById(laboratoryId);
 
-		if (testCases.isEmpty()) {
+		Laboratory laboratory = laboratoryResult.orElseThrow(() -> new ResourceNotFoundException("Laboratory not found with Id : " + laboratoryId));
+		// change to list due to hierachy sake
+
+		if (laboratory.getTestCases().isEmpty()) {
 			throw new ResourceNotFoundException("Test Cases not found");
 
 		}
 
-		return DtoMapper.INSTANCE.testCaseToTestCaseDto(testCases);
+		return DtoMapper.INSTANCE.testCaseToTestCaseDto(laboratory.getTestCases());
 	}
 
 	public TestCaseDto getTestCase(UUID testCaseId) {

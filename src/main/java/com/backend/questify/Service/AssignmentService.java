@@ -3,22 +3,21 @@ package com.backend.questify.Service;
 import com.backend.questify.DTO.AssignmentDto;
 import com.backend.questify.DTO.ClassroomDto;
 import com.backend.questify.DTO.ProfessorDto;
-import com.backend.questify.Entity.Assignment;
-import com.backend.questify.Entity.Classroom;
-import com.backend.questify.Entity.Professor;
+import com.backend.questify.Entity.*;
 import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Exception.UnauthorizedAccessException;
-import com.backend.questify.Repository.AssignmentRepository;
-import com.backend.questify.Repository.ClassroomRepository;
-import com.backend.questify.Repository.ProfessorRepository;
+import com.backend.questify.Repository.*;
 import com.backend.questify.Util.DtoMapper;
+import com.backend.questify.Util.EntityHelper;
 import com.backend.questify.Util.ShortUUIDGenerator;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -33,20 +32,28 @@ public class AssignmentService {
 	private ProfessorRepository professorRepository;
 
 	@Autowired
+	private StudentRepository studentRepository;
+
+	@Autowired
+	private LaboratoryRepository laboratoryRepository;
+
+	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private EntityHelper entityHelper;
+
+
 
 	public AssignmentDto createAssignment(Assignment assignment, UUID classroomId) {
 		Long professorId = userService.getCurrentUserId();
-		Optional<Professor> result = professorRepository.findById(professorId);
-		Professor professor = result.orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + professorId));
-
-		Optional<Classroom> classroomResult = classroomRepository.findById(classroomId);
-		Classroom classroom = classroomResult.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
-
+		Professor professor = entityHelper.findProfessorById(professorId);
+		Classroom classroom = entityHelper.findClassroomById(classroomId);
 		Long currentUserId = userService.getCurrentUserId();
 		if (!classroom.getProfessor().getProfessorId().equals(currentUserId)) {
 			throw new UnauthorizedAccessException("You do not have permission to create assignment in this classroom");
 		}
+		//! Do This every function in this class
 
 
 		LocalDateTime now = LocalDateTime.now();
@@ -83,6 +90,37 @@ public class AssignmentService {
 
 		assignmentRepository.save(createdAssignment);
 		return DtoMapper.INSTANCE.assignmentToAssignmentDto(createdAssignment);
+	}
+
+	@Transactional
+	public AssignmentDto assignLabToStudent(UUID assignmentId, UUID laboratoryId, Long studentId) {
+		Assignment assignment = assignmentRepository.findById(assignmentId)
+													.orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id: " + assignmentId));
+
+		assignment.getStudentLabAssignments().put(entityHelper.findStudentById(studentId).getStudentId(), entityHelper.findLaboratoryById(laboratoryId).getLaboratoryId());
+
+		assignmentRepository.save(assignment);
+
+		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignment);
+	}
+
+	//! Todo : Delete student from classroom delete them from assignment too
+
+	@Transactional
+	public AssignmentDto randomAssignLabs(UUID assignmentId) {
+		Assignment assignment = entityHelper.findAssignmentById(assignmentId);
+
+		assignment.getStudentLabAssignments().clear();
+		List<Student> students = assignment.getClassroom().getStudents();
+		List<Laboratory> laboratories = entityHelper.findLaboratoryByAssignment(assignment);
+
+		Random random = new Random();
+		for (Student student : students) {
+			assignment.getStudentLabAssignments().put(student.getStudentId(), laboratories.get(random.nextInt(laboratories.size())).getLaboratoryId());
+		}
+
+		assignmentRepository.save(assignment);
+		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignment);
 	}
 
 	public List<AssignmentDto> getAssignments(UUID classroomId) {

@@ -31,6 +31,26 @@ public class AssignmentController {
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
+
+	@PostMapping("/assign-laboratory")
+	@PreAuthorize("hasRole('ProfAcc')")
+	public ResponseEntity<ApiResponse<AssignmentDto>> assignLabToStudent(@RequestParam UUID assignmentId, @RequestParam UUID laboratoryId, @RequestParam Long studentId) {
+		AssignmentDto assignmentDto = assignmentService.assignLabToStudent(assignmentId, laboratoryId, studentId);
+		ApiResponse<AssignmentDto> response = ApiResponse.success(assignmentDto, HttpStatus.OK, "Assign Laboratory Successfully");
+
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
+	@PostMapping("/assign-laboratory-random")
+	@PreAuthorize("hasRole('ProfAcc')")
+	public ResponseEntity<ApiResponse<AssignmentDto>> randomAssignLabs(
+			@RequestParam UUID assignmentId) {
+		AssignmentDto assignmentDto = assignmentService.randomAssignLabs(assignmentId);
+		ApiResponse<AssignmentDto> response = ApiResponse.success(assignmentDto, HttpStatus.OK, "Assign Laboratory Randomly Successfully");
+
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
 	@PutMapping("")
 	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<AssignmentDto>> updateAssignment(@RequestParam UUID assignmentId,@RequestBody AssignmentDto assignmentDto) {

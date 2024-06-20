@@ -46,22 +46,6 @@ private UUID laboratoryId;
 	@Column(columnDefinition = "TEXT")
 	private String problemStatement;
 
-//	@ElementCollection
-//	@CollectionTable(name = "laboratory_inputs", joinColumns = @JoinColumn(name = "laboratory_id"))
-//	private List<LaboratoryInput> inputs = new ArrayList<>(); // display as a seperate view to indicate the input just that.
-//
-//	@Lob
-//	@Column(columnDefinition = "TEXT")
-//	private List<LaboratoryOutput> output;
-
-//	@Lob
-//	@Column(columnDefinition = "TEXT")
-//	private String sampleInput;
-//
-//	@Lob
-//	@Column(columnDefinition = "TEXT")
-//	private String sampleOutput;
-
 	@CreationTimestamp
 	@Column(updatable = false)
 	private LocalDateTime createdAt;
@@ -82,8 +66,5 @@ private UUID laboratoryId;
 		testCases.remove(testCase);
 		testCase.setLaboratory(null);
 	}
-	//mappedby = "problem"
-//	@OneToMany( cascade = CascadeType.ALL, orphanRemoval = true)
-//	private List<TestCase> testCases = new ArrayList<>();
 
 }
