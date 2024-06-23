@@ -77,6 +77,29 @@ public class AssignmentService {
 		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignment);
 	}
 
+	@Transactional
+	public AssignmentDto unAssignedLabToStudent(UUID assignmentId, Long studentId) {
+		Assignment assignment = entityHelper.findAssignmentById(assignmentId);
+
+		if (assignment.getStudentLabAssignments().containsKey(studentId)) {
+			assignment.getStudentLabAssignments().remove(studentId);
+			assignmentRepository.save(assignment);
+		} else {
+			throw new ResourceNotFoundException("Student with ID " + studentId + " not found in assignment " + assignmentId);
+		}
+
+		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignment);
+	}
+
+	@Transactional
+	public AssignmentDto unAssignedLabToStudents(UUID assignmentId) {
+		Assignment assignment = entityHelper.findAssignmentById(assignmentId);
+
+		assignment.getStudentLabAssignments().clear();
+
+		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignmentRepository.save(assignment));
+	}
+
 	//! Todo : Delete student from classroom delete them from assignment too
 
 	@Transactional

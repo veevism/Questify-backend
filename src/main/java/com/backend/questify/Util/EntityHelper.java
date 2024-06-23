@@ -1,5 +1,6 @@
 package com.backend.questify.Util;
 
+import com.backend.questify.DTO.StudentDto;
 import com.backend.questify.Entity.*;
 import com.backend.questify.Exception.ListIsNotEmptyException;
 import com.backend.questify.Exception.ResourceNotFoundException;
@@ -13,8 +14,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 public class EntityHelper {
@@ -101,8 +102,27 @@ public class EntityHelper {
 		return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 	}
 
+	public List<StudentDto> filterStudentsByQuery(List<StudentDto> students, String query) {
+		return students.stream()
+					   .filter(student -> student.getStudentId().toString().contains(query) ||
+							   student.getFirstName_EN().contains(query) ||
+							   student.getDisplayName().contains(query))
+					   .collect(Collectors.toList());
+	}
+
+
 	public User findUserById(Long userId) {
 		return userRepository.findById(userId).orElseThrow(
 				() -> new ResourceNotFoundException("User Not Found With This Id: " + userId));
+	}
+
+//	public Classroom findClassroomByAssignment(Assignment assignment) {
+//		return ClassroomRepository.find
+//	}
+
+
+	public List<Student> findStudentsByAssignmentId(UUID assignmentId) {
+
+		return studentRepository.findStudentsByAssignment(findAssignmentById(assignmentId));
 	}
 }

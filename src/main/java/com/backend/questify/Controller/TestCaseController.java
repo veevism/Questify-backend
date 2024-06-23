@@ -24,34 +24,26 @@ public class TestCaseController {
 	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<TestCaseDto>> createTestCase(@RequestParam UUID laboratoryId,
 																   @RequestBody TestCaseDto testCaseDto) {
-		TestCaseDto testCaseDto1 = testCaseService.createTestCase(laboratoryId, testCaseDto);
-
-		ApiResponse<TestCaseDto> response = ApiResponse.success(testCaseDto1, HttpStatus.OK, "Create Test Case Successfully" );
+		ApiResponse<TestCaseDto> response = ApiResponse.success(testCaseService.createTestCase(laboratoryId, testCaseDto), HttpStatus.OK, "Create Test Case Successfully" );
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@GetMapping("/laboratory")
 	public ResponseEntity<ApiResponse<List<TestCaseDto>>> getTestCases(@RequestParam UUID laboratoryId) {
-		List<TestCaseDto> testCaseDto1 = testCaseService.getTestCases(laboratoryId);
-
-		ApiResponse<List<TestCaseDto>> response = ApiResponse.success(testCaseDto1, HttpStatus.OK, "Get All Test Case Successfully" );
+		ApiResponse<List<TestCaseDto>> response = ApiResponse.success(testCaseService.getTestCases(laboratoryId), HttpStatus.OK, "Get All Test Case Successfully" );
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@GetMapping("")
 	public ResponseEntity<ApiResponse<TestCaseDto>> getTestCase(@RequestParam UUID testCaseId) {
-		TestCaseDto testCaseDto = testCaseService.getTestCase(testCaseId);
-
-		ApiResponse<TestCaseDto> response = ApiResponse.success(testCaseDto, HttpStatus.OK, "Get Test Case Successfully");
+		ApiResponse<TestCaseDto> response = ApiResponse.success(testCaseService.getTestCase(testCaseId), HttpStatus.OK, "Get Test Case Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@PutMapping("")
 	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<TestCaseDto>> updateTestCase(@RequestParam UUID testCaseId, @RequestBody TestCaseDto testCaseDto) {
-		TestCaseDto updatedTestCase = testCaseService.updateTestCase(testCaseId, testCaseDto);
-
-		ApiResponse<TestCaseDto> response = ApiResponse.success(updatedTestCase, HttpStatus.OK, "Update Test Case Successfully");
+		ApiResponse<TestCaseDto> response = ApiResponse.success(testCaseService.updateTestCase(testCaseId, testCaseDto), HttpStatus.OK, "Update Test Case Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 

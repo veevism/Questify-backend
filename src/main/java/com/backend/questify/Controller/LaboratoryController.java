@@ -32,12 +32,14 @@ public class LaboratoryController {
 
 
 	@GetMapping("/assignment")
+	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
 	public ResponseEntity<ApiResponse<List<LaboratoryDto>>> getLaboratories(@RequestParam UUID assignmentId) {
 		ApiResponse<List<LaboratoryDto>> response = ApiResponse.success(laboratoryService.getLaboratories(assignmentId) , HttpStatus.OK, "Get Laboratories Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@GetMapping("")
+	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
 	public ResponseEntity<ApiResponse<LaboratoryDto>> getLaboratory(@RequestParam UUID laboratoryId) {
 		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryService.getLaboratory(laboratoryId) , HttpStatus.OK, "Get Laboratory Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);

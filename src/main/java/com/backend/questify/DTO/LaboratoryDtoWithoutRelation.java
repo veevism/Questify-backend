@@ -15,21 +15,16 @@ import java.util.UUID;
 public class LaboratoryDtoWithoutRelation {
 
 	private UUID laboratoryId;
-
 	private ProfessorDto professor;
-
 	private String labTitle;
 	private String description;
-
 	private String problemStatement;
 	private String inputFormat;
 	private String outputFormat;
 	private String sampleInput;
 	private String sampleOutput;
-
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
-
 	private int testCaseQuantity;
 
 

@@ -1,6 +1,7 @@
 package com.backend.questify.Controller;
 
 import com.backend.questify.DTO.ClassroomDto;
+import com.backend.questify.DTO.StudentDto;
 import com.backend.questify.Model.ApiResponse;
 import com.backend.questify.Service.ClassroomService;
 import org.springframework.beans.factory.annotation.Autowired;

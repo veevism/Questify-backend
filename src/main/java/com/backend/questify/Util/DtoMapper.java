@@ -19,6 +19,8 @@ public interface DtoMapper {
  @Mapping(source = "student", target = "student")
  @Mapping(source = "professor", target = "professor")
  UserDto userToUserDto(User user);
+
+
 //
 
  List<UserDto> userToUserDto(List<User> user);
@@ -43,7 +45,7 @@ ProfessorDto professorToProfessorDto(Professor professor);
  @Mapping(source = "user.displayName" ,target = "displayName")
  StudentDto studentToStudentDto (Student student);
 
- List<StudentDto> studentToStudentDto(List<StudentDto> student);
+ List<StudentDto> studentToStudentDto(List<Student> student);
 
 // @Mapping(source = "classroom.professor", target = "professor")
 // @Mapping(source = "classroom.classroomId", target = "classroomId")

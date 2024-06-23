@@ -35,9 +35,21 @@ public class AssignmentController {
 	@PostMapping("/assign-laboratory")
 	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<AssignmentDto>> assignLabToStudent(@RequestParam UUID assignmentId, @RequestParam UUID laboratoryId, @RequestParam Long studentId) {
-		AssignmentDto assignmentDto = assignmentService.assignLabToStudent(assignmentId, laboratoryId, studentId);
-		ApiResponse<AssignmentDto> response = ApiResponse.success(assignmentDto, HttpStatus.OK, "Assign Laboratory Successfully");
+		ApiResponse<AssignmentDto> response = ApiResponse.success(assignmentService.assignLabToStudent(assignmentId, laboratoryId, studentId), HttpStatus.OK, "Assign Laboratory Successfully");
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
 
+	@DeleteMapping("/assign-laboratory")
+	@PreAuthorize("hasRole('ProfAcc')")
+	public ResponseEntity<ApiResponse<AssignmentDto>> unAssignedLabToStudent(@RequestParam UUID assignmentId, @RequestParam Long studentId) {
+		ApiResponse<AssignmentDto> response = ApiResponse.success(assignmentService.unAssignedLabToStudent(assignmentId, studentId), HttpStatus.OK, "Unassigned Laboratory Successfully");
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
+	@DeleteMapping("/assign-laboratory/all")
+	@PreAuthorize("hasRole('ProfAcc')")
+	public ResponseEntity<ApiResponse<AssignmentDto>> unAssignedLabToStudents(@RequestParam UUID assignmentId) {
+		ApiResponse<AssignmentDto> response = ApiResponse.success(assignmentService.unAssignedLabToStudents(assignmentId), HttpStatus.OK, "Unassigned Laboratory To Students Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
@@ -45,38 +57,29 @@ public class AssignmentController {
 	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<AssignmentDto>> randomAssignLabs(
 			@RequestParam UUID assignmentId) {
-		AssignmentDto assignmentDto = assignmentService.randomAssignLabs(assignmentId);
-		ApiResponse<AssignmentDto> response = ApiResponse.success(assignmentDto, HttpStatus.OK, "Assign Laboratory Randomly Successfully");
-
+		ApiResponse<AssignmentDto> response = ApiResponse.success(assignmentService.randomAssignLabs(assignmentId), HttpStatus.OK, "Assign Laboratory Randomly Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@PutMapping("")
 	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<AssignmentDto>> updateAssignment(@RequestParam UUID assignmentId,@RequestBody AssignmentDto assignmentDto) {
-		AssignmentDto assignmentDto1 = assignmentService.updateAssignment(assignmentId, assignmentDto);
-		ApiResponse<AssignmentDto> response = ApiResponse.success(assignmentDto1, HttpStatus.OK, "Update Classrooms Successfully" );
+		ApiResponse<AssignmentDto> response = ApiResponse.success(assignmentService.updateAssignment(assignmentId, assignmentDto), HttpStatus.OK, "Update Classrooms Successfully" );
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@GetMapping("")
+	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
 	public ResponseEntity<ApiResponse<AssignmentDto>> getAssignment(@RequestParam UUID assignmentId) {
-
-		AssignmentDto assignment = assignmentService.getAssignment(assignmentId);
-
-		ApiResponse<AssignmentDto> response = ApiResponse.success(assignment, HttpStatus.OK, "Get Assignment Successfully" );
-
+		ApiResponse<AssignmentDto> response = ApiResponse.success(assignmentService.getAssignment(assignmentId), HttpStatus.OK, "Get Assignment Successfully" );
 		return ResponseEntity.status(response.getStatus()).body(response);
 
 	}
 
 	@GetMapping("/classroom")
+	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
 	public ResponseEntity<ApiResponse<List<AssignmentDto>>> getAssignments(@RequestParam UUID classroomId) {
-
-		List<AssignmentDto> result = assignmentService.getAssignments(classroomId);
-
-		ApiResponse<List<AssignmentDto>> response = ApiResponse.success(result, HttpStatus.OK, "Get Assignment Successfully" );
-
+		ApiResponse<List<AssignmentDto>> response = ApiResponse.success(assignmentService.getAssignments(classroomId), HttpStatus.OK, "Get Assignments Successfully" );
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
@@ -84,10 +87,7 @@ public class AssignmentController {
 	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<AssignmentDto>> createAssignment(@RequestBody Assignment assignment,
 																	   @RequestParam UUID classroomId) {
-		AssignmentDto result = assignmentService.createAssignment(assignment, classroomId);
-
-		ApiResponse<AssignmentDto> response = ApiResponse.success(result, HttpStatus.CREATED, "Create Assignment Successfully" );
-
+		ApiResponse<AssignmentDto> response = ApiResponse.success(assignmentService.createAssignment(assignment, classroomId), HttpStatus.CREATED, "Create Assignment Successfully" );
 		return ResponseEntity.status(response.getStatus()).body(response);	}
 
 }
