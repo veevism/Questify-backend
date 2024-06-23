@@ -12,7 +12,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StudentWithLaboratory {
-	private StudentDto student;
+//	private StudentDto student;
+	private Long studentId;
+	private String email;
+	private String firstName_EN;
+	private String displayName;
 	private UUID laboratoryId;
 	private String labTitle;
 

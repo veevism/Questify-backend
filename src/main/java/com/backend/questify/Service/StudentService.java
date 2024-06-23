@@ -62,15 +62,13 @@ public class StudentService {
 			Laboratory laboratory = laboratoryId != null ? entityHelper.findLaboratoryById(laboratoryId) : null;
 
 			return StudentWithLaboratory.builder()
-										.student(StudentDto.builder()
-														   .studentId(student.getStudentId())
-														   .email(student.getUser().getEmail())
-														   .firstName_EN(student.getUser().getFirstName_EN())
-														   .displayName(student.getUser().getDisplayName())
-														   .build())
-										.laboratoryId(laboratoryId)
-										.labTitle(laboratory != null ? laboratory.getLabTitle() : null)
-										.build();
+					.studentId(student.getStudentId())
+					.email(student.getUser().getEmail())
+					.firstName_EN(student.getUser().getFirstName_EN())
+					.displayName(student.getUser().getDisplayName())
+					.laboratoryId(laboratoryId)
+					.labTitle(laboratory != null ? laboratory.getLabTitle() : null)
+					.build();
 		}).collect(Collectors.toList());
 	}
 }
