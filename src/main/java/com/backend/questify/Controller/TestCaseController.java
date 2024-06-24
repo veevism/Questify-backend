@@ -55,5 +55,15 @@ public class TestCaseController {
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
+	@DeleteMapping("/all")
+	@PreAuthorize("hasRole('ProfAcc')")
+	public ResponseEntity<ApiResponse<Void>> deleteTestCases(@RequestParam UUID laboratoryId) {
+		testCaseService.deleteTestCases(laboratoryId);
+		ApiResponse<Void> response = ApiResponse.success(null, HttpStatus.OK, "Delete Test Cases Successfully" );
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
+
+
 
 }

@@ -24,7 +24,7 @@ public class StudentService {
 
 	public List<StudentWithLaboratory> getStudents(UUID classroomId, UUID assignmentId, String query) {
 		if (assignmentId != null) {
-			return getStudentsWithLaboratoriesByAssignment(assignmentId);
+			return ListIsNotEmptyException.requireNotEmpty(getStudentsWithLaboratoriesByAssignment(assignmentId),Student.class.getSimpleName());
 
 		}
 //			entityHelper.filterStudentsByQuery(), query);

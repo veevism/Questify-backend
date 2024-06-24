@@ -83,4 +83,13 @@ public class TestCaseService {
 
 		return DtoMapper.INSTANCE.testCaseToTestCaseDto(testCaseRepository.save(testCase));
 	}
+
+	public void deleteTestCases(UUID laboratoryId) {
+
+		Laboratory laboratory = entityHelper.findLaboratoryById(laboratoryId);
+
+		laboratory.getTestCases().clear();
+
+		laboratoryRepository.save(laboratory);
+	}
 }
