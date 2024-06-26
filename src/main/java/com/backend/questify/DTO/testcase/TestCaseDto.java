@@ -20,5 +20,5 @@ public class TestCaseDto {
 	private UUID testCaseId;
 	private String input;
 	private String expectedOutput;
-	private LaboratoryDtoWithoutRelation laboratory;
+//	private LaboratoryDtoWithoutRelation laboratory;
 }

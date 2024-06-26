@@ -3,6 +3,7 @@ package com.backend.questify.DTO;
 import com.backend.questify.Entity.Classroom;
 import com.backend.questify.Entity.Professor;
 import com.backend.questify.Entity.Student;
+import com.backend.questify.Model.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,7 @@ public class AssignmentDto {
 
 	private Integer score;
 
-	private Boolean isActive;
+	private Status status;
 
 	private LocalDateTime startTime;
 

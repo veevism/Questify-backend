@@ -1,5 +1,6 @@
 package com.backend.questify.DTO;
 
+import com.backend.questify.Model.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class AssignmentDtoWithoutProfessor {
 
 	private Integer score;
 
-	private Boolean isActive;
+	private Status status;
 
 	private LocalDateTime startTime;
 
@@ -29,5 +30,4 @@ public class AssignmentDtoWithoutProfessor {
 
 //	private Student student;
 
-	private ClassroomDtoWithoutProfessor classroom;
 }

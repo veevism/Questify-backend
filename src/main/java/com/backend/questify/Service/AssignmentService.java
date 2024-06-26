@@ -58,7 +58,7 @@ public class AssignmentService {
 														 .description(assignment.getDescription())
 														 .professor(professor)
 														 .classroom(classroom)
-														 .isActive(true)
+														 .status(assignment.getStatus())
 												 		 .startTime(assignment.getStartTime())
 												 		 .endTime(assignment.getEndTime())
 														 .build();
@@ -158,8 +158,8 @@ public class AssignmentService {
 			assignment.setDescription(assignmentDto.getDescription());
 		}
 
-		if (assignmentDto.getIsActive() != null) {
-			assignment.setIsActive(assignmentDto.getIsActive());
+		if (assignmentDto.getStatus() != null) {
+			assignment.setStatus(assignmentDto.getStatus());
 		}
 
 		if (assignmentDto.getScore() != null) {

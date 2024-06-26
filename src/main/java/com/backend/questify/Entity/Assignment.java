@@ -1,6 +1,7 @@
 package com.backend.questify.Entity;
 
 import com.backend.questify.Model.GradingCriteria;
+import com.backend.questify.Model.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +35,8 @@ public class Assignment {
 
 //	@Column(nullable = true)
 //	private LocalDateTime submissionTime;
-	private Boolean isActive = true;
+	private Status status;
+//	private Boolean isActive = true;
 
 	@Column(nullable = true)
 	private LocalDateTime startTime;

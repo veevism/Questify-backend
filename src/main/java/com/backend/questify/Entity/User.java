@@ -34,8 +34,6 @@ public class User {
 	@Column
 	private String organization_name_EN;
 
-	@Column
-	private String image;
 
 	@Column(nullable = false, unique = true)
 	private String email;

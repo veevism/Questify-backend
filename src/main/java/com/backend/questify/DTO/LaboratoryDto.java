@@ -24,10 +24,6 @@ public class LaboratoryDto {
 	private String description;
 
 	private String problemStatement;
-	private String inputFormat;
-	private String outputFormat;
-	private String sampleInput;
-	private String sampleOutput;
 
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
