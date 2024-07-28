@@ -11,8 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface SubmissionRepository extends JpaRepository<Submission, Long> {
-	Optional<Submission> findByLaboratoryAndStudent(Question question, Student student);
+	Optional<Submission> findByQuestionAndStudent(Question question, Student student);
 
-	Optional<Submission> findByLaboratoryAndProfessor (Question question, Professor professor);
+	Optional<Submission> findByQuestionAndProfessor (Question question, Professor professor);
 
 }

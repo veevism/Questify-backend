@@ -26,5 +26,5 @@ public interface LaboratoryRepository extends JpaRepository<Laboratory, UUID> {
 
     List<Laboratory> findAllByProfessor_ProfessorId(Long userId);
 
-    List<Laboratory> findAllByStudent_StudentId(Long userId);
+//    List<Laboratory> findAll(Long userId);
 }

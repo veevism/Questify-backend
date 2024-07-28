@@ -54,7 +54,7 @@ public class SubmissionService {
 
 			Student student = entityHelper.findStudentById(userId);
 
-			Optional<Submission> existingSubmission = submissionRepository.findByLaboratoryAndStudent(question, student);
+			Optional<Submission> existingSubmission = submissionRepository.findByQuestionAndStudent(question, student);
 			if (existingSubmission.isPresent()) {
 				return DtoMapper.INSTANCE.submissionToSubmissionDto(existingSubmission.get());
 			}
@@ -69,7 +69,7 @@ public class SubmissionService {
 
 			Professor professor = entityHelper.findProfessorById(userId);
 
-			Optional<Submission> existingSubmission = submissionRepository.findByLaboratoryAndProfessor(question, professor);
+			Optional<Submission> existingSubmission = submissionRepository.findByQuestionAndProfessor(question, professor);
 			if (existingSubmission.isPresent()) {
 				return DtoMapper.INSTANCE.submissionToSubmissionDto(existingSubmission.get());
 			}
@@ -129,11 +129,11 @@ public class SubmissionService {
 		Submission submission = null;
 
 		if (user.getRole() == StdAcc) {
-			submission = submissionRepository.findByLaboratoryAndStudent(question, entityHelper.findStudentById(userId)).orElseThrow(
+			submission = submissionRepository.findByQuestionAndStudent(question, entityHelper.findStudentById(userId)).orElseThrow(
 					() -> new ResourceNotFoundException("Submission Not Found With Question Id : " + questionId));
 
 		} else if (user.getRole() == ProfAcc) {
-			submission = submissionRepository.findByLaboratoryAndProfessor(question, entityHelper.findProfessorById(userId)).orElseThrow(
+			submission = submissionRepository.findByQuestionAndProfessor(question, entityHelper.findProfessorById(userId)).orElseThrow(
 					() -> new ResourceNotFoundException("Submission Not Found With Question Id : " + questionId));
 		}
 
