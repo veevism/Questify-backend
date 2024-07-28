@@ -18,7 +18,4 @@ public class ProfessorDto {
 	private String email;
 	private String firstName_EN;
 	private String displayName;
-//	private UserDto user;
-//	private AssignmentDto assignmentDto;
-//	private ClassroomDto classroomDto;
 }

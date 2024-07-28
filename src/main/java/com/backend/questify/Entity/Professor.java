@@ -24,25 +24,8 @@ public class Professor {
 	@JsonBackReference
 	private User user;
 
-
-	@OneToMany(mappedBy = "professor")
-	private Set<Classroom> classrooms;
-
-	@OneToMany(mappedBy = "professor")
-	private Set<Assignment> assignments;
-
 	@OneToMany(mappedBy = "professor")
 	private Set<Laboratory> laboratories;
-
-	public void addAssignment(Assignment assignment) {
-		assignments.add(assignment);
-//		assignment.setProfessor(this);
-	}
-
-	public void removeAssignment(Assignment assignment) {
-		assignments.remove(assignment);
-		assignment.setProfessor(null);
-	}
 
 
 }

@@ -1,6 +1,6 @@
 package com.backend.questify.Repository;
 
-import com.backend.questify.Entity.Laboratory;
+import com.backend.questify.Entity.Question;
 import com.backend.questify.Entity.Professor;
 import com.backend.questify.Entity.Student;
 import com.backend.questify.Entity.Submission;
@@ -11,8 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface SubmissionRepository extends JpaRepository<Submission, Long> {
-	Optional<Submission> findByLaboratoryAndStudent(Laboratory laboratory, Student student);
+	Optional<Submission> findByLaboratoryAndStudent(Question question, Student student);
 
-	Optional<Submission> findByLaboratoryAndProfessor (Laboratory laboratory, Professor professor);
+	Optional<Submission> findByLaboratoryAndProfessor (Question question, Professor professor);
 
 }

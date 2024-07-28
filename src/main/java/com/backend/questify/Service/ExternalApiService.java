@@ -27,6 +27,6 @@ public class ExternalApiService {
 						.retrieve()
 						.bodyToMono(UserRequestDto.class)
 						.onErrorMap(WebClientResponseException.class, e ->
-								new RuntimeException("Error calling external API: " + e.getStatusCode(), e));
+								new RuntimeException("Error calling CMU external API: " + e.getStatusCode(), e));
 	}
 }

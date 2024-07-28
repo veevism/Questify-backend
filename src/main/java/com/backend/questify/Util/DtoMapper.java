@@ -14,25 +14,20 @@ import java.util.List;
 public interface DtoMapper {
  DtoMapper INSTANCE = Mappers.getMapper(DtoMapper.class);
 
+ // --------User
+ List<UserDto> userToUserDto(List<User> user);
  User UserDtoToUser (UserDto userDto);
-
  @Mapping(source = "student", target = "student")
  @Mapping(source = "professor", target = "professor")
  UserDto userToUserDto(User user);
+ // --------
 
-
-//
-
- List<UserDto> userToUserDto(List<User> user);
-
+// --------Submission
  @Mapping(source = "student.studentId", target = "studentId")
  SubmissionDto submissionToSubmissionDto (Submission submission);
-// Optional<SubmissionDto> submissionToSubmissionDto (Submission submission);
+ // --------
 
-
-
-// StudentDto studentToStudentDto(Student student);
-//
+ // --------Professor
 @Mapping(source = "user.email", target = "email")
 @Mapping(source = "user.firstName_EN" ,target = "firstName_EN")
 @Mapping(source = "user.displayName" ,target = "displayName")
@@ -40,39 +35,38 @@ ProfessorDto professorToProfessorDto(Professor professor);
 
  List<ProfessorDto> professorToProfessorDto(List<Professor> professor);
 
+// --------
+
+// --------Student
  @Mapping(source = "user.email", target = "email")
  @Mapping(source = "user.firstName_EN" ,target = "firstName_EN")
  @Mapping(source = "user.displayName" ,target = "displayName")
  StudentDto studentToStudentDto (Student student);
-
  List<StudentDto> studentToStudentDto(List<Student> student);
+// --------
 
-// @Mapping(source = "classroom.professor", target = "professor")
-// @Mapping(source = "classroom.classroomId", target = "classroomId")
-// @Mapping(source = "classroom.title", target = "title")
-// @Mapping(source = "classroom.description", target = "description")
-// @Mapping(source = "classroom.isActive", target = "isActive")
-// @Mapping(source = "classroom.invitationCode", target = "invitationCode")
-//  @Mapping(target = "studentQuantity", expression = "java(classroom.getStudents().size())")
-@Mapping(target = "studentQuantity", expression = "java(classroom.getStudents().size())")
-ClassroomDto classroomToClassroomDto(Classroom classroom);
+ // -------Question
+ List<QuestionDto> questionToQuestionDto ( List<Question> questions);
 
- List<ClassroomDto> classroomToClassroomDto (List<Classroom> classroom);
+ // @Mapping(target = "testCaseQuantity", expression = "java(laboratory.getTestCases().size())")
+ QuestionDto questionToQuestionDto (Question question);
 
- AssignmentDto assignmentToAssignmentDto (Assignment assignment);
-// List<AssignmentDto> assignmentToAssignmentDto (List<AssignmentDto> assignment);
+ // --------
 
- List<AssignmentDto> assignmentToAssignmentDto(List<Assignment> assignment);
+ // --------Laboratory
+ @Mapping(target = "studentQuantity", expression = "java(classroom.getStudents().size())")
+ List<LaboratoryDto> laboratoryToLaboratoryDto ( List<Laboratory> laboratories);
 
- List<LaboratoryDto> laboratoryToLaboratoryDto ( List<Laboratory> laboratory);
-
- @Mapping(target = "testCaseQuantity", expression = "java(laboratory.getTestCases().size())")
+ // @Mapping(target = "testCaseQuantity", expression = "java(laboratory.getTestCases().size())")
  LaboratoryDto laboratoryToLaboratoryDto (Laboratory laboratory);
+//
 
+
+ // --------TestCase
  TestCaseDto testCaseToTestCaseDto (TestCase testCase);
 
  List<TestCaseDto> testCaseToTestCaseDto (List<TestCase> testCase);
-
+//
 
 
 }

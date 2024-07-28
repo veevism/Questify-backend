@@ -1,11 +1,16 @@
 package com.backend.questify.DTO;
 
+import com.backend.questify.Entity.Student;
+import com.backend.questify.Model.Status;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Builder
@@ -18,17 +23,22 @@ public class LaboratoryDto {
 
 	private ProfessorDto professor;
 
-	private AssignmentDtoWithoutProfessor assignment;
+	private String title;
 
-	private String labTitle;
 	private String description;
 
-	private String problemStatement;
+	private String invitationCode;
 
-	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
+	private Integer maxScore;
 
-	private int testCaseQuantity;
+	private Status status; //PUBLISH, DRAFT
 
+	private LocalDateTime startTime;
+
+	private LocalDateTime endTime;
+
+	private List<StudentDto> students = new ArrayList<>();
+
+	private int studentQuantity;
 
 }

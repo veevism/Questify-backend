@@ -1,10 +1,7 @@
 package com.backend.questify.Controller;
 
-import com.backend.questify.DTO.AssignmentDto;
 import com.backend.questify.DTO.testcase.TestCaseDto;
 import com.backend.questify.Model.ApiResponse;
-import com.backend.questify.Repository.LaboratoryRepository;
-import com.backend.questify.Repository.TestCaseRepository;
 import com.backend.questify.Service.TestCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

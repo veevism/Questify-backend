@@ -1,12 +1,10 @@
 package com.backend.questify.Service;
 
-import com.backend.questify.DTO.LaboratoryDto;
 import com.backend.questify.DTO.testcase.TestCaseDto;
-import com.backend.questify.Entity.Laboratory;
+import com.backend.questify.Entity.Question;
 import com.backend.questify.Entity.TestCase;
 import com.backend.questify.Exception.ListIsNotEmptyException;
-import com.backend.questify.Exception.ResourceNotFoundException;
-import com.backend.questify.Repository.LaboratoryRepository;
+import com.backend.questify.Repository.QuestionRepository;
 import com.backend.questify.Repository.TestCaseRepository;
 import com.backend.questify.Util.DtoMapper;
 import com.backend.questify.Util.EntityHelper;
@@ -15,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,7 +20,7 @@ import java.util.UUID;
 public class TestCaseService {
 
 	@Autowired
-	private LaboratoryRepository laboratoryRepository;
+	private QuestionRepository questionRepository;
 
 	@Autowired
 	private TestCaseRepository testCaseRepository;
@@ -31,25 +28,25 @@ public class TestCaseService {
 	@Autowired
 	private EntityHelper entityHelper;
 
-	public TestCaseDto createTestCase(UUID laboratoryId, TestCaseDto testCaseDto) {
+	public TestCaseDto createTestCase(UUID questionId, TestCaseDto testCaseDto) {
 
-		Laboratory laboratory = entityHelper.findLaboratoryById(laboratoryId);
+		Question existingQuestion = entityHelper.findQuestionById(questionId);
 
 		TestCase createdTestCase = TestCase.builder().input(testCaseDto.getInput())
 				.expectedOutput(testCaseDto.getExpectedOutput())
 				.build();
 
-		laboratory.addTestCase(createdTestCase);
+		existingQuestion.addTestCase(createdTestCase);
 
 		testCaseRepository.save(createdTestCase);
 
-		laboratoryRepository.saveAndFlush(laboratory);
+		questionRepository.saveAndFlush(existingQuestion);
 
 		return DtoMapper.INSTANCE.testCaseToTestCaseDto(createdTestCase);
 	}
 
 	public List<TestCaseDto> getTestCases(UUID laboratoryId) {
-		return DtoMapper.INSTANCE.testCaseToTestCaseDto(ListIsNotEmptyException.requireNotEmpty(entityHelper.findLaboratoryById(laboratoryId).getTestCases(), "Test Case"));
+		return DtoMapper.INSTANCE.testCaseToTestCaseDto(ListIsNotEmptyException.requireNotEmpty(entityHelper.findQuestionById(laboratoryId).getTestCases(), TestCase.class.getSimpleName()));
 	}
 
 	public TestCaseDto getTestCase(UUID testCaseId) {
@@ -59,11 +56,11 @@ public class TestCaseService {
 
 	public void deleteTestCase(UUID testCaseId) {
 
-		Laboratory laboratory = entityHelper.findLaboratoryByTestCaseId(testCaseId);
+		Question question = entityHelper.findLaboratoryByTestCaseId(testCaseId);
 
-		laboratory.removeTestCase(entityHelper.findTestCaseById(testCaseId));
+		question.removeTestCase(entityHelper.findTestCaseById(testCaseId));
 
-		laboratoryRepository.save(laboratory);
+		questionRepository.save(question);
 
 	}
 
@@ -84,12 +81,12 @@ public class TestCaseService {
 		return DtoMapper.INSTANCE.testCaseToTestCaseDto(testCaseRepository.save(testCase));
 	}
 
-	public void deleteTestCases(UUID laboratoryId) {
+	public void deleteTestCases(UUID questionId) {
 
-		Laboratory laboratory = entityHelper.findLaboratoryById(laboratoryId);
+		Question question = entityHelper.findQuestionById(questionId);
 
-		laboratory.getTestCases().clear();
+		question.getTestCases().clear();
 
-		laboratoryRepository.save(laboratory);
+		questionRepository.save(question);
 	}
 }

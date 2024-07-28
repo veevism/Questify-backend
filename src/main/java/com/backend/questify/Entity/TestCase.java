@@ -20,9 +20,9 @@ public class TestCase {
 //	@GeneratedValue(strategy = GenerationType.IDENTITY)
 
 //	@GeneratedValue(strategy = GenerationType.AUTO)
-@Id
-@GeneratedValue(generator = "UUID")
-@Column(updatable = false, nullable = false)
+	@Id
+	@GeneratedValue(generator = "UUID")
+	@Column(updatable = false, nullable = false)
 	private UUID testCaseId;
 	@Column(columnDefinition = "TEXT")
 	private String input;
@@ -30,6 +30,6 @@ public class TestCase {
 	private String expectedOutput;
 
 	@ManyToOne
-	@JoinColumn(name = "laboratory_id")
-	private Laboratory laboratory;
+	@JoinColumn(name = "question_id")
+	private Question question;
 }

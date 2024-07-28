@@ -1,70 +1,70 @@
 package com.backend.questify.Entity;
 
+import com.backend.questify.Model.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
+@Entity
 @Data
 @Builder
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "laboratories")
 public class Laboratory {
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//	private Long laboratoryId;
-@Id
-@GeneratedValue(generator = "UUID")
-
-//	@GeneratedValue(strategy = GenerationType.AUTO)
-@Column(updatable = false, nullable = false)
-private UUID laboratoryId;
-
-	@ManyToOne
-	@JoinColumn(name = "assignment_id")
-	private Assignment assignment;
+	@Id
+	@GeneratedValue(generator = "UUID")
+	@Column(updatable = false, nullable = false)
+	private UUID laboratoryId;
 
 	@ManyToOne
 	@JoinColumn(name = "professor_id")
-	private Professor professor; // add later for reusing purpose
+	private Professor professor;
 
-	private String labTitle;
+	private String title;
+
 	private String description;
 
-	@Lob
-	@Column(columnDefinition = "TEXT")
-	private String problemStatement;
+	private String invitationCode;
 
-	@CreationTimestamp
-	@Column(updatable = false)
-	private LocalDateTime createdAt;
+	private Integer maxScore;
 
-	@UpdateTimestamp
-	private LocalDateTime updatedAt;
+	private Status status; //PUBLISH, DRAFT
 
-	@OneToMany(mappedBy = "laboratory", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Column(nullable = true)
+	private LocalDateTime startTime;
+
+	@Column(nullable = true)
+	private LocalDateTime endTime;
+
+	@ManyToMany
+	@JoinTable(
+			name = "laboratory_student",
+			joinColumns = @JoinColumn(name = "laboratory_id"),
+			inverseJoinColumns = @JoinColumn(name = "student_id")
+	)
 	@Builder.Default
-	private List<TestCase> testCases = new ArrayList<>();
+	private List<Student> students = new ArrayList<>();
 
-	public void addTestCase(TestCase testCase) {
-		testCases.add(testCase);
-		testCase.setLaboratory(this);
+	public void removeStudentFromLaboratory(Student student) {
+		students.remove(student);
+		student.getLaboratories().remove(this);
 	}
 
-	public void removeTestCase(TestCase testCase) {
-		testCases.remove(testCase);
-		testCase.setLaboratory(null);
+	public void addStudentToLaboratory(Student student) {
+		students.add(student);
+		student.getLaboratories().add(this);
 	}
+
+	@ElementCollection
+	@CollectionTable(name = "laboratory_student_labs", joinColumns = @JoinColumn(name = "laboratory_id"))
+	@MapKeyJoinColumn(name = "student_id")
+	@Column(name = "question_id")
+	private Map<Long, UUID> studentQuestion = new HashMap<>();
 
 }

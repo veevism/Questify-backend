@@ -1,6 +1,5 @@
 package com.backend.questify.DTO;
 
-import com.backend.questify.Entity.Classroom;
 import com.backend.questify.Entity.Professor;
 import com.backend.questify.Entity.Student;
 import com.backend.questify.Model.Status;

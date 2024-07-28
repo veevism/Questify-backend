@@ -14,7 +14,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,38 +27,26 @@ public class SubmissionService {
 	private SubmissionRepository submissionRepository;
 
 	@Autowired
-	private LaboratoryRepository laboratoryRepository;
-
-	@Autowired
 	private EntityHelper entityHelper;
 
 
 	//! Todo : Add check if student can do anything ( occupied classroom )
 
 	@Transactional
-	public SubmissionDto updateSubmissionContent(UUID laboratoryId, String language, String updatedCode) {
-		Submission submission = getCurrentSubmission(laboratoryId);
+	public SubmissionDto updateSubmissionContent(UUID questionId, String language, String updatedCode) {
+		Submission submission = getCurrentSubmission(questionId);
 
 		Map<String, String> snippets = submission.getCodeSnippets();
 		snippets.put(language, updatedCode);
-		submissionRepository.save(submission);
 
-		return DtoMapper.INSTANCE.submissionToSubmissionDto(submission);
+		return DtoMapper.INSTANCE.submissionToSubmissionDto(submissionRepository.save(submission));
 	}
 
-
-	public Submission saveSubmission(Submission submission) {
-		return submissionRepository.save(submission);
-	}
-
-
-	public SubmissionDto getAndCreateSubmission(UUID laboratoryId) throws Exception {
+	public SubmissionDto getAndCreateSubmission(UUID questionId) throws Exception {
 		Long userId = entityHelper.getCurrentUserId();
 		User user = entityHelper.getCurrentUser();
 
-		Optional<Laboratory> laboratoryResult = laboratoryRepository.findById(laboratoryId);
-		Laboratory laboratory = laboratoryResult.orElseThrow(
-				() -> new ResourceNotFoundException("Laboratory Not Found With This Id: " + laboratoryId));
+		Question question = entityHelper.findQuestionById(questionId);
 
 		Submission submission = null;
 
@@ -67,14 +54,14 @@ public class SubmissionService {
 
 			Student student = entityHelper.findStudentById(userId);
 
-			Optional<Submission> existingSubmission = submissionRepository.findByLaboratoryAndStudent(laboratory, student);
+			Optional<Submission> existingSubmission = submissionRepository.findByLaboratoryAndStudent(question, student);
 			if (existingSubmission.isPresent()) {
 				return DtoMapper.INSTANCE.submissionToSubmissionDto(existingSubmission.get());
 			}
 
 			Submission newSubmission = Submission.builder()
 												 .student(student)
-												 .laboratory(laboratory)
+												 .question(question)
 												 .build();
 
 			submission = submissionRepository.save(newSubmission);
@@ -82,14 +69,14 @@ public class SubmissionService {
 
 			Professor professor = entityHelper.findProfessorById(userId);
 
-			Optional<Submission> existingSubmission = submissionRepository.findByLaboratoryAndProfessor(laboratory, professor);
+			Optional<Submission> existingSubmission = submissionRepository.findByLaboratoryAndProfessor(question, professor);
 			if (existingSubmission.isPresent()) {
 				return DtoMapper.INSTANCE.submissionToSubmissionDto(existingSubmission.get());
 			}
 
 			Submission newSubmission = Submission.builder()
 												 .professor(professor)
-												 .laboratory(laboratory)
+												 .question(question)
 												 .build();
 
 			submission = submissionRepository.save(newSubmission);
@@ -103,57 +90,51 @@ public class SubmissionService {
 		return DtoMapper.INSTANCE.submissionToSubmissionDto(submission);
 	}
 
-	public void deleteSubmission(Long id) {
-		submissionRepository.deleteById(id);
+
+	public SubmissionDto resetSubmission(UUID questionId) {
+		return DtoMapper.INSTANCE.submissionToSubmissionDto(submissionRepository.save(getCurrentSubmission(questionId)));
 	}
 
-	public SubmissionDto resetSubmission(UUID laboratoryId) {
-		Submission submission = getCurrentSubmission(laboratoryId);
-		return DtoMapper.INSTANCE.submissionToSubmissionDto(submissionRepository.save(submission));
-	}
+	public ExecutionResponse executeSubmission(UUID questionId, String language, UUID testCaseId) {
 
-	public ExecutionResponse executeSubmission(UUID laboratoryId, String language, UUID testCaseId) {
-
-		SubmissionDto submissionDto = DtoMapper.INSTANCE.submissionToSubmissionDto(getCurrentSubmission(laboratoryId));
+		SubmissionDto submissionDto = DtoMapper.INSTANCE.submissionToSubmissionDto(getCurrentSubmission(questionId));
 
 		ExecutionResult result = getExecutionResult(language, submissionDto, entityHelper.findTestCaseById(testCaseId).getInput());
 
-		ExecutionResponse executionResponse = ExecutionResponse.builder()
-															   .StdErr(result.getOutput()
-																			 .getStderr())
-															   .StdOut(result.getOutput()
-																			 .getStdout())
-															   .Output(result.getOutput()
-																			 .getOutput())
-															   .Code(result.getOutput()
-																		   .getCode())
-															   .Signal(result.getOutput()
-																			 .getSignal())
-															   .Language(result.getLanguage())
-															   .Version(result.getVersion())
-															   .build();
-
-		return executionResponse;
+		return ExecutionResponse.builder()
+				.StdErr(result.getOutput()
+						.getStderr())
+				.StdOut(result.getOutput()
+						.getStdout())
+				.Output(result.getOutput()
+						.getOutput())
+				.Code(result.getOutput()
+						.getCode())
+				.Signal(result.getOutput()
+						.getSignal())
+				.Language(result.getLanguage())
+				.Version(result.getVersion())
+				.build();
 
 
 	}
 
-	private Submission getCurrentSubmission(UUID laboratoryId) {
+	private Submission getCurrentSubmission(UUID questionId) {
 		Long userId = entityHelper.getCurrentUserId();
 
 		User user = entityHelper.getCurrentUser();
 
-		Laboratory laboratory = entityHelper.findLaboratoryById(laboratoryId);
+		Question question = entityHelper.findQuestionById(questionId);
 
 		Submission submission = null;
 
 		if (user.getRole() == StdAcc) {
-			submission = submissionRepository.findByLaboratoryAndStudent(laboratory, entityHelper.findStudentById(userId)).orElseThrow(
-					() -> new ResourceNotFoundException("Submission Not Found With Laboratory Id : " + laboratoryId));
+			submission = submissionRepository.findByLaboratoryAndStudent(question, entityHelper.findStudentById(userId)).orElseThrow(
+					() -> new ResourceNotFoundException("Submission Not Found With Question Id : " + questionId));
 
 		} else if (user.getRole() == ProfAcc) {
-			submission = submissionRepository.findByLaboratoryAndProfessor(laboratory, entityHelper.findProfessorById(userId)).orElseThrow(
-					() -> new ResourceNotFoundException("Submission Not Found With Laboratory Id : " + laboratoryId));
+			submission = submissionRepository.findByLaboratoryAndProfessor(question, entityHelper.findProfessorById(userId)).orElseThrow(
+					() -> new ResourceNotFoundException("Submission Not Found With Question Id : " + questionId));
 		}
 
 		return submission;

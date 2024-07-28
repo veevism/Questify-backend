@@ -26,6 +26,6 @@ public class Student {
 
 	@ManyToMany(mappedBy = "students")
 	@Builder.Default
-	private List<Classroom> classrooms = new ArrayList<>();
+	private List<Laboratory> laboratories = new ArrayList<>();
 
 }

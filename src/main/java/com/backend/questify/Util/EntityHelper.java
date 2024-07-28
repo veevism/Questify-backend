@@ -6,6 +6,7 @@ import com.backend.questify.Exception.ListIsNotEmptyException;
 import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Exception.UnauthorizedAccessException;
 import com.backend.questify.Exception.UserNotAuthenticatedException;
+import com.backend.questify.Model.Role;
 import com.backend.questify.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -24,13 +25,10 @@ public class EntityHelper {
 	private ProfessorRepository professorRepository;
 
 	@Autowired
-	private AssignmentRepository assignmentRepository;
+	private QuestionRepository questionRepository;
 
 	@Autowired
 	private LaboratoryRepository laboratoryRepository;
-
-	@Autowired
-	private ClassroomRepository classroomRepository;
 
 	@Autowired
 	private StudentRepository studentRepository;
@@ -46,42 +44,36 @@ public class EntityHelper {
 								  .orElseThrow(() -> new ResourceNotFoundException("Professor not found with Id : " + professorId));
 	}
 
-	public Assignment findAssignmentById(UUID assignmentId) {
-		return assignmentRepository.findById(assignmentId)
-								   .orElseThrow(() -> new ResourceNotFoundException("Assignment not found with Id : " + assignmentId));
-	}
-
-	public Laboratory findLaboratoryById(UUID laboratoryId) {
-		return laboratoryRepository.findById(laboratoryId)
-								   .orElseThrow(() -> new ResourceNotFoundException("Laboratory not found with Id : " + laboratoryId));
-	}
-
-	public Classroom findClassroomById(UUID classroomId) {
-		return classroomRepository.findById(classroomId).orElseThrow(() -> new ResourceNotFoundException("Classroom not found with Id : " + classroomId));
-	}
-
 	public Student findStudentById(Long studentId) {
 		return studentRepository.findById(studentId)
-						 .orElseThrow(() -> new ResourceNotFoundException("Student not found with Id: " + studentId));
+				.orElseThrow(() -> new ResourceNotFoundException("Student not found with Id: " + studentId));
 	}
 
-	public List<Laboratory> findLaboratoryByAssignment(Assignment assignment) {
-		return laboratoryRepository.findAllByAssignment(assignment);
+	public Question findQuestionById(UUID questionId) {
+		return questionRepository.findById(questionId)
+								   .orElseThrow(() -> new ResourceNotFoundException("Question not found with Id : " + questionId));
 	}
 
-	public List<Assignment> findAllAssignmentByClassroomId(UUID classroomId) {
-		return ListIsNotEmptyException.requireNotEmpty(assignmentRepository.findAllByClassroom_ClassroomId(classroomId), Assignment.class.getSimpleName());
+	public List<Question> findQuestionsByLaboratory(Laboratory laboratory) {
+		return ListIsNotEmptyException.requireNotEmpty(questionRepository.findAllByLaboratory(laboratory), Question.class.getSimpleName());
+	}// .getStudentQuestion().get(getCurrentUser().getStudent().getStudentId())
+
+	public void deleteQuestionById(UUID questionId) {
+		questionRepository.deleteById(questionId);
 	}
+
+//
+//	public List<Question> findQuestions(Laboratory assignment) {
+//		return ListIsNotEmptyException.requireNotEmpty(assignmentRepository.findAllByLaboratory_LaboratoryId(laboratoryId), Laboratory.class.getSimpleName());
+//	}
+
+
 
 	public TestCase findTestCaseById(UUID testCaseId) {
 		return testCaseRepository.findById(testCaseId).orElseThrow(() -> new ResourceNotFoundException("Test Case not found with Id : " + testCaseId));
 	}
 
-	public Laboratory findLaboratoryByTestCaseId(UUID testCaseId) {
-		UUID laboratoryId = findTestCaseById(testCaseId).getLaboratory()
-														.getLaboratoryId();
-		return laboratoryRepository.findById(laboratoryId).orElseThrow(() -> new ResourceNotFoundException("Laboratory of this test case not found with Id : " + laboratoryId));
-	}
+
 
 	public Long getCurrentUserId() throws UserNotAuthenticatedException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -110,19 +102,52 @@ public class EntityHelper {
 					   .collect(Collectors.toList());
 	}
 
-
 	public User findUserById(Long userId) {
 		return userRepository.findById(userId).orElseThrow(
 				() -> new ResourceNotFoundException("User Not Found With This Id: " + userId));
 	}
 
-//	public Classroom findClassroomByAssignment(Assignment assignment) {
-//		return ClassroomRepository.find
+//	public Laboratory findLaboratoryByAssignment(Assignment assignment) {
+//		return LaboratoryRepository.find
 //	}
 
 
-	public List<Student> findStudentsByAssignmentId(UUID assignmentId) {
+//	public List<Student> findStudentsByAssignmentId(UUID assignmentId) {
+//
+//		return studentRepository.findStudentsByAssignment(findAssignmentById(assignmentId));
+//	}
 
-		return studentRepository.findStudentsByAssignment(findAssignmentById(assignmentId));
+	public List<Laboratory> findLaboratoryByRole(Role role) {
+		return null;
 	}
+
+
+	// --------Laboratory
+	public void deleteLaboratoryById(UUID laboratoryId) {
+		laboratoryRepository.deleteById(laboratoryId);
+	}
+
+	public Question findLaboratoryByTestCaseId(UUID testCaseId) {
+		UUID laboratoryId = findTestCaseById(testCaseId).getQuestion()
+				.getQuestionId();
+		return questionRepository.findById(laboratoryId).orElseThrow(() -> new ResourceNotFoundException("Laboratory of this test case not found with Id : " + laboratoryId));
+	}
+
+	public Laboratory findLaboratoryById(UUID laboratoryId) {
+		return laboratoryRepository.findById(laboratoryId).orElseThrow(() -> new ResourceNotFoundException("Laboratory not found with Id : " + laboratoryId));
+	}
+
+	public Laboratory findLaboratoryByInvitationCode(String invitationCode) {
+		return laboratoryRepository.findByInvitationCode(invitationCode).orElseThrow(() -> new ResourceNotFoundException("Laboratory not found with this invitation code : " + invitationCode));
+	}
+
+	public List<Laboratory> findLaboratoriesByStudent(User user) {
+		return ListIsNotEmptyException.requireNotEmpty(laboratoryRepository.findAllByStudent_StudentId(user.getUserId()), Laboratory.class.getSimpleName());
+	}
+
+	public List<Laboratory> findLaboratoriesByProfessor(User user) {
+		return ListIsNotEmptyException.requireNotEmpty(laboratoryRepository.findAllByProfessor_ProfessorId(user.getUserId()), Laboratory.class.getSimpleName());
+	}
+
+	// --------End Laboratory
 }

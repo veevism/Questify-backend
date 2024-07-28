@@ -26,5 +26,5 @@ public class SubmissionTestCaseResult {
 	private TestCase testCase;
 
 	@Column
-	private Boolean passed;
+	private Boolean passed; // Change to
 }

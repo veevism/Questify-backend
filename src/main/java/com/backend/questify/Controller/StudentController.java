@@ -22,12 +22,12 @@ public class StudentController {
 	@Autowired
 	StudentService studentService;
 
-	@GetMapping("")
-	public ResponseEntity<ApiResponse<List<StudentWithLaboratory>>> getStudents (@RequestParam(required = false) UUID classroomId,
-																				 @RequestParam(required = false) UUID assignmentId,
-																				 @RequestParam(required = false) String name) {
-		ApiResponse<List<StudentWithLaboratory>> response = ApiResponse.success(studentService.getStudents(classroomId,assignmentId,name), HttpStatus.OK, "Get Students Successfully" );
-		return ResponseEntity.status(response.getStatus()).body(response);
-
-	}
+//	@GetMapping("")
+//	public ResponseEntity<ApiResponse<List<StudentWithLaboratory>>> getStudents (@RequestParam(required = false) UUID classroomId,
+//																				 @RequestParam(required = false) UUID assignmentId,
+//																				 @RequestParam(required = false) String name) {
+//		ApiResponse<List<StudentWithLaboratory>> response = ApiResponse.success(studentService.getStudents(classroomId,assignmentId,name), HttpStatus.OK, "Get Students Successfully" );
+//		return ResponseEntity.status(response.getStatus()).body(response);
+//
+//	}
 }

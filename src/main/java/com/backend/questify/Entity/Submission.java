@@ -27,8 +27,8 @@ public class Submission {
 	private Long submissionId;
 
 	@ManyToOne
-	@JoinColumn(name = "laboratory_id")
-	private Laboratory laboratory;
+	@JoinColumn(name = "question_id")
+	private Question question;
 
 	@ManyToOne
 	@JoinColumn(name = "student_id")
@@ -67,12 +67,15 @@ public class Submission {
 
 	private Integer givenScore;
 
-	private Integer maximumScore;
-
 // Next Phase --->
 
 	@Enumerated(EnumType.STRING)
-	private SubmissionStatus status;
+	private SubmissionStatus status; // NEW, SUBMITTED, GRADED
+
+	// Todo 1 new model using this submission combine with test case result for calculating score
+	// Todo 1 WTF already done
+
+	// End Next Phase
 
 	public static Map<String, String> getDefaultSnippets() {
 		Map<String, String> snippets = new HashMap<>();

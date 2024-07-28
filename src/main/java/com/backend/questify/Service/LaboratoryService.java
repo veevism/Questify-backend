@@ -2,21 +2,18 @@ package com.backend.questify.Service;
 
 import com.backend.questify.DTO.LaboratoryDto;
 import com.backend.questify.Entity.*;
-import com.backend.questify.Exception.BadRequestException;
-import com.backend.questify.Exception.ListIsNotEmptyException;
 import com.backend.questify.Exception.ResourceNotFoundException;
+import com.backend.questify.Exception.UnauthorizedAccessException;
 import com.backend.questify.Repository.*;
 import com.backend.questify.Util.DtoMapper;
 import com.backend.questify.Util.EntityHelper;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import com.backend.questify.Util.ShortUUIDGenerator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.backend.questify.Model.Role.ProfAcc;
@@ -31,64 +28,157 @@ public class LaboratoryService {
 	@Autowired
 	private EntityHelper entityHelper;
 
-	public LaboratoryDto createLaboratory (UUID assignmentId, LaboratoryDto laboratoryDto) {
+	public LaboratoryDto createLaboratory(Laboratory laboratory) {
+		Professor professor = entityHelper.findProfessorById(entityHelper.getCurrentUserId());
 
+		LocalDateTime now = LocalDateTime.now();
+		if (laboratory.getStartTime() != null && laboratory.getStartTime().isBefore(now)) {
+			throw new IllegalArgumentException("Start Date or Due Date cannot be in the past");
+		}
+
+		if (laboratory.getEndTime() != null && laboratory.getEndTime().isBefore(now)) {
+			throw new IllegalArgumentException("Start Date or Due Date cannot be in the past");
+		}
+
+		if (laboratory.getStartTime() != null && laboratory.getEndTime() != null && laboratory.getEndTime().isBefore(laboratory.getStartTime())) {
+			throw new IllegalArgumentException("End time cannot be before start time.");
+		}
+
+		// ***/120
 		Laboratory createdLaboratory = Laboratory.builder()
-				.assignment(entityHelper.findAssignmentById(assignmentId))
-				.professor(entityHelper.findProfessorById(entityHelper.getCurrentUserId()))
-				.labTitle(laboratoryDto.getLabTitle())
-				.description(laboratoryDto.getDescription())
-				.problemStatement(laboratoryDto.getProblemStatement())
-				.build();
+											  .invitationCode(ShortUUIDGenerator.generateShortUUID())
+											  .title(laboratory.getTitle())
+											  .description(laboratory.getDescription())
+												.startTime(laboratory.getStartTime())
+												.endTime(laboratory.getEndTime())
+												.maxScore(laboratory.getMaxScore())
+					 	 	 	 	 	 	   .status(laboratory.getStatus())
+
+											  .professor(professor)
+											  .build();
 
 		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratoryRepository.save(createdLaboratory));
 	}
 
-	public List<LaboratoryDto> getLaboratories(UUID assignmentId) {
-		User user = entityHelper.getCurrentUser();
-		Assignment assignment = entityHelper.findAssignmentById(assignmentId);
-		if (user.getRole() == StdAcc) {
-			UUID laboratoryId = assignment.getStudentLabAssignments().get(user.getStudent().getStudentId());
-			return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(ListIsNotEmptyException.requireNotEmpty(laboratoryRepository.findAllByLaboratoryId(laboratoryId), Laboratory.class.getSimpleName()));
+	public LaboratoryDto updateLaboratory(UUID laboratoryId, Laboratory laboratory) {
+		Professor professor = entityHelper.findProfessorById(entityHelper.getCurrentUserId());
+		Laboratory existingLaboratory = entityHelper.findLaboratoryById(laboratoryId);
 
-		} else if (user.getRole() == ProfAcc) {
-			return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(ListIsNotEmptyException.requireNotEmpty(laboratoryRepository.findAllByAssignment(assignment), Laboratory.class.getSimpleName()));
-		} else {
-			throw new BadRequestException("Bad User"); //! Todo : Cope with this
+		if ((existingLaboratory.getProfessor() != professor)) {
+			throw new IllegalArgumentException("Classroom title cannot be duplicated.");
 		}
+
+		LocalDateTime now = LocalDateTime.now();
+
+		LocalDateTime startTime;
+		startTime = laboratory.getStartTime();
+
+		if (laboratory.getStartTime() != null) {
+            existingLaboratory.setStartTime(laboratory.getStartTime());
+			// may add start time can't be after end time
+		}
+
+		if (laboratory.getEndTime() != null) {
+			if (laboratory.getEndTime().isBefore(now)) {
+				throw new IllegalArgumentException("End time cannot be in the past.");
+			}
+			if (startTime != null && laboratory.getEndTime().isBefore(startTime)) {
+				throw new IllegalArgumentException("End time cannot be before start time.");
+			}
+			existingLaboratory.setEndTime(laboratory.getEndTime());
+		}
+
+		existingLaboratory.setTitle(laboratory.getTitle());
+		existingLaboratory.setDescription(laboratory.getDescription());
+		existingLaboratory.setStartTime(laboratory.getStartTime());
+		existingLaboratory.setEndTime(laboratory.getEndTime());
+		existingLaboratory.setMaxScore(laboratory.getMaxScore());
+		existingLaboratory.setStatus(laboratory.getStatus());
+
+		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratoryRepository.save(existingLaboratory));
 	}
 
-	//
+	public List<LaboratoryDto> getLaboratories() {
+
+		List<Laboratory> laboratories;
+
+		// Get only status Publish
+		if (entityHelper.getCurrentUser().getRole().equals(ProfAcc)) {
+			laboratories = entityHelper.findLaboratoriesByProfessor(entityHelper.getCurrentUser());
+//			classrooms = ListIsNotEmptyException.requireNotEmpty(classroomRepository.findByProfessor_ProfessorId(currentUser.getUserId()), Classroom.class.getSimpleName());
+		} else {
+			laboratories = entityHelper.findLaboratoriesByStudent(entityHelper.getCurrentUser());
+
+//			classrooms = ListIsNotEmptyException.requireNotEmpty(classroomRepository.findByStudents_StudentId(currentUser.getUserId()), Classroom.class.getSimpleName());
+		}
+
+
+		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratories);
+	}
+
 	public LaboratoryDto getLaboratory(UUID laboratoryId) {
 		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(entityHelper.findLaboratoryById(laboratoryId));
 	}
 
 	public void deleteLaboratory(UUID laboratoryId) {
-		if (laboratoryRepository.existsById(laboratoryId)) {
-			laboratoryRepository.deleteById(laboratoryId);
-		} else {
-			throw new ResourceNotFoundException("Laboratory not found with Id : " + laboratoryId);
+		entityHelper.deleteLaboratoryById(laboratoryId);
+	}
+
+	public LaboratoryDto studentJoinLaboratory(String invitationCode) {
+		Laboratory existingLaboratory = entityHelper.findLaboratoryByInvitationCode(invitationCode);
+//		Optional<Classroom> classroomResult = classroomRepository.findByInvitationCode(invitationCode);
+//		Classroom classroom = classroomResult.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with this invitation code : " + invitationCode));
+
+		if (existingLaboratory.getStudents().contains(entityHelper.findStudentById(entityHelper.getCurrentUserId()))) {
+			throw new IllegalArgumentException("Student is already enrolled in this classroom");
 		}
+
+		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratoryRepository.save(existingLaboratory));
+	}
+
+	public LaboratoryDto removeStudentFromLaboratory(UUID laboratoryId, Long studentId) {
+
+		Laboratory existingLaboratory = entityHelper.findLaboratoryById(laboratoryId);
+		existingLaboratory.removeStudentFromLaboratory(entityHelper.findStudentById(studentId));
+
+		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratoryRepository.save(existingLaboratory));
 	}
 
 	@Transactional
-	public LaboratoryDto updateLaboratory(UUID laboratoryId, LaboratoryDto laboratoryDto) {
+	public LaboratoryDto assignQuestionToStudent(UUID laboratoryId, UUID questionId, Long studentId) {
+		Laboratory existingLaboratory = entityHelper.findLaboratoryById(laboratoryId);
+		existingLaboratory.getStudentQuestion().put(entityHelper.findStudentById(studentId).getStudentId(), entityHelper.findQuestionById(questionId).getQuestionId());
 
-		Laboratory laboratory = entityHelper.findLaboratoryById(laboratoryId);
-
-		if (laboratoryDto.getLabTitle() != null && !laboratoryDto.getLabTitle().trim().isEmpty()) {
-			laboratory.setLabTitle(laboratoryDto.getLabTitle());
-		}
-
-		if (laboratoryDto.getDescription() != null && !laboratoryDto.getDescription().trim().isEmpty()) {
-			laboratory.setDescription(laboratoryDto.getDescription());
-		}
-
-		if (laboratoryDto.getProblemStatement() != null && !laboratoryDto.getProblemStatement().trim().isEmpty()) {
-			laboratory.setProblemStatement(laboratoryDto.getProblemStatement());
-		}
-
-		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratoryRepository.save(laboratory));
-
+		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratoryRepository.save(existingLaboratory));
 	}
+//
+	@Transactional
+	public LaboratoryDto unAssignQuestionToStudent(UUID laboratoryId, Long studentId) {
+		Laboratory existingLaboratory = entityHelper.findLaboratoryById(laboratoryId);
+
+		if (existingLaboratory.getStudentQuestion().containsKey(studentId)) {
+			existingLaboratory.getStudentQuestion().remove(studentId);
+		} else {
+			throw new ResourceNotFoundException("Student with ID " + studentId + " not found in assignment " + laboratoryId);
+		}
+
+		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratoryRepository.save(existingLaboratory));
+	}
+
+//	@Transactional
+//	public AssignmentDto randomAssignLabs(UUID assignmentId) {
+//		Laboratory assignment = entityHelper.findAssignmentById(assignmentId);
+//
+//		assignment.getStudentLabAssignments().clear();
+//		List<Student> students = assignment.getClassroom().getStudents();
+//		List<Question> laboratories = entityHelper.findLaboratoryByAssignment(assignment);
+//
+//		Random random = new Random();
+//		for (Student student : students) {
+//			assignment.getStudentLabAssignments().put(student.getStudentId(), laboratories.get(random.nextInt(laboratories.size())).getQuestionId());
+//		}
+//
+//		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignmentRepository.save(assignment));
+//	}
+
 }

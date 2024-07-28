@@ -1,6 +1,5 @@
 package com.backend.questify;
 
-import com.backend.questify.Entity.Classroom;
 import com.backend.questify.Entity.User;
 import com.backend.questify.Model.Role;
 import com.backend.questify.Service.UserService;
