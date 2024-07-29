@@ -151,5 +151,6 @@ public class EntityHelper {
 		return ListIsNotEmptyException.requireNotEmpty(laboratoryRepository.findAllByProfessor_ProfessorId(user.getUserId()), Laboratory.class.getSimpleName());
 	}
 
+
 	// --------End Laboratory
 }

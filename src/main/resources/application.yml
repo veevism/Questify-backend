@@ -6,7 +6,7 @@ spring:
     driver-class-name : com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     generate-ddl : true
 #    properties:
 #      hibernate:

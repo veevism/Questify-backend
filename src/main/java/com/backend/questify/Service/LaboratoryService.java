@@ -31,6 +31,10 @@ public class LaboratoryService {
 	public LaboratoryDto createLaboratory(Laboratory laboratory) {
 		Professor professor = entityHelper.findProfessorById(entityHelper.getCurrentUserId());
 
+		if (laboratoryRepository.existsByTitleAndProfessor(laboratory.getTitle(), professor)) {
+			throw new IllegalArgumentException("Classroom title cannot be duplicated.");
+		}
+
 		LocalDateTime now = LocalDateTime.now();
 
 		// ***/120
@@ -91,12 +95,14 @@ public class LaboratoryService {
 
 	public LaboratoryDto studentJoinLaboratory(String invitationCode) {
 		Laboratory existingLaboratory = entityHelper.findLaboratoryByInvitationCode(invitationCode);
+		Student student = entityHelper.findStudentById(entityHelper.getCurrentUserId());
 //		Optional<Classroom> classroomResult = classroomRepository.findByInvitationCode(invitationCode);
 //		Classroom classroom = classroomResult.orElseThrow(() -> new ResourceNotFoundException("Classroom not found with this invitation code : " + invitationCode));
-
-		if (existingLaboratory.getStudents().contains(entityHelper.findStudentById(entityHelper.getCurrentUserId()))) {
+		if (existingLaboratory.getStudents().contains(student)) {
 			throw new IllegalArgumentException("Student is already enrolled in this classroom");
 		}
+		existingLaboratory.addStudentToLaboratory(student);
+
 
 		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratoryRepository.save(existingLaboratory));
 	}

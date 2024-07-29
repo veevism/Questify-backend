@@ -23,31 +23,31 @@ public class SubmissionController {
 
 	@PutMapping("")
 	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
-	public ResponseEntity<ApiResponse<SubmissionDto>> updateCodeSnippet(@RequestParam UUID laboratoryId, @RequestParam Language language, @RequestBody String codeContent) {
-		ApiResponse<SubmissionDto> response = ApiResponse.success(submissionService.updateSubmissionContent(laboratoryId, language.name(), codeContent) , HttpStatus.OK, "Update Submission Successfully");
+	public ResponseEntity<ApiResponse<SubmissionDto>> updateCodeSnippet(@RequestParam UUID questionId, @RequestParam Language language, @RequestBody String codeContent) {
+		ApiResponse<SubmissionDto> response = ApiResponse.success(submissionService.updateSubmissionContent(questionId, language.name(), codeContent) , HttpStatus.OK, "Update Submission Successfully");
 
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@GetMapping("")
 	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
-	public ResponseEntity<ApiResponse<SubmissionDto>> getAndCreateSubmission(@RequestParam UUID laboratoryId)
+	public ResponseEntity<ApiResponse<SubmissionDto>> getAndCreateSubmission(@RequestParam UUID questionId)
 	throws Exception {
-		ApiResponse<SubmissionDto> response = ApiResponse.success(submissionService.getAndCreateSubmission(laboratoryId) , HttpStatus.OK, "Get And Create Submission Successfully");
+		ApiResponse<SubmissionDto> response = ApiResponse.success(submissionService.getAndCreateSubmission(questionId) , HttpStatus.OK, "Get And Create Submission Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@DeleteMapping("/reset")
 	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
-	public ResponseEntity<ApiResponse<SubmissionDto>> resetSubmission(@RequestParam UUID laboratoryId) {
-		ApiResponse<SubmissionDto> response = ApiResponse.success(submissionService.resetSubmission(laboratoryId) , HttpStatus.OK, "Reset Submission Successfully");
+	public ResponseEntity<ApiResponse<SubmissionDto>> resetSubmission(@RequestParam UUID questionId) {
+		ApiResponse<SubmissionDto> response = ApiResponse.success(submissionService.resetSubmission(questionId) , HttpStatus.OK, "Reset Submission Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 	@PostMapping("/execute")
 	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
-	public ResponseEntity<ApiResponse<ExecutionResponse>> executeSubmission(@RequestParam UUID laboratoryId, @RequestParam String language, @RequestParam UUID testCaseId) {
-		ApiResponse<ExecutionResponse> response = ApiResponse.success(submissionService.executeSubmission(laboratoryId, language, testCaseId) , HttpStatus.OK, "Execution Submission Successfully");
+	public ResponseEntity<ApiResponse<ExecutionResponse>> executeSubmission(@RequestParam UUID questionId, @RequestParam String language, @RequestParam UUID testCaseId) {
+		ApiResponse<ExecutionResponse> response = ApiResponse.success(submissionService.executeSubmission(questionId, language, testCaseId) , HttpStatus.OK, "Execution Submission Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 

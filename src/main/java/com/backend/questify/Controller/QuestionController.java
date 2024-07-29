@@ -23,15 +23,15 @@ public class QuestionController {
 	@PostMapping("")
 	@PreAuthorize("hasRole('ProfAcc')")
 	public ResponseEntity<ApiResponse<QuestionDto>> createQuestion(@RequestBody QuestionDto questionDto,
-																	   @RequestParam UUID questionId) {
-		ApiResponse<QuestionDto> response = ApiResponse.success(questionService.createQuestion(questionId, questionDto) , HttpStatus.CREATED, "Create Question Successfully");
+																	   @RequestParam UUID laboratoryId) {
+		ApiResponse<QuestionDto> response = ApiResponse.success(questionService.createQuestion(laboratoryId, questionDto) , HttpStatus.CREATED, "Create Question Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
-	@GetMapping("/question")
+	@GetMapping("/laboratory")
 	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
-	public ResponseEntity<ApiResponse<List<QuestionDto>>> getQuestions(@RequestParam UUID questionId) {
-		ApiResponse<List<QuestionDto>> response = ApiResponse.success(questionService.getQuestions(questionId) , HttpStatus.OK, "Get Questions Successfully");
+	public ResponseEntity<ApiResponse<List<QuestionDto>>> getQuestions(@RequestParam UUID laboratoryId) {
+		ApiResponse<List<QuestionDto>> response = ApiResponse.success(questionService.getQuestions(laboratoryId) , HttpStatus.OK, "Get Questions Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 

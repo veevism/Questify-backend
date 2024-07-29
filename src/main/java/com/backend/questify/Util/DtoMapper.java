@@ -54,10 +54,10 @@ ProfessorDto professorToProfessorDto(Professor professor);
  // --------
 
  // --------Laboratory
- @Mapping(target = "studentQuantity", expression = "java(classroom.getStudents().size())")
+ @Mapping(target = "studentQuantity", expression = "java(laboratory.getStudents().size())")
  List<LaboratoryDto> laboratoryToLaboratoryDto ( List<Laboratory> laboratories);
 
- // @Mapping(target = "testCaseQuantity", expression = "java(laboratory.getTestCases().size())")
+ @Mapping(target = "studentQuantity", expression = "java(laboratory.getStudents().size())")
  LaboratoryDto laboratoryToLaboratoryDto (Laboratory laboratory);
 //
 

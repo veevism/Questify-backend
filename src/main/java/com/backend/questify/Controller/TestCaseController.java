@@ -19,15 +19,15 @@ public class TestCaseController {
 	private TestCaseService testCaseService;
 	@PostMapping("")
 	@PreAuthorize("hasRole('ProfAcc')")
-	public ResponseEntity<ApiResponse<TestCaseDto>> createTestCase(@RequestParam UUID laboratoryId,
+	public ResponseEntity<ApiResponse<TestCaseDto>> createTestCase(@RequestParam UUID questionId,
 																   @RequestBody TestCaseDto testCaseDto) {
-		ApiResponse<TestCaseDto> response = ApiResponse.success(testCaseService.createTestCase(laboratoryId, testCaseDto), HttpStatus.OK, "Create Test Case Successfully" );
+		ApiResponse<TestCaseDto> response = ApiResponse.success(testCaseService.createTestCase(questionId, testCaseDto), HttpStatus.OK, "Create Test Case Successfully" );
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
-	@GetMapping("/laboratory")
-	public ResponseEntity<ApiResponse<List<TestCaseDto>>> getTestCases(@RequestParam UUID laboratoryId) {
-		ApiResponse<List<TestCaseDto>> response = ApiResponse.success(testCaseService.getTestCases(laboratoryId), HttpStatus.OK, "Get All Test Case Successfully" );
+	@GetMapping("/question")
+	public ResponseEntity<ApiResponse<List<TestCaseDto>>> getTestCases(@RequestParam UUID questionId) {
+		ApiResponse<List<TestCaseDto>> response = ApiResponse.success(testCaseService.getTestCases(questionId), HttpStatus.OK, "Get All Test Case Successfully" );
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
@@ -54,8 +54,8 @@ public class TestCaseController {
 
 	@DeleteMapping("/all")
 	@PreAuthorize("hasRole('ProfAcc')")
-	public ResponseEntity<ApiResponse<Void>> deleteTestCases(@RequestParam UUID laboratoryId) {
-		testCaseService.deleteTestCases(laboratoryId);
+	public ResponseEntity<ApiResponse<Void>> deleteTestCases(@RequestParam UUID questionId) {
+		testCaseService.deleteTestCases(questionId);
 		ApiResponse<Void> response = ApiResponse.success(null, HttpStatus.OK, "Delete Test Cases Successfully" );
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}

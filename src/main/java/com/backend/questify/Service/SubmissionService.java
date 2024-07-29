@@ -128,13 +128,17 @@ public class SubmissionService {
 
 		Submission submission = null;
 
-		if (user.getRole() == StdAcc) {
-			submission = submissionRepository.findByQuestionAndStudent(question, entityHelper.findStudentById(userId)).orElseThrow(
+
+//		if (user.getRole() == StdAcc) {
+//			submission = submissionRepository.findByQuestionAndStudent(question, entityHelper.findStudentById(userId)).orElseThrow(
+//					() -> new ResourceNotFoundException("Submission Not Found With Question Id : " + questionId));
+//
+//		} else
+			if (user.getRole() == ProfAcc) {
+			submission = submissionRepository.findById(1L).orElseThrow(
 					() -> new ResourceNotFoundException("Submission Not Found With Question Id : " + questionId));
 
-		} else if (user.getRole() == ProfAcc) {
-			submission = submissionRepository.findByQuestionAndProfessor(question, entityHelper.findProfessorById(userId)).orElseThrow(
-					() -> new ResourceNotFoundException("Submission Not Found With Question Id : " + questionId));
+				System.out.println(DtoMapper.INSTANCE.submissionToSubmissionDto(submission));
 		}
 
 		return submission;

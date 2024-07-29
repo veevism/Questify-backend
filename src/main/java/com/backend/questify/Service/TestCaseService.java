@@ -45,8 +45,8 @@ public class TestCaseService {
 		return DtoMapper.INSTANCE.testCaseToTestCaseDto(createdTestCase);
 	}
 
-	public List<TestCaseDto> getTestCases(UUID laboratoryId) {
-		return DtoMapper.INSTANCE.testCaseToTestCaseDto(ListIsNotEmptyException.requireNotEmpty(entityHelper.findQuestionById(laboratoryId).getTestCases(), TestCase.class.getSimpleName()));
+	public List<TestCaseDto> getTestCases(UUID questionId) {
+		return DtoMapper.INSTANCE.testCaseToTestCaseDto(ListIsNotEmptyException.requireNotEmpty(entityHelper.findQuestionById(questionId).getTestCases(), TestCase.class.getSimpleName()));
 	}
 
 	public TestCaseDto getTestCase(UUID testCaseId) {
