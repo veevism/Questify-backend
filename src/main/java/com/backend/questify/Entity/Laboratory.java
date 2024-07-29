@@ -36,11 +36,7 @@ public class Laboratory {
 
 	private Status status; //PUBLISH, DRAFT
 
-	@Column(nullable = true)
-	private LocalDateTime startTime;
-
-	@Column(nullable = true)
-	private LocalDateTime endTime;
+	private Integer duration;
 
 	@ManyToMany
 	@JoinTable(

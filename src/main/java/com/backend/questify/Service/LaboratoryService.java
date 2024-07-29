@@ -32,28 +32,15 @@ public class LaboratoryService {
 		Professor professor = entityHelper.findProfessorById(entityHelper.getCurrentUserId());
 
 		LocalDateTime now = LocalDateTime.now();
-		if (laboratory.getStartTime() != null && laboratory.getStartTime().isBefore(now)) {
-			throw new IllegalArgumentException("Start Date or Due Date cannot be in the past");
-		}
-
-		if (laboratory.getEndTime() != null && laboratory.getEndTime().isBefore(now)) {
-			throw new IllegalArgumentException("Start Date or Due Date cannot be in the past");
-		}
-
-		if (laboratory.getStartTime() != null && laboratory.getEndTime() != null && laboratory.getEndTime().isBefore(laboratory.getStartTime())) {
-			throw new IllegalArgumentException("End time cannot be before start time.");
-		}
 
 		// ***/120
 		Laboratory createdLaboratory = Laboratory.builder()
 											  .invitationCode(ShortUUIDGenerator.generateShortUUID())
 											  .title(laboratory.getTitle())
 											  .description(laboratory.getDescription())
-												.startTime(laboratory.getStartTime())
-												.endTime(laboratory.getEndTime())
-												.maxScore(laboratory.getMaxScore())
-					 	 	 	 	 	 	   .status(laboratory.getStatus())
-
+											  .duration(laboratory.getDuration())
+				   	 						  .maxScore(laboratory.getMaxScore())
+											  .status(laboratory.getStatus())
 											  .professor(professor)
 											  .build();
 
@@ -67,32 +54,10 @@ public class LaboratoryService {
 		if ((existingLaboratory.getProfessor() != professor)) {
 			throw new IllegalArgumentException("Classroom title cannot be duplicated.");
 		}
-
-		LocalDateTime now = LocalDateTime.now();
-
-		LocalDateTime startTime;
-		startTime = laboratory.getStartTime();
-
-		if (laboratory.getStartTime() != null) {
-            existingLaboratory.setStartTime(laboratory.getStartTime());
-			// may add start time can't be after end time
-		}
-
-		if (laboratory.getEndTime() != null) {
-			if (laboratory.getEndTime().isBefore(now)) {
-				throw new IllegalArgumentException("End time cannot be in the past.");
-			}
-			if (startTime != null && laboratory.getEndTime().isBefore(startTime)) {
-				throw new IllegalArgumentException("End time cannot be before start time.");
-			}
-			existingLaboratory.setEndTime(laboratory.getEndTime());
-		}
-
 		existingLaboratory.setTitle(laboratory.getTitle());
 		existingLaboratory.setDescription(laboratory.getDescription());
-		existingLaboratory.setStartTime(laboratory.getStartTime());
-		existingLaboratory.setEndTime(laboratory.getEndTime());
 		existingLaboratory.setMaxScore(laboratory.getMaxScore());
+		existingLaboratory.setDuration(laboratory.getDuration());
 		existingLaboratory.setStatus(laboratory.getStatus());
 
 		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratoryRepository.save(existingLaboratory));

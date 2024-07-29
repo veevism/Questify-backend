@@ -20,9 +20,9 @@ public class QuestifyApplication {
     public static void main(String[] args) {
 
         SpringApplication.run(QuestifyApplication.class, args);
-
-
     }
+
+
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -35,72 +35,17 @@ public class QuestifyApplication {
             }
         };
     }
+// Todo 1.Logging 2.Time Assess And Scoring
+    // Time Assess track only when is laboratory start and end
+    // minus them will get all the times take
+    // if exceed time the turn over will be late and status of the result submission will be late and appear in the "report" ( appear right after lab is start and can be refresh )
+    // Todo some property shouldn't be in laboratory move it to question maybe
 
+    // progress is the new name
+    // progress use to display the code and how many test case pass ( do this ) and have place for professor to give score
 
-//    @Bean
-//    public CommandLineRunner init(UserService userService) {
-//        return args -> {
-//
-//            User studentUser1 = User.builder()
-//                    .userName("student1")
-//                    .firstName("Student")
-//                    .lastName("User")
-//                    .displayName("Student User")
-//                    .password("studentpassword")
-//                    .email("student1@example.com")
-//                    .role(Role.STUDENT)
-//                    .build();
-//            userService.createUser(studentUser1);
-//
-//            User professorUser = User.builder()
-//                    .userName("admin")
-//                    .firstName("Admin")
-//                    .lastName("User")
-//                    .displayName("Admin User")
-//                    .password("adminpassword")
-//                    .email("admin@example.com")
-//                    .role(Role.PROFESSOR)
-//                    .build();
-//            userService.createUser(professorUser);
-//
-//            User studentUser2 = User.builder()
-//                    .userName("student2")
-//                    .firstName("Student")
-//                    .lastName("User")
-//                    .displayName("Student User")
-//                    .password("studentpassword")
-//                    .email("student2@example.com")
-//                    .role(Role.STUDENT)
-//                    .build();
-//            userService.createUser(studentUser2);
-//
-//            User studentUser3 = User.builder()
-//                    .userName("student3")
-//                    .firstName("Student")
-//                    .lastName("User")
-//                    .displayName("Student User")
-//                    .password("studentpassword")
-//                    .email("student3@example.com")
-//                    .role(Role.STUDENT)
-//                    .build();
-//            userService.createUser(studentUser3);
-//
-//            User studentUser4 = User.builder()
-//                    .userName("student4")
-//                    .firstName("Student")
-//                    .lastName("User")
-//                    .displayName("Student User")
-//                    .password("studentpassword")
-//                    .email("student4@example.com")
-//                    .role(Role.STUDENT)
-//                    .build();
-//            userService.createUser(studentUser4);
-//
-//
-////			Classroom classroom1 = Classroom.builder()
-////					.professor(professorUser).
-////											.build();
-//        };
-//    }
+    // Todo logging then when frontend user use key like alt+tab , ctrl c , ctrl v -> will mark the timestamp and how much of it in the report
+    // if logging on will prevent right click and everything
+
 
 }

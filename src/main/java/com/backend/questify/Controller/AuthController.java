@@ -89,10 +89,7 @@ public class AuthController {
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
-
-
-
-		@Data
+	@Data
 	@AllArgsConstructor
 	public static class AuthenticationResponse {
 		private String token;

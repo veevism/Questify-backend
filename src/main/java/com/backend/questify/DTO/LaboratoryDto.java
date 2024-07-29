@@ -33,9 +33,7 @@ public class LaboratoryDto {
 
 	private Status status; //PUBLISH, DRAFT
 
-	private LocalDateTime startTime;
-
-	private LocalDateTime endTime;
+	private Integer duration;
 
 	private List<StudentDto> students = new ArrayList<>();
 

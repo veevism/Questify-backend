@@ -22,6 +22,4 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
 
 	List<Question> findAllByLaboratory(Laboratory laboratory);
 
-
-
 }

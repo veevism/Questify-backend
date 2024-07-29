@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "submission_test_case_results")
-public class SubmissionTestCaseResult {
+@Table(name = "submission_result")
+public class SubmissionResult {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -25,6 +25,4 @@ public class SubmissionTestCaseResult {
 	@JoinColumn(name = "test_case_id")
 	private TestCase testCase;
 
-	@Column
-	private Boolean passed; // Change to
 }
