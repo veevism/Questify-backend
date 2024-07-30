@@ -8,6 +8,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Mapper
@@ -23,9 +25,32 @@ public interface DtoMapper {
  // --------
 
 // --------Submission
-// @Mapping(source = "student.studentId", target = "studentId")
+ @Mapping(source = "student.studentId", target = "studentId")
  SubmissionDto submissionToSubmissionDto (Submission submission);
+
+// default SubmissionDto mapSubmissionToDtoWithRemainingTime(Submission submission) {
+//  SubmissionDto dto = submissionToSubmissionDto(submission);
+//  if (submission.getStartTime() != null && submission.getQuestion() != null) {
+//   LaboratoryDto lab = dto.getLaboratory();
+//   if (lab != null && lab.getDurationTime() != null) {
+//    LocalDateTime endTime = submission.getStartTime().plusSeconds(lab.getDurationTime());
+//    dto.setRemainingTime((int) ChronoUnit.SECONDS.between(LocalDateTime.now(), endTime));
+//   }
+//  }
+//  return dto;
+// }
  // --------
+
+ // --------Report
+ ReportDto reportToReportDto(Report report);
+
+ Report reportDtoToReport(ReportDto reportDto);
+ //
+
+ // -----Logging
+
+ LoggingDto loggingToLoggingDto(Logging logging);
+ //
 
  // --------Professor
 @Mapping(source = "user.email", target = "email")

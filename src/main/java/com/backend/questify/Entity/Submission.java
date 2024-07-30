@@ -8,7 +8,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,9 +55,6 @@ public class Submission {
 		}
 	}
 
-	@OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Logging> loggings;
-
 	public static Map<String, String> getDefaultSnippets() {
 		Map<String, String> snippets = new HashMap<>();
 		snippets.put("Java", "public class Main { public static void main(String[] args) { System.out.println(\"Welcome To Questify Ja from Java\"); } }");
@@ -68,12 +69,30 @@ public class Submission {
 @OneToOne(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
 private Report report;
 
-//	@CreationTimestamp
-//	@Column(updatable = false)
-//	private LocalDateTime createdAt;
-//
-//	@UpdateTimestamp
-//	private LocalDateTime updatedAt;
+	@CreationTimestamp
+	@Column(updatable = false)
+	private LocalDateTime startTime;
+
+	@Transient
+	private Integer remainingTime;
+
+	@PostLoad
+	public void calculateRemainingTime() {
+		if (this.startTime != null && this.question != null) {
+			Laboratory lab = this.question.getLaboratory();
+			if (lab != null && lab.getDurationTime() != null) {
+				LocalDateTime endTime = this.startTime.plusSeconds(lab.getDurationTime());
+				this.remainingTime = (int) ChronoUnit.SECONDS.between(LocalDateTime.now(), endTime);
+			}
+		}
+	}
+
+	@CreationTimestamp
+	@Column(updatable = false)
+	private LocalDateTime createdAt;
+
+	@UpdateTimestamp
+	private LocalDateTime updatedAt;
 
 
 

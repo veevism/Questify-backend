@@ -1,7 +1,9 @@
 package com.backend.questify.Controller;
 
+import com.backend.questify.DTO.ReportDto;
 import com.backend.questify.DTO.SubmissionDto;
 import com.backend.questify.Entity.Logging;
+import com.backend.questify.Entity.Report;
 import com.backend.questify.Entity.Submission;
 import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Model.ApiResponse;
@@ -9,8 +11,10 @@ import com.backend.questify.Model.ExecutionResponse;
 import com.backend.questify.Model.Language;
 import com.backend.questify.Repository.LoggingRepository;
 import com.backend.questify.Repository.QuestionRepository;
+import com.backend.questify.Repository.ReportRepository;
 import com.backend.questify.Repository.SubmissionRepository;
 import com.backend.questify.Service.SubmissionService;
+import com.backend.questify.Util.DtoMapper;
 import com.backend.questify.Util.EntityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,6 +38,9 @@ public class SubmissionController {
 
 	@Autowired
 	private LoggingRepository loggingRepository;
+
+	@Autowired
+	private ReportRepository reportRepository;
 
 	@Autowired
 	private EntityHelper entityHelper;
@@ -70,19 +77,24 @@ public class SubmissionController {
 
 
 	@PostMapping("/log")
-	public Logging logEvent(@RequestParam UUID questionId, @RequestBody Logging logging) {
+	public ReportDto logEvent(@RequestParam Long submissionId, @RequestBody Logging logging) {
 		//{
 		//  "actionName": "copy"
 		//}
-		Optional<Submission> submissionOpt = submissionRepository.findByQuestionAndStudent(entityHelper.findQuestionById(questionId), entityHelper.findStudentById(entityHelper.getCurrentUserId())); // SUS
-		if (submissionOpt.isPresent()) {
-			Submission submission = submissionOpt.get();
-//			logging.setReport(submission);
+		Optional<Report> reportOpt = reportRepository.findBySubmission_SubmissionId(submissionId);
+		if (reportOpt.isPresent()) {
+			Report report = reportOpt.get();
+			logging.setReport(report);
 			logging.setTimeStamp(LocalDateTime.now());
-			return loggingRepository.save(logging);
+			return DtoMapper.INSTANCE.reportToReportDto(report);
 		} else {
-			throw new ResourceNotFoundException("Question not found with id: " + questionId);
+			throw new ResourceNotFoundException("Report not found for submission id: " + submissionId);
 		}
+	}
+
+	@PostMapping("/submit")
+	public SubmissionDto submitSubmission(@RequestParam Long submissionId) {
+		return submissionService.submitSubmission(submissionId);
 	}
 
 

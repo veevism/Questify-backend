@@ -26,10 +26,6 @@ public class Report {
 	@JoinColumn(name = "submission_id", nullable = false)
 	private Submission submission;
 
-	@ManyToOne
-	@JoinColumn(name = "test_case_id")
-	private TestCase testCase;
-
 	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Logging> loggings;
 
@@ -41,6 +37,8 @@ public class Report {
 	@Column(updatable = false)
 	private LocalDateTime startTime;
 
+	private LocalDateTime submitTime;
+
 	@Enumerated(EnumType.STRING)
 	private SubmitStatus submitStatus;
 
@@ -50,6 +48,15 @@ public class Report {
 		this.startTime = LocalDateTime.now();
 		if (this.maxScore == null && this.submission != null) {
 			this.maxScore = this.submission.getQuestion().getLaboratory().getMaxScore();
+		}
+	}
+
+	public void markSubmitted() {
+		this.submitTime = LocalDateTime.now();
+		Laboratory lab = this.submission.getQuestion().getLaboratory();
+		if (lab != null && this.startTime != null) {
+			LocalDateTime endTime = this.startTime.plusSeconds(lab.getDurationTime());
+			this.submitStatus = this.submitTime.isBefore(endTime) ? SubmitStatus.ON_TIME : SubmitStatus.LATE;
 		}
 	}
 }

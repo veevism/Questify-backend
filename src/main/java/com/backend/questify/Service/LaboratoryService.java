@@ -42,7 +42,7 @@ public class LaboratoryService {
 											  .invitationCode(ShortUUIDGenerator.generateShortUUID())
 											  .title(laboratory.getTitle())
 											  .description(laboratory.getDescription())
-											  .duration(laboratory.getDuration())
+											  .durationTime(laboratory.getDurationTime())
 				   	 						  .maxScore(laboratory.getMaxScore())
 											  .status(laboratory.getStatus())
 											  .professor(professor)
@@ -61,7 +61,7 @@ public class LaboratoryService {
 		existingLaboratory.setTitle(laboratory.getTitle());
 		existingLaboratory.setDescription(laboratory.getDescription());
 		existingLaboratory.setMaxScore(laboratory.getMaxScore());
-		existingLaboratory.setDuration(laboratory.getDuration());
+		existingLaboratory.setDurationTime(laboratory.getDurationTime());
 		existingLaboratory.setStatus(laboratory.getStatus());
 
 		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratoryRepository.save(existingLaboratory));

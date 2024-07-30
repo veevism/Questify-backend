@@ -16,16 +16,12 @@ import java.util.Map;
 public class SubmissionDto {
 
 	private Long submissionId;
-
 	private LaboratoryDto laboratory;
-
 	private Long studentId;
-
 	private Map<String, String> codeSnippets = new HashMap<>();
-
 	private LocalDateTime submissionTime;
-
 	private LocalDateTime createdAt;
-
 	private LocalDateTime updatedAt;
+	private Integer remainingTime;
+
 }

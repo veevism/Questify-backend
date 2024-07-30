@@ -33,7 +33,7 @@ public class LaboratoryDto {
 
 	private Status status; //PUBLISH, DRAFT
 
-	private Integer duration;
+	private Integer durationTime;
 
 	private List<StudentDto> students = new ArrayList<>();
 

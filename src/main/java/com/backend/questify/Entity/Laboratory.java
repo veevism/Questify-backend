@@ -34,9 +34,9 @@ public class Laboratory {
 
 	private Integer maxScore;
 
-	private Status status; //PUBLISH, DRAFT
+	private Integer durationTime;
 
-	private Integer duration;
+	private Status status; //PUBLISH, DRAFT
 
 	@ManyToMany
 	@JoinTable(
