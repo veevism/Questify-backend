@@ -20,6 +20,7 @@ import java.util.Map;
 @Builder
 @Table(name = "submissions")
 public class Submission {
+	//Store code only
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long submissionId;
@@ -41,7 +42,7 @@ public class Submission {
 	@Builder.Default
 	private Map<String, String> codeSnippets = new HashMap<>();
 
-	private SubmissionStatus status;
+	private SubmissionStatus status; //SUS, Should Delete if no value
 
 	@PrePersist
 	public void prePersist() {
@@ -49,6 +50,9 @@ public class Submission {
 			this.codeSnippets = getDefaultSnippets();
 		}
 	}
+
+	@OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Logging> loggings;
 
 	public static Map<String, String> getDefaultSnippets() {
 		Map<String, String> snippets = new HashMap<>();
@@ -61,8 +65,8 @@ public class Submission {
 
 // <-- Next Phase
 
-	@OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<SubmissionResult> testCaseResults;
+@OneToOne(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
+private Report report;
 
 //	@CreationTimestamp
 //	@Column(updatable = false)

@@ -23,7 +23,7 @@ public interface DtoMapper {
  // --------
 
 // --------Submission
- @Mapping(source = "student.studentId", target = "studentId")
+// @Mapping(source = "student.studentId", target = "studentId")
  SubmissionDto submissionToSubmissionDto (Submission submission);
  // --------
 

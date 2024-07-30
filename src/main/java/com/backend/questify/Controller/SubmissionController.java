@@ -1,17 +1,25 @@
 package com.backend.questify.Controller;
 
 import com.backend.questify.DTO.SubmissionDto;
+import com.backend.questify.Entity.Logging;
 import com.backend.questify.Entity.Submission;
+import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Model.ApiResponse;
 import com.backend.questify.Model.ExecutionResponse;
 import com.backend.questify.Model.Language;
+import com.backend.questify.Repository.LoggingRepository;
+import com.backend.questify.Repository.QuestionRepository;
+import com.backend.questify.Repository.SubmissionRepository;
 import com.backend.questify.Service.SubmissionService;
+import com.backend.questify.Util.EntityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -20,6 +28,15 @@ public class SubmissionController {
 
 	@Autowired
 	private SubmissionService submissionService;
+
+	@Autowired
+	private SubmissionRepository submissionRepository;
+
+	@Autowired
+	private LoggingRepository loggingRepository;
+
+	@Autowired
+	private EntityHelper entityHelper;
 
 	@PutMapping("")
 	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
@@ -50,6 +67,27 @@ public class SubmissionController {
 		ApiResponse<ExecutionResponse> response = ApiResponse.success(submissionService.executeSubmission(questionId, language, testCaseId) , HttpStatus.OK, "Execution Submission Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
+
+
+	@PostMapping("/log")
+	public Logging logEvent(@RequestParam UUID questionId, @RequestBody Logging logging) {
+		//{
+		//  "actionName": "copy"
+		//}
+		Optional<Submission> submissionOpt = submissionRepository.findByQuestionAndStudent(entityHelper.findQuestionById(questionId), entityHelper.findStudentById(entityHelper.getCurrentUserId())); // SUS
+		if (submissionOpt.isPresent()) {
+			Submission submission = submissionOpt.get();
+//			logging.setReport(submission);
+			logging.setTimeStamp(LocalDateTime.now());
+			return loggingRepository.save(logging);
+		} else {
+			throw new ResourceNotFoundException("Question not found with id: " + questionId);
+		}
+	}
+
+
+
+
 
 	//! Todo : Should Add getRuntime which return language and version available
 
