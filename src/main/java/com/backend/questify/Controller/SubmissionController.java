@@ -86,6 +86,8 @@ public class SubmissionController {
 			Report report = reportOpt.get();
 			logging.setReport(report);
 			logging.setTimeStamp(LocalDateTime.now());
+			report.getLoggings().add(loggingRepository.save(logging));
+
 			return DtoMapper.INSTANCE.reportToReportDto(report);
 		} else {
 			throw new ResourceNotFoundException("Report not found for submission id: " + submissionId);

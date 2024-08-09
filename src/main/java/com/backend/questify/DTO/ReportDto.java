@@ -22,6 +22,6 @@ public class ReportDto {
     private Integer givenScore;
     private Integer maxScore;
     private LocalDateTime startTime;
-
+    private LocalDateTime submitTime;
     private SubmitStatus submitStatus;
 }

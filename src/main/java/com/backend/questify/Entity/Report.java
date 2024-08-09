@@ -58,5 +58,6 @@ public class Report {
 			LocalDateTime endTime = this.startTime.plusSeconds(lab.getDurationTime());
 			this.submitStatus = this.submitTime.isBefore(endTime) ? SubmitStatus.ON_TIME : SubmitStatus.LATE;
 		}
+
 	}
 }

@@ -23,13 +23,17 @@ public class ReportService {
     }
 
     @Transactional
-    public ReportDto updateReport(Long reportId, ReportDto reportDto) {
-        Report report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new ResourceNotFoundException("Report not found with id: " + reportId));
+    public ReportDto updateReport(Long submissionId, ReportDto reportDto) {
+        Report report = reportRepository.findBySubmission_SubmissionId(submissionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Report not found for submission id: " + submissionId));
 
         if (reportDto.getGivenScore() != null) {
             report.setGivenScore(reportDto.getGivenScore());
         }
+
+        // check submitTime in submission and reportDto
+        // add case givenScore can't be more than maxScore
+        // change every id to UUID
 
         return DtoMapper.INSTANCE.reportToReportDto(reportRepository.save(report));
     }

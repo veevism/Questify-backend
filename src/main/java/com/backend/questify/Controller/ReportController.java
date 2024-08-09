@@ -18,7 +18,7 @@ public class ReportController {
     }
 
     @PutMapping("")
-    public ReportDto updateReport(@RequestParam Long reportId, @RequestBody ReportDto reportDto) {
-        return reportService.updateReport(reportId, reportDto);
+    public ReportDto updateReport(@RequestParam Long submissionId, @RequestBody ReportDto reportDto) {
+        return reportService.updateReport(submissionId, reportDto);
     }
 }
