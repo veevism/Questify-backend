@@ -9,13 +9,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReportDto {
-    private Long id;
+    private UUID reportId;
     private SubmissionDto submission;
     private List<LoggingDto> loggings;
 //    private Long testCaseId;

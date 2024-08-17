@@ -1,5 +1,6 @@
 package com.backend.questify.Entity;
 
+import com.backend.questify.DTO.TestCaseResultDto;
 import com.backend.questify.Model.SubmissionStatus;
 import com.backend.questify.Model.SubmitStatus;
 import com.backend.questify.Util.HashMapConverter;
@@ -13,9 +14,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 @Data
@@ -26,8 +25,9 @@ import java.util.Map;
 public class Submission {
 	//Store code only
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long submissionId;
+	@GeneratedValue(generator = "UUID")
+	@Column(updatable = false, nullable = false)
+	private UUID submissionId;
 
 	@ManyToOne
 	@JoinColumn(name = "question_id")
@@ -46,14 +46,7 @@ public class Submission {
 	@Builder.Default
 	private Map<String, String> codeSnippets = new HashMap<>();
 
-	private SubmissionStatus status; //SUS, Should Delete if no value
-
-	@PrePersist
-	public void prePersist() {
-		if (this.codeSnippets.isEmpty()) {
-			this.codeSnippets = getDefaultSnippets();
-		}
-	}
+	private SubmissionStatus status;
 
 	public static Map<String, String> getDefaultSnippets() {
 		Map<String, String> snippets = new HashMap<>();
@@ -66,26 +59,15 @@ public class Submission {
 
 // <-- Next Phase
 
-@OneToOne(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
-private Report report;
+	@OneToOne(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Report report;
 
-	@CreationTimestamp
 	@Column(updatable = false)
 	private LocalDateTime startTime;
 
-	@Transient
-	private Integer remainingTime;
+	@Column(updatable = false)
+	private LocalDateTime endTime;
 
-	@PostLoad
-	public void calculateRemainingTime() {
-		if (this.startTime != null && this.question != null) {
-			Laboratory lab = this.question.getLaboratory();
-			if (lab != null && lab.getDurationTime() != null) {
-				LocalDateTime endTime = this.startTime.plusSeconds(lab.getDurationTime());
-				this.remainingTime = (int) ChronoUnit.SECONDS.between(LocalDateTime.now(), endTime);
-			}
-		}
-	}
 
 	@CreationTimestamp
 	@Column(updatable = false)
@@ -93,6 +75,29 @@ private Report report;
 
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
+
+	@PrePersist
+	public void prePersist() {
+		if (this.codeSnippets.isEmpty()) {
+			this.codeSnippets = getDefaultSnippets();
+		}
+		if (this.startTime == null) {
+			this.startTime = LocalDateTime.now();
+		}
+		if (this.question != null && this.question.getLaboratory() != null) {
+			Integer durationTime = this.question.getLaboratory().getDurationTime();
+			if (durationTime != null) {
+				this.endTime = this.startTime.plusSeconds(durationTime);
+			}
+		}
+		if (this.codeSnippets.isEmpty()) {
+			this.codeSnippets = getDefaultSnippets();
+		}
+	}
+
+	@OneToMany(mappedBy = "submission", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<TestCaseResult> testCaseResults = new ArrayList<>();
 
 
 

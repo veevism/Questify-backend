@@ -5,6 +5,8 @@ import com.backend.questify.Service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/report")
 public class ReportController {
@@ -13,12 +15,12 @@ public class ReportController {
     private ReportService reportService;
 
     @GetMapping("")
-    public ReportDto getReport(@RequestParam Long submissionId) {
+    public ReportDto getReport(@RequestParam UUID submissionId) {
         return reportService.getReportBySubmissionId(submissionId);
     }
 
     @PutMapping("")
-    public ReportDto updateReport(@RequestParam Long submissionId, @RequestBody ReportDto reportDto) {
+    public ReportDto updateReport(@RequestParam UUID submissionId, @RequestBody ReportDto reportDto) {
         return reportService.updateReport(submissionId, reportDto);
     }
 }

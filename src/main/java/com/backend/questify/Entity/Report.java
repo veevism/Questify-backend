@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -19,8 +20,8 @@ import java.util.List;
 @Table(name = "reports")
 public class Report {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@GeneratedValue(generator = "UUID")
+	private UUID reportId;
 
 	@OneToOne
 	@JoinColumn(name = "submission_id", nullable = false)

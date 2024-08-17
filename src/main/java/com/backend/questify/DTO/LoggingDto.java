@@ -16,6 +16,8 @@ import java.util.UUID;
 @NoArgsConstructor
 public class LoggingDto {
 
+    private UUID loggingId;
+
     private ActionName actionName;
 
     private LocalDateTime timeStamp;

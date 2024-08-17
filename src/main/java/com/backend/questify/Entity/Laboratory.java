@@ -19,7 +19,6 @@ import java.util.*;
 public class Laboratory {
 	@Id
 	@GeneratedValue(generator = "UUID")
-	@Column(updatable = false, nullable = false)
 	private UUID laboratoryId;
 
 	@ManyToOne

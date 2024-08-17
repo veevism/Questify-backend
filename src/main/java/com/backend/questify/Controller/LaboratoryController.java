@@ -70,6 +70,14 @@ public class LaboratoryController {
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
+	@GetMapping("/assign-question")
+	@PreAuthorize("hasRole('ProfAcc')")
+	public ResponseEntity<ApiResponse<LaboratoryDto>> randomAssignQuestion(
+			@RequestParam UUID laboratoryId) {
+		ApiResponse<LaboratoryDto> response = ApiResponse.success(laboratoryService.randomAssignQuestion(laboratoryId), HttpStatus.OK, "Assign Question Randomly Successfully");
+		return ResponseEntity.status(response.getStatus()).body(response);
+	}
+
 
 
 }

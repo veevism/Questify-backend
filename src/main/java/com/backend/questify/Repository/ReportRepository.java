@@ -5,8 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface ReportRepository extends JpaRepository<Report, Long> {
-    Optional<Report> findBySubmission_SubmissionId(Long submissionId);
+public interface ReportRepository extends JpaRepository<Report, UUID> {
+    Optional<Report> findBySubmission_SubmissionId(UUID submissionId);
 }

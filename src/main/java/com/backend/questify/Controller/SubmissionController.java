@@ -70,14 +70,14 @@ public class SubmissionController {
 
 	@PostMapping("/execute")
 	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
-	public ResponseEntity<ApiResponse<ExecutionResponse>> executeSubmission(@RequestParam UUID questionId, @RequestParam String language, @RequestParam UUID testCaseId) {
-		ApiResponse<ExecutionResponse> response = ApiResponse.success(submissionService.executeSubmission(questionId, language, testCaseId) , HttpStatus.OK, "Execution Submission Successfully");
+	public ResponseEntity<ApiResponse<SubmissionDto>> executeSubmission(@RequestParam UUID questionId, @RequestParam String language) {
+		ApiResponse<SubmissionDto> response = ApiResponse.success(submissionService.executeSubmission(questionId, language) , HttpStatus.OK, "Execution Submission Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 
 
 	@PostMapping("/log")
-	public ReportDto logEvent(@RequestParam Long submissionId, @RequestBody Logging logging) {
+	public ReportDto logEvent(@RequestParam UUID submissionId, @RequestBody Logging logging) {
 		//{
 		//  "actionName": "copy"
 		//}
@@ -95,7 +95,7 @@ public class SubmissionController {
 	}
 
 	@PostMapping("/submit")
-	public SubmissionDto submitSubmission(@RequestParam Long submissionId) {
+	public SubmissionDto submitSubmission(@RequestParam UUID submissionId) {
 		return submissionService.submitSubmission(submissionId);
 	}
 
@@ -115,13 +115,13 @@ public class SubmissionController {
 //	private SubmissionService submissionService;
 //
 //	@GetMapping("/{language}")
-//	public ResponseEntity<String> getCode(@PathVariable Long submissionId, @PathVariable String language) {
+//	public ResponseEntity<String> getCode(@PathVariable UUID submissionId, @PathVariable String language) {
 //		String code = submissionService.getCode(submissionId, language);
 //		return ResponseEntity.ok(code);
 //	}
 //
 //	@PostMapping("/{language}")
-//	public ResponseEntity<Submission> saveCode(@PathVariable Long submissionId, @PathVariable String language, @RequestBody String code) {
+//	public ResponseEntity<Submission> saveCode(@PathVariable UUID submissionId, @PathVariable String language, @RequestBody String code) {
 //		Submission submission = submissionService.saveCode(submissionId, language, code);
 //		return ResponseEntity.ok(submission);
 //	}

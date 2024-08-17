@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import static com.backend.questify.Model.Role.ProfAcc;
@@ -136,20 +137,20 @@ public class LaboratoryService {
 		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratoryRepository.save(existingLaboratory));
 	}
 
-//	@Transactional
-//	public AssignmentDto randomAssignLabs(UUID assignmentId) {
-//		Laboratory assignment = entityHelper.findAssignmentById(assignmentId);
-//
-//		assignment.getStudentLabAssignments().clear();
-//		List<Student> students = assignment.getClassroom().getStudents();
-//		List<Question> laboratories = entityHelper.findLaboratoryByAssignment(assignment);
-//
-//		Random random = new Random();
-//		for (Student student : students) {
-//			assignment.getStudentLabAssignments().put(student.getStudentId(), laboratories.get(random.nextInt(laboratories.size())).getQuestionId());
-//		}
-//
-//		return DtoMapper.INSTANCE.assignmentToAssignmentDto(assignmentRepository.save(assignment));
-//	}
+	@Transactional
+	public LaboratoryDto randomAssignQuestion(UUID laboratoryId) {
+		Laboratory laboratory = entityHelper.findLaboratoryById(laboratoryId);
+
+		laboratory.getStudentQuestion().clear();
+		List<Student> students = laboratory.getStudents();
+		List<Question> questions = entityHelper.findAllQuestionsByLaboratory(laboratory);
+
+		Random random = new Random();
+		for (Student student : students) {
+			laboratory.getStudentQuestion().put(student.getStudentId(), questions.get(random.nextInt(questions.size())).getQuestionId());
+		}
+
+		return DtoMapper.INSTANCE.laboratoryToLaboratoryDto(laboratoryRepository.save(laboratory));
+	}
 
 }

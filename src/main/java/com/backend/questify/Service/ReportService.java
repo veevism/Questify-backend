@@ -10,20 +10,22 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class ReportService {
 
     @Autowired
     private ReportRepository reportRepository;
 
-    public ReportDto getReportBySubmissionId(Long submissionId) {
+    public ReportDto getReportBySubmissionId(UUID submissionId) {
         Report report = reportRepository.findBySubmission_SubmissionId(submissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Report not found for submission id: " + submissionId));
         return DtoMapper.INSTANCE.reportToReportDto(report);
     }
 
     @Transactional
-    public ReportDto updateReport(Long submissionId, ReportDto reportDto) {
+    public ReportDto updateReport(UUID submissionId, ReportDto reportDto) {
         Report report = reportRepository.findBySubmission_SubmissionId(submissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Report not found for submission id: " + submissionId));
 

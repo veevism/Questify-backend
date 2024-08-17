@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 @Entity
@@ -18,8 +19,8 @@ import java.time.LocalDateTime;
 @Table(name = "loggings")
 public class Logging {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    private UUID loggingId;
 
     @Enumerated(EnumType.STRING)
     private ActionName actionName;

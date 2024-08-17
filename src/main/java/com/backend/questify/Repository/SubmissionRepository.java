@@ -9,9 +9,10 @@ import org.springframework.stereotype.Repository;
 
 import javax.swing.text.html.Option;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface SubmissionRepository extends JpaRepository<Submission, Long> {
+public interface SubmissionRepository extends JpaRepository<Submission, UUID> {
 
 	Optional<Submission> findByQuestionAndStudent(Question question, Student student);
 

@@ -2,6 +2,7 @@ package com.backend.questify.Service;
 
 import com.backend.questify.DTO.LaboratoryDto;
 import com.backend.questify.DTO.SubmissionDto;
+import com.backend.questify.DTO.TestCaseResultDto;
 import com.backend.questify.Entity.*;
 import com.backend.questify.Exception.BadRequestException;
 import com.backend.questify.Exception.ResourceNotFoundException;
@@ -18,9 +19,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.backend.questify.Model.Role.ProfAcc;
 import static com.backend.questify.Model.Role.StdAcc;
@@ -36,6 +39,12 @@ public class SubmissionService {
 	@Autowired
 	private ReportRepository reportRepository;
 
+	@Autowired
+	private TestCaseRepository testCaseRepository;
+
+	@Autowired
+	private TestCaseResultRepository testCaseResultRepository;
+
 	@Transactional
 	public SubmissionDto updateSubmissionContent(UUID questionId, String language, String updatedCode) {
 		Submission submission = getCurrentSubmission(questionId);
@@ -43,7 +52,7 @@ public class SubmissionService {
 		Map<String, String> snippets = submission.getCodeSnippets();
 		snippets.put(language, updatedCode);
 
-		return convertToDtoWithRemainingTime(submissionRepository.save(submission));
+		return DtoMapper.INSTANCE.submissionToSubmissionDto(submissionRepository.save(submission));
 	}
 
 	public SubmissionDto getAndCreateSubmission(UUID questionId) throws Exception {
@@ -57,60 +66,85 @@ public class SubmissionService {
 
 		Submission submission = null;
 
-		if (user.getRole() == StdAcc) {
 			Student student = entityHelper.findStudentById(userId);
 
 			Optional<Submission> existingSubmission = submissionRepository.findByQuestionAndStudent(question, student);
 			if (existingSubmission.isPresent()) {
-				return convertToDtoWithRemainingTime(existingSubmission.get());
+				return DtoMapper.INSTANCE.submissionToSubmissionDto(existingSubmission.get());
 			}
 
-			Submission newSubmission = Submission.builder()
-					.student(student)
-					.question(question)
-					.status(SubmissionStatus.ACTIVE)
-					.build();
+		Submission newSubmission = Submission.builder()
+				.student(student)
+				.question(question)
+				.status(SubmissionStatus.ACTIVE)
+				.build();
 
-			submissionRepository.save(newSubmission);
+		submissionRepository.save(newSubmission);
 
-			Report report = Report.builder()
-					.submission(newSubmission)
-					.maxScore(question.getLaboratory().getMaxScore())
-					.build();
+		Report report = Report.builder()
+				.submission(newSubmission)
+				.maxScore(question.getLaboratory().getMaxScore())
+				.build();
 
-			newSubmission.setReport(reportRepository.save(report));
+		newSubmission.setReport(reportRepository.save(report));
 
-			submission = submissionRepository.save(newSubmission);;
+		submission = submissionRepository.save(newSubmission);
 
-		} else if (user.getRole() == ProfAcc) {
-			Professor professor = entityHelper.findProfessorById(userId);
-
-			Optional<Submission> existingSubmission = submissionRepository.findByQuestionAndProfessor(question, professor);
-			if (existingSubmission.isPresent()) {
-				return convertToDtoWithRemainingTime(submission);
-			}
-
-			Submission newSubmission = Submission.builder()
-					.professor(professor)
-					.question(question)
-					.build();
-
-			submission = submissionRepository.save(newSubmission);
-		} else {
-			throw new Exception("Something Bad Happens To Submission"); //! Todo : Fix This
-		}
-
-		return convertToDtoWithRemainingTime(submission);
+		return DtoMapper.INSTANCE.submissionToSubmissionDto(submission);
 	}
 
 	public SubmissionDto resetSubmission(UUID questionId) {
-		return convertToDtoWithRemainingTime(submissionRepository.save(getCurrentSubmission(questionId)));
+		return DtoMapper.INSTANCE.submissionToSubmissionDto(submissionRepository.save(getCurrentSubmission(questionId)));
 	}
 
-	public ExecutionResponse executeSubmission(UUID questionId, String language, UUID testCaseId) {
-		SubmissionDto submissionDto = convertToDtoWithRemainingTime(getCurrentSubmission(questionId));
 
-		ExecutionResult result = getExecutionResult(language, submissionDto, entityHelper.findTestCaseById(testCaseId).getInput());
+	@Transactional
+	public SubmissionDto executeSubmission(UUID questionId, String language) {
+		// ดึง submission ปัจจุบัน
+		Submission submission = getCurrentSubmission(questionId);
+
+		// ล้างผลลัพธ์การทดสอบเก่าทั้งหมด
+		submission.getTestCaseResults().clear();
+		testCaseResultRepository.deleteAllBySubmission(submission);
+
+		// ดึง TestCase ทั้งหมดที่เกี่ยวข้องกับคำถามนี้
+		List<TestCase> testCases = testCaseRepository.findAllByQuestion(submission.getQuestion());
+
+		// สร้างลิสต์สำหรับเก็บผลลัพธ์การทดสอบ
+		for (TestCase testCase : testCases) {
+			ExecutionResponse executionResponse = executeTestCase(submission, language, testCase);
+
+			String actualOutput = executionResponse.getOutput();
+
+			if (actualOutput.endsWith("\n")) {
+				actualOutput = actualOutput.substring(0, actualOutput.length() - 1);
+			}
+
+//			actualOutput = actualOutput.replaceAll("[\\n\\r\\t]+$", "");
+
+
+			String expectedOutput = testCase.getExpectedOutput();
+
+			String result = actualOutput.equals(expectedOutput) ? "PASS" : "NOT PASS";
+
+			TestCaseResult testCaseResult = TestCaseResult.builder()
+					.submission(submission)
+					.testCase(testCase)
+					.actualOutput(actualOutput)
+					.result(result)
+					.build();
+
+			submission.getTestCaseResults().add(testCaseResult);
+			testCaseResultRepository.save(testCaseResult);
+		}
+
+		Submission updatedSubmission = submissionRepository.save(submission);
+
+		return DtoMapper.INSTANCE.submissionToSubmissionDto(updatedSubmission);
+	}
+	private ExecutionResponse executeTestCase(Submission submission, String language, TestCase testCase) {
+		SubmissionDto submissionDto = DtoMapper.INSTANCE.submissionToSubmissionDto(submission);
+		ExecutionResult result = getExecutionResult(language, submissionDto, testCase.getInput());
 
 		return ExecutionResponse.builder()
 				.StdErr(result.getOutput().getStderr())
@@ -122,6 +156,7 @@ public class SubmissionService {
 				.Version(result.getVersion())
 				.build();
 	}
+
 
 	private Submission getCurrentSubmission(UUID questionId) {
 		Long userId = entityHelper.getCurrentUserId();
@@ -140,6 +175,7 @@ public class SubmissionService {
 
 		return submission;
 	}
+
 
 	private static ExecutionResult getExecutionResult(String language, SubmissionDto submissionDto, String stdin) {
 		try {
@@ -170,7 +206,7 @@ public class SubmissionService {
 
 
 	@Transactional
-	public SubmissionDto submitSubmission(Long submissionId) {
+	public SubmissionDto submitSubmission(UUID submissionId) {
 		Submission submission = submissionRepository.findById(submissionId)
 				.orElseThrow(() -> new ResourceNotFoundException("Submission not found with id: " + submissionId));
 
@@ -188,18 +224,7 @@ public class SubmissionService {
 		submissionRepository.save(submission);
 		reportRepository.save(report);
 
-		return convertToDtoWithRemainingTime(submission);
+		return DtoMapper.INSTANCE.submissionToSubmissionDto(submission);
 	}
 
-	private SubmissionDto convertToDtoWithRemainingTime(Submission submission) {
-		SubmissionDto dto = DtoMapper.INSTANCE.submissionToSubmissionDto(submission);
-		if (submission.getStartTime() != null && submission.getQuestion() != null) {
-			LaboratoryDto lab = dto.getLaboratory();
-			if (lab != null && lab.getDurationTime() != null) {
-				LocalDateTime endTime = submission.getStartTime().plusSeconds(lab.getDurationTime());
-				dto.setRemainingTime((int) ChronoUnit.SECONDS.between(LocalDateTime.now(), endTime));
-			}
-		}
-		return dto;
-	}
 }
