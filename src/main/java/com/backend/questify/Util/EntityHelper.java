@@ -142,8 +142,8 @@ public class EntityHelper {
 	}
 
 	public List<Laboratory> findLaboratoriesByStudent(User user) {
-//		return ListIsNotEmptyException.requireNotEmpty(laboratoryRepository.findAllByStudent_StudentId(user.getUserId()), Laboratory.class.getSimpleName());
-		return ListIsNotEmptyException.requireNotEmpty(laboratoryRepository.findAllByProfessor_ProfessorId(user.getUserId()), Laboratory.class.getSimpleName());
+		return ListIsNotEmptyException.requireNotEmpty(laboratoryRepository.findAllByStudents_StudentId(user.getUserId()), Laboratory.class.getSimpleName());
+//		return ListIsNotEmptyException.requireNotEmpty(laboratoryRepository.findAllByProfessor_ProfessorId(user.getUserId()), Laboratory.class.getSimpleName());
 
 	}
 

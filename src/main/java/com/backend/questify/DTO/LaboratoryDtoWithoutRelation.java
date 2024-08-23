@@ -23,5 +23,4 @@ public class LaboratoryDtoWithoutRelation {
 	private LocalDateTime updatedAt;
 	private int testCaseQuantity;
 
-
 }

@@ -26,6 +26,8 @@ public interface LaboratoryRepository extends JpaRepository<Laboratory, UUID> {
 
     List<Laboratory> findAllByProfessor_ProfessorId(Long userId);
 
+    List<Laboratory> findAllByStudents_StudentId(Long userId);
+
     boolean existsByTitleAndProfessor(String title, Professor professor);
 
 //    List<Laboratory> findAll(Long userId);
