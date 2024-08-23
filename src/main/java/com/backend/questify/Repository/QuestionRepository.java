@@ -22,4 +22,5 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
 
 	List<Question> findAllByLaboratory(Laboratory laboratory);
 
+    List<Question> findAllByQuestionId(UUID questionId);
 }
