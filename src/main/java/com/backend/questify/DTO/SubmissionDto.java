@@ -21,7 +21,6 @@ public class SubmissionDto {
 	private UUID submissionId;
 	private Long studentId;
 	private Map<String, String> codeSnippets = new HashMap<>();
-	private LocalDateTime submissionTime;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	private LocalDateTime startTime;

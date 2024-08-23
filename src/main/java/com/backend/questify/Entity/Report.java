@@ -53,12 +53,7 @@ public class Report {
 	}
 
 	public void markSubmitted() {
-		this.submitTime = LocalDateTime.now();
-		Laboratory lab = this.submission.getQuestion().getLaboratory();
-		if (lab != null && this.startTime != null) {
-			LocalDateTime endTime = this.startTime.plusSeconds(lab.getDurationTime());
-			this.submitStatus = this.submitTime.isBefore(endTime) ? SubmitStatus.ON_TIME : SubmitStatus.LATE;
-		}
+
 
 	}
 }

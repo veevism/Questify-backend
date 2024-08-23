@@ -5,9 +5,11 @@ import com.backend.questify.DTO.SubmissionDto;
 import com.backend.questify.DTO.TestCaseResultDto;
 import com.backend.questify.Entity.*;
 import com.backend.questify.Exception.BadRequestException;
+import com.backend.questify.Exception.ConflictException;
 import com.backend.questify.Exception.ResourceNotFoundException;
 import com.backend.questify.Model.ExecutionResponse;
 import com.backend.questify.Model.SubmissionStatus;
+import com.backend.questify.Model.SubmitStatus;
 import com.backend.questify.Repository.*;
 import com.backend.questify.Util.DtoMapper;
 import com.backend.questify.Util.EntityHelper;
@@ -70,6 +72,10 @@ public class SubmissionService {
 
 			Optional<Submission> existingSubmission = submissionRepository.findByQuestionAndStudent(question, student);
 			if (existingSubmission.isPresent()) {
+				if (existingSubmission.get().getStatus() == SubmissionStatus.INACTIVE) {
+					throw new ConflictException("Submission is marked as inactive. You have already completed this submission.");
+				}
+
 				return DtoMapper.INSTANCE.submissionToSubmissionDto(existingSubmission.get());
 			}
 
@@ -210,17 +216,22 @@ public class SubmissionService {
 		Submission submission = submissionRepository.findById(submissionId)
 				.orElseThrow(() -> new ResourceNotFoundException("Submission not found with id: " + submissionId));
 
-		// Update submission status
 		submission.setStatus(SubmissionStatus.INACTIVE);
 
-		// Find the associated report
 		Report report = reportRepository.findBySubmission_SubmissionId(submissionId)
 				.orElseThrow(() -> new ResourceNotFoundException("Report not found for submission id: " + submissionId));
 
-		// Mark the report as submitted
-		report.markSubmitted();
+		LocalDateTime submitTime = LocalDateTime.now();
+		LocalDateTime endTime = submission.getEndTime();
 
-		// Save both entities
+        if (submitTime.isBefore(endTime)) {
+            report.setSubmitStatus(SubmitStatus.ON_TIME);
+        } else {
+            report.setSubmitStatus(SubmitStatus.LATE);
+        }
+
+		report.setSubmitTime(submitTime);
+
 		submissionRepository.save(submission);
 		reportRepository.save(report);
 
