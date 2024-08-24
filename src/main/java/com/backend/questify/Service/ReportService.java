@@ -66,4 +66,8 @@ public class ReportService {
 
         return DtoMapper.INSTANCE.reportToReportDto(reportRepository.save(report));
     }
+
+    public ReportDto getReportByReportId(UUID reportId) {
+        return DtoMapper.INSTANCE.reportToReportDto(reportRepository.findById(reportId).orElseThrow(() -> new ResourceNotFoundException("Report not found for submission id: " + reportId)));
+    }
 }

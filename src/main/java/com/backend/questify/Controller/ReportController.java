@@ -18,6 +18,12 @@ public class ReportController {
     @Autowired
     private ReportService reportService;
 
+    @GetMapping("/")
+    public ResponseEntity<ApiResponse<ReportDto>> getReportByReportId(@RequestParam UUID reportId) {
+        ApiResponse<ReportDto> response = ApiResponse.success(reportService.getReportByReportId(reportId), HttpStatus.OK, "Get Report Successfully");
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
     @GetMapping("")
     public ResponseEntity<ApiResponse<ReportDto>> getReport(@RequestParam UUID questionId) {
         ApiResponse<ReportDto> response = ApiResponse.success(reportService.getReport(questionId), HttpStatus.OK, "Get Report Successfully");
