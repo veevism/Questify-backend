@@ -44,6 +44,8 @@ public interface DtoMapper {
  // --------Report
  ReportDto reportToReportDto(Report report);
 
+ List<ReportDto> reportToReportDto(List<Report> reportDto);
+
  Report reportDtoToReport(ReportDto reportDto);
  //
 
