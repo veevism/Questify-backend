@@ -19,8 +19,9 @@ public class ReportController {
     private ReportService reportService;
 
     @GetMapping("")
-    public ReportDto getReport(@RequestParam UUID submissionId) {
-        return reportService.getReportBySubmissionId(submissionId);
+    public ResponseEntity<ApiResponse<ReportDto>> getReport(@RequestParam UUID submissionId) {
+        ApiResponse<ReportDto> response = ApiResponse.success(reportService.getReportBySubmissionId(submissionId), HttpStatus.OK, "Get Report Successfully");
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/laboratory")
@@ -29,13 +30,9 @@ public class ReportController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-//    @GetMapping("")
-//    public ReportDto getReports(@RequestParam UUID laboratoryId) {
-//        return reportService.getAllReport(submissionId);
-//    }
-
     @PutMapping("")
-    public ReportDto updateReport(@RequestParam UUID submissionId, @RequestBody ReportDto reportDto) {
-        return reportService.updateReport(submissionId, reportDto);
+    public ResponseEntity<ApiResponse<ReportDto>> updateReport(@RequestParam UUID submissionId, @RequestBody ReportDto reportDto) {
+        ApiResponse<ReportDto> response = ApiResponse.success(reportService.updateReport(submissionId, reportDto), HttpStatus.OK, "Update Report Successfully");
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 }

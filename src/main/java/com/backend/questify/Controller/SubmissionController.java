@@ -77,10 +77,8 @@ public class SubmissionController {
 
 
 	@PostMapping("/log")
-	public ReportDto logEvent(@RequestParam UUID submissionId, @RequestBody Logging logging) {
-		//{
-		//  "actionName": "copy"
-		//}
+	public  ResponseEntity<ApiResponse<Void>> logEvent(@RequestParam UUID submissionId, @RequestBody Logging logging) {
+
 		Optional<Report> reportOpt = reportRepository.findBySubmission_SubmissionId(submissionId);
 		if (reportOpt.isPresent()) {
 			Report report = reportOpt.get();
@@ -88,15 +86,21 @@ public class SubmissionController {
 			logging.setTimeStamp(LocalDateTime.now());
 			report.getLoggings().add(loggingRepository.save(logging));
 
-			return DtoMapper.INSTANCE.reportToReportDto(report);
-		} else {
-			throw new ResourceNotFoundException("Report not found for submission id: " + submissionId);
+			ApiResponse<Void> response = ApiResponse.success(null, HttpStatus.OK, "Log Event Successfully");
+
+			return ResponseEntity.status(response.getStatus()).body(response);
 		}
+		throw new ResourceNotFoundException("Report not found for submission id: " + submissionId);
+
 	}
 
 	@PostMapping("/submit")
-	public SubmissionDto submitSubmission(@RequestParam UUID submissionId) {
-		return submissionService.submitSubmission(submissionId);
+	public ResponseEntity<ApiResponse<SubmissionDto>> submitSubmission(@RequestParam UUID submissionId) {
+
+		ApiResponse<SubmissionDto> response = ApiResponse.success(submissionService.submitSubmission(submissionId), HttpStatus.OK, "Submit Submission Successfully");
+
+		return ResponseEntity.status(response.getStatus()).body(response);
+
 	}
 
 
