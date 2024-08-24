@@ -6,9 +6,7 @@ import com.backend.questify.Entity.Logging;
 import com.backend.questify.Entity.Report;
 import com.backend.questify.Entity.Submission;
 import com.backend.questify.Exception.ResourceNotFoundException;
-import com.backend.questify.Model.ApiResponse;
-import com.backend.questify.Model.ExecutionResponse;
-import com.backend.questify.Model.Language;
+import com.backend.questify.Model.*;
 import com.backend.questify.Repository.LoggingRepository;
 import com.backend.questify.Repository.QuestionRepository;
 import com.backend.questify.Repository.ReportRepository;
@@ -47,8 +45,9 @@ public class SubmissionController {
 
 	@PutMapping("")
 	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
-	public ResponseEntity<ApiResponse<SubmissionDto>> updateCodeSnippet(@RequestParam UUID questionId, @RequestParam Language language, @RequestBody String codeContent) {
-		ApiResponse<SubmissionDto> response = ApiResponse.success(submissionService.updateSubmissionContent(questionId, language.name(), codeContent) , HttpStatus.OK, "Update Submission Successfully");
+	// delete submitStatus later
+	public ResponseEntity<ApiResponse<SubmissionDto>> updateCodeSnippet(@RequestParam UUID questionId, @RequestParam Language language, @RequestBody String codeContent, @RequestParam SubmissionStatus submissionStatus) {
+		ApiResponse<SubmissionDto> response = ApiResponse.success(submissionService.updateSubmissionContent(questionId, language.name(), codeContent, submissionStatus) , HttpStatus.OK, "Update Submission Successfully");
 
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}

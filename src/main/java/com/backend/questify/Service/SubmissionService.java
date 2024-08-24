@@ -48,11 +48,15 @@ public class SubmissionService {
 	private TestCaseResultRepository testCaseResultRepository;
 
 	@Transactional
-	public SubmissionDto updateSubmissionContent(UUID questionId, String language, String updatedCode) {
+	public SubmissionDto updateSubmissionContent(UUID questionId, String language, String updatedCode, SubmissionStatus submissionStatus) {
 		Submission submission = getCurrentSubmission(questionId);
 
 		Map<String, String> snippets = submission.getCodeSnippets();
 		snippets.put(language, updatedCode);
+
+		// debugging
+		submission.setStatus(submissionStatus);
+		// debugging
 
 		return DtoMapper.INSTANCE.submissionToSubmissionDto(submissionRepository.save(submission));
 	}
