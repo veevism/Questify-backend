@@ -89,6 +89,7 @@ public class SubmissionService {
 
 		Report report = Report.builder()
 				.submission(newSubmission)
+				.question(question)
 				.maxScore(question.getLaboratory().getMaxScore())
 				.build();
 

@@ -30,6 +30,9 @@ public class Report {
 	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Logging> loggings;
 
+	@ManyToOne
+	private Question question;
+
 	private Integer givenScore;
 
 	private Integer maxScore;

@@ -19,8 +19,8 @@ public class ReportController {
     private ReportService reportService;
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse<ReportDto>> getReport(@RequestParam UUID submissionId) {
-        ApiResponse<ReportDto> response = ApiResponse.success(reportService.getReportBySubmissionId(submissionId), HttpStatus.OK, "Get Report Successfully");
+    public ResponseEntity<ApiResponse<ReportDto>> getReport(@RequestParam UUID questionId) {
+        ApiResponse<ReportDto> response = ApiResponse.success(reportService.getReport(questionId), HttpStatus.OK, "Get Report Successfully");
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

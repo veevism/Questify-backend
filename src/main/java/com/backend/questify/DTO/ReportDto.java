@@ -1,6 +1,7 @@
 package com.backend.questify.DTO;
 
 import com.backend.questify.Entity.Logging;
+import com.backend.questify.Entity.Question;
 import com.backend.questify.Model.SubmitStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ public class ReportDto {
     private UUID reportId;
     private SubmissionDto submission;
     private List<LoggingDto> loggings;
+    private QuestionDto questionDto;
 //    private Long testCaseId;
     private Integer givenScore;
     private Integer maxScore;

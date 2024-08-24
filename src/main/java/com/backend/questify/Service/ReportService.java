@@ -5,10 +5,14 @@ import com.backend.questify.DTO.ReportDto;
 import com.backend.questify.Entity.Laboratory;
 import com.backend.questify.Entity.Question;
 import com.backend.questify.Entity.Report;
+import com.backend.questify.Entity.Submission;
 import com.backend.questify.Exception.ListIsNotEmptyException;
 import com.backend.questify.Exception.ResourceNotFoundException;
+import com.backend.questify.Repository.QuestionRepository;
 import com.backend.questify.Repository.ReportRepository;
+import com.backend.questify.Repository.SubmissionRepository;
 import com.backend.questify.Util.DtoMapper;
+import com.backend.questify.Util.EntityHelper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,9 +26,22 @@ public class ReportService {
     @Autowired
     private ReportRepository reportRepository;
 
-    public ReportDto getReportBySubmissionId(UUID submissionId) {
-        Report report = reportRepository.findBySubmission_SubmissionId(submissionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Report not found for submission id: " + submissionId));
+    @Autowired
+    private EntityHelper entityHelper;
+
+    @Autowired
+    private SubmissionRepository submissionRepository;
+
+    @Autowired
+    private QuestionRepository questionRepository;
+
+    public ReportDto getReport(UUID questionId) {
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new ResourceNotFoundException("Report not found for submission id: " + questionId));
+
+        Submission submission = submissionRepository.findByQuestionAndStudent(question, entityHelper.getCurrentUser().getStudent()).orElseThrow(() -> new ResourceNotFoundException("Report not found for submission id: " + questionId));
+
+        Report report = reportRepository.findBySubmission(submission)
+                .orElseThrow(() -> new ResourceNotFoundException("Report not found for submission id: " + questionId));
         return DtoMapper.INSTANCE.reportToReportDto(report);
     }
 
