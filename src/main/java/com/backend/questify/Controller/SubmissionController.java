@@ -11,6 +11,7 @@ import com.backend.questify.Repository.LoggingRepository;
 import com.backend.questify.Repository.QuestionRepository;
 import com.backend.questify.Repository.ReportRepository;
 import com.backend.questify.Repository.SubmissionRepository;
+import com.backend.questify.Service.ReportService;
 import com.backend.questify.Service.SubmissionService;
 import com.backend.questify.Util.DtoMapper;
 import com.backend.questify.Util.EntityHelper;
@@ -39,6 +40,9 @@ public class SubmissionController {
 
 	@Autowired
 	private ReportRepository reportRepository;
+
+	@Autowired
+	private ReportService reportService;
 
 	@Autowired
 	private EntityHelper entityHelper;
@@ -77,20 +81,10 @@ public class SubmissionController {
 
 	@PostMapping("/log")
 	public  ResponseEntity<ApiResponse<Void>> logEvent(@RequestParam UUID submissionId, @RequestBody Logging logging) {
-
-		Optional<Report> reportOpt = reportRepository.findBySubmission_SubmissionId(submissionId);
-		if (reportOpt.isPresent()) {
-			Report report = reportOpt.get();
-			logging.setReport(report);
-			logging.setTimeStamp(LocalDateTime.now());
-			report.getLoggings().add(loggingRepository.save(logging));
-
+			reportService.logEvent(submissionId, logging);
 			ApiResponse<Void> response = ApiResponse.success(null, HttpStatus.OK, "Log Event Successfully");
 
 			return ResponseEntity.status(response.getStatus()).body(response);
-		}
-		throw new ResourceNotFoundException("Report not found for submission id: " + submissionId);
-
 	}
 
 	@PostMapping("/submit")

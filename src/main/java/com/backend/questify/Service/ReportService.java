@@ -2,12 +2,10 @@ package com.backend.questify.Service;
 
 
 import com.backend.questify.DTO.ReportDto;
-import com.backend.questify.Entity.Laboratory;
-import com.backend.questify.Entity.Question;
-import com.backend.questify.Entity.Report;
-import com.backend.questify.Entity.Submission;
+import com.backend.questify.Entity.*;
 import com.backend.questify.Exception.ListIsNotEmptyException;
 import com.backend.questify.Exception.ResourceNotFoundException;
+import com.backend.questify.Repository.LoggingRepository;
 import com.backend.questify.Repository.QuestionRepository;
 import com.backend.questify.Repository.ReportRepository;
 import com.backend.questify.Repository.SubmissionRepository;
@@ -17,7 +15,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -35,6 +35,9 @@ public class ReportService {
     @Autowired
     private QuestionRepository questionRepository;
 
+    @Autowired
+    private LoggingRepository loggingRepository;
+
     public ReportDto getReport(UUID questionId) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new ResourceNotFoundException("Report not found for submission id: " + questionId));
 
@@ -48,7 +51,6 @@ public class ReportService {
     public List<ReportDto> getReports(UUID laboratoryId) {
         List<Report> reports = ListIsNotEmptyException.requireNotEmpty(reportRepository.findAllBySubmission_Question_Laboratory_LaboratoryId(laboratoryId), Laboratory.class.getSimpleName());
         return DtoMapper.INSTANCE.reportToReportDto(reports);
-
     }
 
     @Transactional
@@ -69,5 +71,13 @@ public class ReportService {
 
     public ReportDto getReportByReportId(UUID reportId) {
         return DtoMapper.INSTANCE.reportToReportDto(reportRepository.findById(reportId).orElseThrow(() -> new ResourceNotFoundException("Report not found for submission id: " + reportId)));
+    }
+
+    public void logEvent(UUID submissionId, Logging logging) {
+
+        Report report = reportRepository.findBySubmission_SubmissionId(submissionId).orElseThrow(()-> new ResourceNotFoundException("Report not found for submission id: " + submissionId));
+        logging.setReport(report);
+        logging.setTimeStamp(LocalDateTime.now());
+        report.getLoggings().add(loggingRepository.save(logging));
     }
 }

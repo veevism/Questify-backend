@@ -93,7 +93,7 @@ public class SubmissionService {
 
 		Report report = Report.builder()
 				.submission(newSubmission)
-				.question(question)
+				.question(newSubmission.getQuestion())
 				.maxScore(question.getLaboratory().getMaxScore())
 				.build();
 
@@ -229,11 +229,15 @@ public class SubmissionService {
 		LocalDateTime submitTime = LocalDateTime.now();
 		LocalDateTime endTime = submission.getEndTime();
 
-        if (submitTime.isBefore(endTime)) {
-            report.setSubmitStatus(SubmitStatus.ON_TIME);
-        } else {
-            report.setSubmitStatus(SubmitStatus.LATE);
-        }
+		if (endTime != null) {
+			if (submitTime.isBefore(endTime)) {
+				report.setSubmitStatus(SubmitStatus.ON_TIME);
+			} else {
+				report.setSubmitStatus(SubmitStatus.LATE);
+			}
+		} else {
+			throw new BadRequestException("End time for submission is not set.");
+		}
 
 		report.setSubmitTime(submitTime);
 

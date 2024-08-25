@@ -33,7 +33,7 @@ public class LaboratoryService {
 		Professor professor = entityHelper.findProfessorById(entityHelper.getCurrentUserId());
 
 		if (laboratoryRepository.existsByTitleAndProfessor(laboratory.getTitle(), professor)) {
-			throw new IllegalArgumentException("Classroom title cannot be duplicated.");
+			throw new IllegalArgumentException("Laboratory title cannot be duplicated.");
 		}
 
 		LocalDateTime now = LocalDateTime.now();
@@ -57,7 +57,7 @@ public class LaboratoryService {
 		Laboratory existingLaboratory = entityHelper.findLaboratoryById(laboratoryId);
 
 		if ((existingLaboratory.getProfessor() != professor)) {
-			throw new IllegalArgumentException("Classroom title cannot be duplicated.");
+			throw new IllegalArgumentException("Laboratory title cannot be duplicated.");
 		}
 		existingLaboratory.setTitle(laboratory.getTitle());
 		existingLaboratory.setDescription(laboratory.getDescription());
