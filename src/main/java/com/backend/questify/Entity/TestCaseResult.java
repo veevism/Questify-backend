@@ -32,5 +32,5 @@ import java.util.UUID;
         @Column(columnDefinition = "TEXT")
         private String actualOutput;
 
-        private String result; // "PASS" "NOT PASS"
+        private String result;
     }

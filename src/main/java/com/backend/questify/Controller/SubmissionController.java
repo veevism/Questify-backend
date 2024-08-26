@@ -74,7 +74,7 @@ public class SubmissionController {
 	@PostMapping("/execute")
 	@PreAuthorize("hasAnyRole('StdAcc', 'ProfAcc')")
 	public ResponseEntity<ApiResponse<SubmissionDto>> executeSubmission(@RequestParam UUID questionId, @RequestParam String language) {
-		ApiResponse<SubmissionDto> response = ApiResponse.success(submissionService.executeSubmission(questionId, language) , HttpStatus.OK, "Execution Submission Successfully");
+		ApiResponse<SubmissionDto> response = ApiResponse.success(submissionService.executeSubmission(questionId, language) , HttpStatus.OK, "Execute Submission Successfully");
 		return ResponseEntity.status(response.getStatus()).body(response);
 	}
 

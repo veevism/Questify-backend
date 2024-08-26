@@ -43,10 +43,7 @@ public class QuestionService {
 		Laboratory existingLaboratory = entityHelper.findLaboratoryById(laboratoryId);
 		if (entityHelper.getCurrentUser().getRole() == StdAcc) {
 			return DtoMapper.INSTANCE.questionToQuestionDto(ListIsNotEmptyException.requireNotEmpty(questionRepository.findAllByQuestionId(existingLaboratory.getStudentQuestion().get(entityHelper.getCurrentUser().getStudent().getStudentId())), Question.class.getSimpleName()));
-//			return DtoMapper.INSTANCE.questionToQuestionDto(entityHelper.findQuestionsByLaboratory(existingLaboratory));
 		} else {
-			// Still Need Fix
-//			return DtoMapper.INSTANCE.questionToQuestionDto(ListIsNotEmptyException.requireNotEmpty(questionRepository.findAllByAssignment(assignment), Question.class.getSimpleName()));
 			return DtoMapper.INSTANCE.questionToQuestionDto(entityHelper.findQuestionsByLaboratory(existingLaboratory));
 		}
 	}

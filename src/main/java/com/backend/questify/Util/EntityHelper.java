@@ -8,6 +8,7 @@ import com.backend.questify.Exception.UnauthorizedAccessException;
 import com.backend.questify.Exception.UserNotAuthenticatedException;
 import com.backend.questify.Model.Role;
 import com.backend.questify.Repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +38,9 @@ public class EntityHelper {
 	private TestCaseRepository testCaseRepository;
 
 	@Autowired
+	private SubmissionRepository submissionRepository;
+
+	@Autowired
 	private UserRepository userRepository;
 
 	public Professor findProfessorById(Long professorId) {
@@ -58,9 +62,26 @@ public class EntityHelper {
 		return ListIsNotEmptyException.requireNotEmpty(questionRepository.findAllByLaboratory(laboratory), Question.class.getSimpleName());
 	}// .getStudentQuestion().get(getCurrentUser().getStudent().getStudentId())
 
+
 	public void deleteQuestionById(UUID questionId) {
+
+		Question question = questionRepository.findById(questionId)
+				.orElseThrow(() -> new EntityNotFoundException("Question not found"));
+
+
+		List<Submission> submissions = submissionRepository.findAllByQuestion(question);
+
+
+		for (Submission submission : submissions) {
+			submission.setQuestion(null);
+			submissionRepository.save(submission);
+		}
+
+		question.getTestCases().clear();
+
 		questionRepository.deleteById(questionId);
 	}
+
 
 //
 //	public List<Question> findQuestions(Laboratory assignment) {
@@ -122,8 +143,17 @@ public class EntityHelper {
 	}
 
 
-	// --------Laboratory
 	public void deleteLaboratoryById(UUID laboratoryId) {
+		Laboratory laboratory = laboratoryRepository.findById(laboratoryId)
+				.orElseThrow(() -> new EntityNotFoundException("Laboratory not found"));
+
+		List<Question> questions = questionRepository.findAllByLaboratory(laboratory);
+
+		for (Question question : questions) {
+			question.setLaboratory(null);
+			questionRepository.save(question);
+		}
+
 		laboratoryRepository.deleteById(laboratoryId);
 	}
 
