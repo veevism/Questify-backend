@@ -23,4 +23,5 @@ public class ExportController {
     public ResponseEntity<byte[]> exportReport(@RequestParam UUID laboratoryId) throws IOException {
         return exportService.exportReport(laboratoryId);
     }
+
 }
